@@ -748,5 +748,85 @@ describe('LogCapture', () => {
       // Restore original JSON.stringify
       JSON.stringify = originalStringify;
     });
+
+    it('should handle errors in handleLog and call original console.error', () => {
+      const capture = new LogCapture({ applicationName: 'test-app' });
+      const mockConsoleError = jest.fn();
+
+      // Store original console.error and replace with mock
+      const originalError = console.error;
+      console.error = mockConsoleError;
+      capture.originalConsole.error = mockConsoleError;
+
+      // Mock _createLogEntry to throw an error
+      const originalCreateLogEntry = capture._createLogEntry;
+      capture._createLogEntry = jest.fn(() => {
+        throw new Error('Test error in handleLog');
+      });
+
+      capture.start();
+
+      // This should trigger the error handling in handleLog
+      console.log('test message that will cause error');
+
+      // Should have called the original console.error
+      expect(mockConsoleError).toHaveBeenCalledWith(
+        'LogCapture error:',
+        expect.any(Error)
+      );
+
+      // Restore everything
+      capture._createLogEntry = originalCreateLogEntry;
+      console.error = originalError;
+      capture.stop();
+    });
+
+    it('should handle environment detection with staging hostname', () => {
+      const originalLocation = global.window?.location;
+
+      // Test with staging hostname
+      global.window = { location: { hostname: 'staging.example.com' } };
+      const capture = new LogCapture({ applicationName: 'test-app' });
+      expect(capture.options.environment).toBe('staging');
+
+      // Restore original location
+      if (originalLocation) {
+        global.window.location = originalLocation;
+      } else {
+        delete global.window;
+      }
+    });
+
+    it('should handle environment detection with dev hostname', () => {
+      const originalLocation = global.window?.location;
+
+      // Test with dev hostname
+      global.window = { location: { hostname: 'dev.example.com' } };
+      const capture = new LogCapture({ applicationName: 'test-app' });
+      expect(capture.options.environment).toBe('staging');
+
+      // Restore original location
+      if (originalLocation) {
+        global.window.location = originalLocation;
+      } else {
+        delete global.window;
+      }
+    });
+
+    it('should handle environment detection with production hostname', () => {
+      const originalLocation = global.window?.location;
+
+      // Test with production hostname (not localhost, not staging/dev)
+      global.window = { location: { hostname: 'example.com' } };
+      const capture = new LogCapture({ applicationName: 'test-app' });
+      expect(capture.options.environment).toBe('production');
+
+      // Restore original location
+      if (originalLocation) {
+        global.window.location = originalLocation;
+      } else {
+        delete global.window;
+      }
+    });
   });
 });
