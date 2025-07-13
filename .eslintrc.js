@@ -89,6 +89,7 @@ module.exports = {
     'build/',
     'coverage/',
     '*.min.js',
+    '*.d.ts',
     'packages/*/dist/',
     'packages/*/build/',
     'packages/*/types/',
