@@ -48,7 +48,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     needs: [validate]
-    if: github.event_name == 'release'
+    if: github.event_name == 'release' || startsWith(github.ref, 'refs/tags/v')
 
     steps:
       - name: Checkout code
@@ -154,7 +154,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     needs: [publish-npm]
-    if: github.event_name == 'release'
+    if: github.event_name == 'release' || startsWith(github.ref, 'refs/tags/v')
 
     steps:
       - name: Checkout code
@@ -194,7 +194,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     needs: [publish-npm, release-assets, update-docs]
-    if: always() && github.event_name == 'release'
+    if: always() && (github.event_name == 'release' || startsWith(github.ref, 'refs/tags/v'))
 
     steps:
       - name: Notify success
