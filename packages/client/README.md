@@ -41,6 +41,27 @@ npm install @kansnpms/console-log-pipe-client
 
 ## 🚀 Quick Start
 
+### Step 1: Start the CLI Server
+
+First, install and start the Console Log Pipe CLI server:
+
+```bash
+# Install CLI globally
+npm install -g console-log-pipe
+
+# Start server for your application
+clp start --app my-web-app
+
+# The CLI will display:
+# 🔍 Console Log Pipe Server Started
+# 📱 Application: my-web-app
+# 🆔 Session ID: clp_abc123_xyz789
+# 🌐 Server Port: 3001
+# 🔗 Ready to receive logs...
+```
+
+### Step 2: Add to Your Web Application
+
 ```javascript
 import ConsoleLogPipe from '@kansnpms/console-log-pipe-client';
 
@@ -49,6 +70,11 @@ ConsoleLogPipe.init({
   // sessionId is auto-generated, or use custom one from CLI output
 });
 ```
+
+### Step 3: Monitor Logs in Your IDE
+
+All browser console logs, errors, and network requests will now stream directly to your CLI terminal
+and development environment!
 
 ## 🤖 AI-Friendly Development Workflow
 
