@@ -63,6 +63,8 @@ clp start --app my-web-app --port 3001
 
 #### Option 1: NPM Package (Recommended)
 
+**📦 [View on NPM](https://www.npmjs.com/package/@kansnpms/console-log-pipe-client)**
+
 ```bash
 npm install @kansnpms/console-log-pipe-client
 ```

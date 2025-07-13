@@ -29,6 +29,8 @@ easily parse and understand.
 
 ### NPM Package (Recommended)
 
+**📦 [View on NPM](https://www.npmjs.com/package/@kansnpms/console-log-pipe-client)**
+
 ```bash
 npm install @kansnpms/console-log-pipe-client
 ```
