@@ -180,6 +180,123 @@ cd packages/client && npm run test:coverage
 - Review artifact uploads for additional context
 - Use workflow dispatch for manual testing
 
+## 🔄 Task Workflow with CI/CD Verification
+
+### Mandatory 5-Step Workflow
+
+For each task execution, follow this workflow:
+
+#### 1. 🧠 UNDERSTAND Phase
+
+- Analyze task requirements and dependencies
+- Review existing codebase and documentation
+- Plan implementation approach
+
+#### 2. ⚙️ DEVELOP Phase
+
+- Implement the required functionality
+- Follow coding standards and best practices
+- Write comprehensive code documentation
+
+#### 3. 🧪 TEST Phase
+
+- Write and run unit tests
+- Execute integration tests
+- Verify >90% test coverage
+- Run local quality checks:
+  ```bash
+  npm run lint
+  npm run type-check
+  npm run format:check
+  npm run test:all
+  npm run build
+  ```
+
+#### 4. 📝 GIT COMMIT Phase
+
+- Stage changes: `git add .`
+- Commit with conventional format: `git commit -m "type(scope): description"`
+- Verify git hooks pass (lint-staged, commitlint)
+
+#### 5. 🚀 GIT PUSH & CI/CD VERIFICATION Phase
+
+- Push changes: `git push origin main`
+- **MANDATORY: Verify GitHub Actions pass**
+
+  ```bash
+  # Check CI/CD status
+  npm run ci:check
+
+  # Wait for workflows to complete (if running)
+  # Re-run check until all workflows pass
+  npm run ci:status
+  ```
+
+- **Task is NOT complete until all CI/CD checks pass**
+
+### GitHub Actions Status Verification
+
+#### Quick Status Check
+
+```bash
+# Check current GitHub Actions status
+npm run ci:check
+```
+
+#### Detailed Status Information
+
+The status checker provides:
+
+- ✅ **Workflow Health**: Success rate and recent run statistics
+- 📋 **Available Workflows**: List of all configured workflows
+- 📝 **Recent Runs**: Last 10 workflow executions with details
+- ❌ **Failure Analysis**: Details about failed jobs and steps
+- 💡 **Recommendations**: Actionable suggestions for improvements
+
+#### Status Interpretation
+
+- **🟢 Success Rate ≥90%**: Excellent workflow health
+- **🟡 Success Rate 60-89%**: Needs attention
+- **🔴 Success Rate <60%**: Critical issues requiring immediate fix
+
+#### Handling CI/CD Failures
+
+If GitHub Actions fail:
+
+1. **Check the failure details**:
+
+   ```bash
+   npm run ci:status
+   ```
+
+2. **Common failure types**:
+
+   - **Security Audit**: Dependencies with vulnerabilities
+   - **Test Failures**: Broken tests or insufficient coverage
+   - **Build Errors**: Compilation or bundling issues
+   - **Linting/Formatting**: Code style violations
+
+3. **Fix and retry**:
+
+   ```bash
+   # Fix the issues locally
+   npm run lint --fix
+   npm run format
+   npm audit fix
+
+   # Test locally
+   npm run test:all
+   npm run build
+
+   # Commit fixes
+   git add .
+   git commit -m "fix(build): resolve ci/cd issues"
+   git push origin main
+
+   # Verify fix
+   npm run ci:check
+   ```
+
 ## 🔄 Release Process
 
 ### Automated Release
@@ -187,14 +304,16 @@ cd packages/client && npm run test:coverage
 1. Create git tag: `git tag v1.0.0`
 2. Push tag: `git push origin v1.0.0`
 3. Create GitHub release from tag
-4. CI/CD automatically publishes to NPM
+4. **Verify release workflow passes**: `npm run ci:check`
+5. CI/CD automatically publishes to NPM
 
 ### Manual Release
 
 1. Update versions: `npm run version`
 2. Build packages: `npm run build`
 3. Run tests: `npm run test:all`
-4. Publish: `npm run publish`
+4. **Verify all CI/CD checks pass**: `npm run ci:check`
+5. Publish: `npm run publish`
 
 ## 📝 Best Practices
 

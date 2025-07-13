@@ -42,6 +42,8 @@
     "type-check": "tsc --noEmit",
     "docs:generate": "echo 'Documentation generation not yet implemented'",
     "security:audit": "npm audit --audit-level=moderate",
+    "ci:check": "node scripts/check-github-actions.js",
+    "ci:status": "node scripts/check-github-actions.js",
     "clean": "lerna clean && rimraf node_modules coverage",
     "version": "lerna version",
     "publish": "lerna publish",
