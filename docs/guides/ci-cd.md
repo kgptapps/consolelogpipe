@@ -232,6 +232,16 @@ For each task execution, follow this workflow:
   npm run ci:status
   ```
 
+- **MANDATORY: Validate GitHub Actions workflows**
+
+  ```bash
+  # Validate workflow syntax and dependencies
+  npm run ci:validate
+
+  # Check for deprecated actions
+  npm run ci:audit-actions
+  ```
+
 - **Task is NOT complete until all CI/CD checks pass**
 
 ### GitHub Actions Status Verification
@@ -241,6 +251,19 @@ For each task execution, follow this workflow:
 ```bash
 # Check current GitHub Actions status
 npm run ci:check
+```
+
+#### Workflow Validation
+
+```bash
+# Validate workflow syntax and check for deprecated actions
+npm run ci:validate
+
+# Auto-fix deprecated actions and common issues
+npm run ci:fix
+
+# Audit actions for security and best practices
+npm run ci:audit-actions
 ```
 
 #### Detailed Status Information
@@ -269,17 +292,34 @@ If GitHub Actions fail:
    npm run ci:status
    ```
 
-2. **Common failure types**:
+2. **Validate and fix workflow issues**:
 
+   ```bash
+   # Check for deprecated actions and syntax errors
+   npm run ci:validate
+
+   # Auto-fix deprecated actions
+   npm run ci:fix
+
+   # Re-validate after fixes
+   npm run ci:validate
+   ```
+
+3. **Common failure types**:
+
+   - **Deprecated Actions**: `actions/upload-artifact@v3` → `@v4`
    - **Security Audit**: Dependencies with vulnerabilities
    - **Test Failures**: Broken tests or insufficient coverage
    - **Build Errors**: Compilation or bundling issues
    - **Linting/Formatting**: Code style violations
 
-3. **Fix and retry**:
+4. **Fix and retry**:
 
    ```bash
-   # Fix the issues locally
+   # Fix workflow issues first
+   npm run ci:fix
+
+   # Fix code issues locally
    npm run lint --fix
    npm run format
    npm audit fix
