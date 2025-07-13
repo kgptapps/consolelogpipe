@@ -28,13 +28,43 @@
 
 ### Development Workflow Pattern
 
-Every task must follow the **Understand → Develop → Test → Git Commit → Git Push** pattern:
+Every task must follow the **Understand → Develop → Test → Git Commit → Git Push → GitHub Actions
+Validation** pattern:
 
 1. **🧠 UNDERSTAND** - Read requirements, dependencies, and acceptance criteria
 2. **⚙️ DEVELOP** - Implement the feature according to AI Instructions
 3. **🧪 TEST** - Write and run unit tests, verify functionality
 4. **📝 GIT COMMIT** - Commit changes with descriptive message
 5. **🚀 GIT PUSH** - Push to repository for backup and collaboration
+6. **🤖 GITHUB ACTIONS VALIDATION** - Verify CI/CD pipeline passes all checks
+
+### Automated Release Workflow
+
+For package releases, use the automated GitHub Actions pipeline instead of manual CLI publishing:
+
+#### **✅ CORRECT: Automated Release Process**
+
+```bash
+npm run release          # Creates patch release (1.0.1 → 1.0.2)
+npm run release:minor    # Creates minor release (1.0.1 → 1.1.0)
+npm run release:major    # Creates major release (1.0.1 → 2.0.0)
+```
+
+#### **❌ AVOID: Manual CLI Publishing**
+
+```bash
+# DON'T DO THIS - bypasses automated validation
+npm version patch && npm publish
+```
+
+#### **🚀 Automated Pipeline Benefits**
+
+- ✅ **Security Audit** - Validates no vulnerabilities before release
+- ✅ **Full Test Suite** - Runs comprehensive tests before publishing
+- ✅ **Build Validation** - Ensures all packages build correctly
+- ✅ **GitHub Release** - Creates proper release with tags and notes
+- ✅ **NPM Publishing** - Automated publishing with MFA bypass
+- ✅ **Documentation Updates** - Updates README and changelog automatically
 
 ### Task Priority Levels
 
