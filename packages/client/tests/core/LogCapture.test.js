@@ -35,8 +35,8 @@ describe('LogCapture', () => {
       debug: console.debug,
     };
 
-    // Create fresh LogCapture instance
-    logCapture = new LogCapture();
+    // Create fresh LogCapture instance with required applicationName
+    logCapture = new LogCapture({ applicationName: 'test-app' });
   });
 
   afterEach(() => {
@@ -66,6 +66,7 @@ describe('LogCapture', () => {
 
     it('should accept custom options', () => {
       const customOptions = {
+        applicationName: 'custom-test-app',
         levels: ['error', 'warn'],
         captureMetadata: false,
         maxLogSize: 5000,
@@ -233,7 +234,10 @@ describe('LogCapture', () => {
     });
 
     it('should not include metadata when disabled', () => {
-      const noMetadataCapture = new LogCapture({ captureMetadata: false });
+      const noMetadataCapture = new LogCapture({
+        applicationName: 'no-metadata-test-app',
+        captureMetadata: false,
+      });
       const listener = jest.fn();
       noMetadataCapture.addListener(listener);
       noMetadataCapture.start();
@@ -253,6 +257,7 @@ describe('LogCapture', () => {
   describe('Filtering', () => {
     it('should filter by log levels', () => {
       const levelFilterCapture = new LogCapture({
+        applicationName: 'level-filter-test-app',
         filters: { levels: ['error', 'warn'] },
       });
       const listener = jest.fn();
@@ -277,6 +282,7 @@ describe('LogCapture', () => {
 
     it('should filter by exclude patterns', () => {
       const patternFilterCapture = new LogCapture({
+        applicationName: 'pattern-filter-test-app',
         filters: { excludePatterns: [/password/i, 'secret'] },
       });
       const listener = jest.fn();
@@ -301,6 +307,7 @@ describe('LogCapture', () => {
 
     it('should filter by include patterns', () => {
       const includeFilterCapture = new LogCapture({
+        applicationName: 'include-filter-test-app',
         filters: { includePatterns: [/important/i, 'debug'] },
       });
       const listener = jest.fn();
@@ -350,7 +357,10 @@ describe('LogCapture', () => {
     });
 
     it('should handle log size limits', () => {
-      const smallSizeCapture = new LogCapture({ maxLogSize: 50 });
+      const smallSizeCapture = new LogCapture({
+        applicationName: 'small-size-test-app',
+        maxLogSize: 50,
+      });
       const listener = jest.fn();
       smallSizeCapture.addListener(listener);
       smallSizeCapture.start();
@@ -413,7 +423,9 @@ describe('LogCapture', () => {
       delete global.console;
 
       expect(() => {
-        const safeCapture = new LogCapture();
+        const safeCapture = new LogCapture({
+          applicationName: 'safe-test-app',
+        });
         safeCapture.start();
         safeCapture.stop();
       }).not.toThrow();
@@ -524,6 +536,133 @@ describe('LogCapture', () => {
 
       global.Error = originalError;
       logCapture.stop();
+    });
+  });
+
+  describe('Multi-Application Support', () => {
+    it('should require applicationName parameter', () => {
+      expect(() => {
+        new LogCapture();
+      }).toThrow('applicationName is required and must be a non-empty string');
+
+      expect(() => {
+        new LogCapture({ applicationName: '' });
+      }).toThrow('applicationName is required and must be a non-empty string');
+
+      expect(() => {
+        new LogCapture({ applicationName: 123 });
+      }).toThrow('applicationName is required and must be a non-empty string');
+    });
+
+    it('should generate unique session IDs', () => {
+      const capture1 = new LogCapture({ applicationName: 'app1' });
+      const capture2 = new LogCapture({ applicationName: 'app2' });
+
+      expect(capture1.options.sessionId).toBeDefined();
+      expect(capture2.options.sessionId).toBeDefined();
+      expect(capture1.options.sessionId).not.toBe(capture2.options.sessionId);
+      expect(capture1.options.sessionId).toMatch(/^clp_/);
+    });
+
+    it('should accept custom session ID', () => {
+      const customSessionId = 'custom-session-123';
+      const capture = new LogCapture({
+        applicationName: 'test-app',
+        sessionId: customSessionId,
+      });
+
+      expect(capture.options.sessionId).toBe(customSessionId);
+    });
+
+    it('should assign application-specific ports', () => {
+      const capture1 = new LogCapture({
+        applicationName: 'ecommerce-frontend',
+      });
+      const capture2 = new LogCapture({ applicationName: 'admin-panel' });
+      const capture3 = new LogCapture({
+        applicationName: 'ecommerce-frontend',
+      }); // Same app
+
+      expect(capture1.options.serverPort).toBeGreaterThanOrEqual(3001);
+      expect(capture1.options.serverPort).toBeLessThanOrEqual(3100);
+      expect(capture2.options.serverPort).toBeGreaterThanOrEqual(3001);
+      expect(capture2.options.serverPort).toBeLessThanOrEqual(3100);
+
+      // Same application should get same port
+      expect(capture1.options.serverPort).toBe(capture3.options.serverPort);
+    });
+
+    it('should detect environment context', () => {
+      // Mock window.location for testing
+      const originalLocation = global.window?.location;
+      global.window = { location: { hostname: 'localhost' } };
+
+      const capture = new LogCapture({ applicationName: 'test-app' });
+      expect(capture.options.environment).toBe('development');
+
+      // Restore original location
+      if (originalLocation) {
+        global.window.location = originalLocation;
+      } else {
+        delete global.window;
+      }
+    });
+
+    it('should initialize error categories', () => {
+      const capture = new LogCapture({ applicationName: 'test-app' });
+
+      expect(capture.errorCategories).toBeDefined();
+      expect(capture.errorCategories.syntax_error).toBe('Code syntax issues');
+      expect(capture.errorCategories.runtime_error).toBe(
+        'Runtime execution errors'
+      );
+      expect(capture.errorCategories.network_error).toBe(
+        'API/network connectivity issues'
+      );
+      expect(capture.errorCategories.user_error).toBe(
+        'User input or interaction errors'
+      );
+      expect(capture.errorCategories.system_error).toBe(
+        'Browser/system level errors'
+      );
+      expect(capture.errorCategories.performance_error).toBe(
+        'Performance degradation issues'
+      );
+      expect(capture.errorCategories.security_error).toBe(
+        'Security or permission errors'
+      );
+    });
+
+    it('should log session information to console', () => {
+      const originalConsoleLog = console.log;
+      const mockConsoleLog = jest.fn();
+      console.log = mockConsoleLog;
+
+      const capture = new LogCapture({ applicationName: 'test-app' });
+
+      expect(mockConsoleLog).toHaveBeenCalledWith(
+        expect.stringContaining('Console Log Pipe Session Started'),
+        expect.any(String),
+        expect.objectContaining({
+          applicationName: 'test-app',
+          sessionId: expect.stringMatching(/^clp_/),
+          environment: expect.any(String),
+          serverPort: expect.any(Number),
+        })
+      );
+
+      console.log = originalConsoleLog;
+    });
+
+    it('should support AI-friendly configuration options', () => {
+      const capture = new LogCapture({
+        applicationName: 'test-app',
+        enableErrorCategorization: true,
+        enablePerformanceTracking: true,
+      });
+
+      expect(capture.options.enableErrorCategorization).toBe(true);
+      expect(capture.options.enablePerformanceTracking).toBe(true);
     });
   });
 });

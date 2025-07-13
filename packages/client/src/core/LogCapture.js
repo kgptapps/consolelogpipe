@@ -7,11 +7,43 @@
 
 class LogCapture {
   constructor(options = {}) {
+    // Validate required applicationName
+    if (
+      !options.applicationName ||
+      typeof options.applicationName !== 'string'
+    ) {
+      throw new Error(
+        'applicationName is required and must be a non-empty string'
+      );
+    }
+
     this.options = {
       levels: ['log', 'error', 'warn', 'info', 'debug'],
       captureMetadata: true,
       preserveOriginal: true,
       maxLogSize: 10 * 1024, // 10KB per log
+
+      // Multi-application support (REQUIRED)
+      applicationName: options.applicationName,
+      sessionId: options.sessionId || this._generateSessionId(),
+
+      // AI-friendly development context
+      environment: options.environment || this._detectEnvironment(),
+      developer: options.developer || this._detectDeveloper(),
+      branch: options.branch || this._detectBranch(),
+
+      // Server connection configuration
+      serverPort:
+        options.serverPort || this._getApplicationPort(options.applicationName),
+      serverHost: options.serverHost || 'localhost',
+      enableRemoteLogging: options.enableRemoteLogging || false,
+      batchSize: options.batchSize || 10, // For remote logging
+      batchTimeout: options.batchTimeout || 1000, // 1 second
+
+      // AI-friendly error categorization
+      enableErrorCategorization: options.enableErrorCategorization !== false,
+      enablePerformanceTracking: options.enablePerformanceTracking !== false,
+
       filters: {
         excludePatterns: [],
         includePatterns: [],
@@ -24,6 +56,15 @@ class LogCapture {
     this.isCapturing = false;
     this.logQueue = [];
     this.listeners = new Set();
+    this.remoteBatch = [];
+    this.batchTimer = null;
+    this.websocket = null;
+    this.hasActiveListeners = false;
+    this.performanceMarks = new Map();
+    this.errorCategories = this._initializeErrorCategories();
+
+    // Log session information to console for manual inspection
+    this._logSessionInfo();
 
     // Bind methods to preserve context
     this.handleLog = this.handleLog.bind(this);
@@ -381,6 +422,130 @@ class LogCapture {
         // Fail silently to avoid breaking other listeners
       }
     });
+  }
+
+  /**
+   * Generate unique session ID
+   * @returns {string} Session ID
+   * @private
+   */
+  _generateSessionId() {
+    const timestamp = Date.now().toString(36);
+    const random = Math.random().toString(36).substr(2, 9);
+    return `clp_${timestamp}_${random}`;
+  }
+
+  /**
+   * Get application-specific port (3001-3100 range)
+   * @param {string} applicationName - Application name
+   * @returns {number} Port number
+   * @private
+   */
+  _getApplicationPort(applicationName) {
+    // Simple hash function to assign consistent ports
+    let hash = 0;
+    for (let i = 0; i < applicationName.length; i++) {
+      const char = applicationName.charCodeAt(i);
+      hash = (hash << 5) - hash + char;
+      hash = hash & hash; // Convert to 32-bit integer
+    }
+    // Map to port range 3001-3100
+    return 3001 + (Math.abs(hash) % 100);
+  }
+
+  /**
+   * Detect current environment
+   * @returns {string} Environment name
+   * @private
+   */
+  _detectEnvironment() {
+    if (typeof window !== 'undefined') {
+      const hostname = window.location?.hostname;
+      if (hostname === 'localhost' || hostname === '127.0.0.1') {
+        return 'development';
+      }
+      if (hostname?.includes('staging') || hostname?.includes('dev')) {
+        return 'staging';
+      }
+      return 'production';
+    }
+    return 'development';
+  }
+
+  /**
+   * Detect developer name from various sources
+   * @returns {string|null} Developer name
+   * @private
+   */
+  _detectDeveloper() {
+    // In browser environment, we can't access git config
+    // This would be enhanced in a Node.js environment
+    if (typeof window !== 'undefined') {
+      // Try to get from localStorage or sessionStorage
+      const stored =
+        localStorage?.getItem('console-log-pipe-developer') ||
+        sessionStorage?.getItem('console-log-pipe-developer');
+      if (stored) return stored;
+    }
+    return null;
+  }
+
+  /**
+   * Detect current git branch
+   * @returns {string|null} Branch name
+   * @private
+   */
+  _detectBranch() {
+    // In browser environment, we can't access git directly
+    // This would be enhanced in a Node.js environment or with build-time injection
+    if (typeof window !== 'undefined') {
+      // Try to get from build-time environment variables
+      const branch =
+        window.__GIT_BRANCH__ ||
+        localStorage?.getItem('console-log-pipe-branch');
+      if (branch) return branch;
+    }
+    return null;
+  }
+
+  /**
+   * Initialize error categorization system
+   * @returns {Object} Error categories
+   * @private
+   */
+  _initializeErrorCategories() {
+    return {
+      syntax_error: 'Code syntax issues',
+      runtime_error: 'Runtime execution errors',
+      network_error: 'API/network connectivity issues',
+      user_error: 'User input or interaction errors',
+      system_error: 'Browser/system level errors',
+      performance_error: 'Performance degradation issues',
+      security_error: 'Security or permission errors',
+    };
+  }
+
+  /**
+   * Log session information to console for manual inspection
+   * @private
+   */
+  _logSessionInfo() {
+    if (this.options.preserveOriginal && typeof console !== 'undefined') {
+      const sessionInfo = {
+        applicationName: this.options.applicationName,
+        sessionId: this.options.sessionId,
+        environment: this.options.environment,
+        developer: this.options.developer,
+        branch: this.options.branch,
+        serverPort: this.options.serverPort,
+      };
+
+      console.log(
+        '%c🔍 Console Log Pipe Session Started',
+        'color: #4CAF50; font-weight: bold; font-size: 14px;',
+        sessionInfo
+      );
+    }
   }
 }
 
