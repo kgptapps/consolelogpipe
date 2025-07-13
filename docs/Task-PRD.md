@@ -44,10 +44,37 @@ For package releases, use the automated GitHub Actions pipeline instead of manua
 
 #### **✅ CORRECT: Automated Release Process**
 
+**Method 1: Git Tag-Based Release (Recommended)**
+
+```bash
+# Create and push annotated tag to trigger release pipeline
+git tag v1.1.0 -a -m "v1.1.0 - AI-Friendly Data Structure Implementation"
+git push origin v1.1.0
+```
+
+**Method 2: NPM Scripts (Alternative)**
+
 ```bash
 npm run release          # Creates patch release (1.0.1 → 1.0.2)
 npm run release:minor    # Creates minor release (1.0.1 → 1.1.0)
 npm run release:major    # Creates major release (1.0.1 → 2.0.0)
+```
+
+#### **✅ SUCCESSFUL RELEASE EXAMPLE: v1.1.0**
+
+**Released:** 2025-07-13 - AI-Friendly Data Structure Implementation
+
+```bash
+# Tag created and pushed successfully
+git tag v1.1.0 -a -m "v1.1.0 - AI-Friendly Data Structure Implementation"
+git push origin v1.1.0
+
+# Triggered GitHub Actions workflow: .github/workflows/release.yml
+# Pipeline automatically:
+# 1. Validated release with comprehensive tests
+# 2. Built package with new AI-friendly features
+# 3. Published @kansnpms/console-log-pipe-client@1.1.0 to NPM
+# 4. Created GitHub release with detailed changelog
 ```
 
 #### **❌ AVOID: Manual CLI Publishing**
@@ -65,6 +92,7 @@ npm version patch && npm publish
 - ✅ **GitHub Release** - Creates proper release with tags and notes
 - ✅ **NPM Publishing** - Automated publishing with MFA bypass
 - ✅ **Documentation Updates** - Updates README and changelog automatically
+- ✅ **Tag-Based Triggers** - Simple `git tag` + `git push` workflow
 
 ### Task Priority Levels
 
