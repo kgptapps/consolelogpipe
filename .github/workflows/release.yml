@@ -1,0 +1,200 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+  release:
+    types: [published]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  # Job 1: Validate Release
+  validate:
+    name: Validate Release
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run full test suite
+        run: npm run test:all
+
+      - name: Build all packages
+        run: npm run build
+
+      - name: Security audit
+        run: npm audit --audit-level=moderate
+
+  # Job 2: Publish to NPM
+  publish-npm:
+    name: Publish to NPM
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: [validate]
+    if: github.event_name == 'release'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          cache: "npm"
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build packages
+        run: npm run build
+
+      - name: Publish to NPM
+        run: npm run publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  # Job 3: Create GitHub Release Assets
+  release-assets:
+    name: Create Release Assets
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: [validate]
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build packages
+        run: npm run build
+
+      - name: Build CLI binaries
+        run: |
+          cd packages/cli
+          npm run build:binaries || echo "Binary build not yet implemented"
+
+      - name: Package release assets
+        run: |
+          mkdir -p release-assets
+
+          # Package client library
+          cd packages/client
+          npm pack
+          mv *.tgz ../../release-assets/
+          cd ../..
+
+          # Package CLI tool
+          cd packages/cli
+          npm pack
+          mv *.tgz ../../release-assets/
+          cd ../..
+
+          # Package server
+          cd packages/server
+          npm pack
+          mv *.tgz ../../release-assets/
+          cd ../..
+
+      - name: Upload release assets
+        uses: actions/upload-artifact@v3
+        with:
+          name: release-assets-${{ matrix.os }}
+          path: release-assets/
+          retention-days: 30
+
+  # Job 4: Update Documentation
+  update-docs:
+    name: Update Documentation
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: [publish-npm]
+    if: github.event_name == 'release'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate API documentation
+        run: |
+          npm run docs:generate || echo "Documentation generation not yet implemented"
+
+      - name: Update version badges
+        run: |
+          echo "Updating version badges in README.md"
+          # This would update version badges with the new release version
+
+      - name: Commit documentation updates
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add -A
+          git diff --staged --quiet || git commit -m "docs: update documentation for release ${{ github.ref_name }}"
+          git push || echo "No documentation changes to push"
+
+  # Job 5: Notify Release
+  notify:
+    name: Notify Release
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs: [publish-npm, release-assets, update-docs]
+    if: always() && github.event_name == 'release'
+
+    steps:
+      - name: Notify success
+        if: needs.publish-npm.result == 'success'
+        run: |
+          echo "🎉 Release ${{ github.ref_name }} published successfully!"
+          echo "📦 NPM packages updated"
+          echo "📋 Release assets created"
+          echo "📚 Documentation updated"
+
+      - name: Notify failure
+        if: needs.publish-npm.result == 'failure'
+        run: |
+          echo "❌ Release ${{ github.ref_name }} failed!"
+          echo "Please check the logs and retry the release."
+          exit 1

@@ -165,7 +165,7 @@ Every task must follow the **Understand → Develop → Test → Git Commit → 
 ### T003: CI/CD Pipeline Setup
 
 - **Priority:** P1
-- **Status:** 🔴 NOT_STARTED
+- **Status:** 🟡 IN_PROGRESS
 - **Estimated Time:** 60 minutes
 - **Dependencies:** T001, T002
 - **AI Instructions:**

@@ -1,0 +1,187 @@
+name: "CodeQL Security Analysis"
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+  schedule:
+    # Run at 6 AM UTC every day
+    - cron: "0 6 * * *"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  analyze:
+    name: Analyze Code
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+    strategy:
+      fail-fast: false
+      matrix:
+        language: ["javascript"]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v2
+        with:
+          languages: ${{ matrix.language }}
+          queries: +security-and-quality
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build packages
+        run: npm run build
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v2
+        with:
+          category: "/language:${{matrix.language}}"
+
+  # Additional security checks
+  security-checks:
+    name: Additional Security Checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run npm audit
+        run: |
+          npm audit --audit-level=moderate --json > npm-audit-results.json || true
+
+          if [ -s npm-audit-results.json ]; then
+            echo "## NPM Audit Results" >> security-summary.md
+            echo "" >> security-summary.md
+            npm audit --audit-level=moderate >> security-summary.md || true
+          else
+            echo "No npm audit issues found." >> security-summary.md
+          fi
+
+      - name: Check for secrets
+        run: |
+          echo "## Secret Scanning" >> security-summary.md
+          echo "" >> security-summary.md
+
+          # Check for common secret patterns
+          if grep -r -E "(password|secret|key|token|api_key)" --include="*.js" --include="*.ts" --include="*.json" . | grep -v node_modules | grep -v ".git" | grep -v "test" | grep -v "spec"; then
+            echo "⚠️ Potential secrets found in code" >> security-summary.md
+          else
+            echo "✅ No obvious secrets found in code" >> security-summary.md
+          fi
+
+      - name: Check dependencies for known vulnerabilities
+        run: |
+          echo "" >> security-summary.md
+          echo "## Dependency Vulnerability Check" >> security-summary.md
+          echo "" >> security-summary.md
+
+          # This would integrate with vulnerability databases
+          echo "Dependency vulnerability check would be implemented here" >> security-summary.md
+
+      - name: Upload security summary
+        uses: actions/upload-artifact@v3
+        with:
+          name: security-summary
+          path: security-summary.md
+          retention-days: 30
+
+  # License compliance check
+  license-check:
+    name: License Compliance
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check license compatibility
+        run: |
+          echo "## License Compliance Report" > license-report.md
+          echo "" >> license-report.md
+
+          # Install license checker
+          npm install -g license-checker
+
+          # Generate license report
+          license-checker --json > licenses.json
+
+          echo "### Dependencies and their licenses:" >> license-report.md
+          echo "" >> license-report.md
+
+          # Parse and format license information
+          node -e "
+            const licenses = require('./licenses.json');
+            console.log('| Package | License | Repository |');
+            console.log('|---------|---------|------------|');
+            Object.entries(licenses).forEach(([pkg, info]) => {
+              const license = info.licenses || 'Unknown';
+              const repo = info.repository || 'N/A';
+              console.log(\`| \${pkg} | \${license} | \${repo} |\`);
+            });
+          " >> license-report.md
+
+      - name: Check for incompatible licenses
+        run: |
+          echo "" >> license-report.md
+          echo "### License Compatibility Check" >> license-report.md
+          echo "" >> license-report.md
+
+          # Check for GPL licenses that might conflict with MIT
+          if grep -i "gpl" licenses.json; then
+            echo "⚠️ GPL licenses found - review for compatibility" >> license-report.md
+          else
+            echo "✅ No GPL licenses found" >> license-report.md
+          fi
+
+          # Check for other restrictive licenses
+          if grep -iE "(agpl|copyleft)" licenses.json; then
+            echo "⚠️ Restrictive licenses found - review required" >> license-report.md
+          else
+            echo "✅ No restrictive licenses found" >> license-report.md
+          fi
+
+      - name: Upload license report
+        uses: actions/upload-artifact@v3
+        with:
+          name: license-report
+          path: license-report.md
+          retention-days: 30

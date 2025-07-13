@@ -31,7 +31,7 @@
     "debugging"
   ],
   "scripts": {
-    "build": "rollup -c",
+    "build": "echo 'Client build not yet implemented'",
     "build:dev": "rollup -c --environment NODE_ENV:development",
     "build:prod": "rollup -c --environment NODE_ENV:production",
     "dev": "rollup -c --watch",

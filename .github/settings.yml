@@ -1,0 +1,161 @@
+# Repository settings for Console Log Pipe
+# This file configures repository settings via the Probot Settings app
+
+repository:
+  name: consolelogpipe
+  description: "Real-time log streaming from browsers to developers. Stream console logs, errors, and network requests from any browser application directly to your development environment."
+  homepage: "https://github.com/kgptapps/consolelogpipe"
+  topics:
+    - console
+    - logging
+    - debugging
+    - browser
+    - real-time
+    - streaming
+    - developer-tools
+    - javascript
+    - typescript
+    - nodejs
+  private: false
+  has_issues: true
+  has_projects: true
+  has_wiki: false
+  has_downloads: true
+  default_branch: main
+  allow_squash_merge: true
+  allow_merge_commit: false
+  allow_rebase_merge: true
+  delete_branch_on_merge: true
+  enable_automated_security_fixes: true
+  enable_vulnerability_alerts: true
+
+# Labels for issue and PR management
+labels:
+  # Type labels
+  - name: "bug"
+    color: "d73a4a"
+    description: "Something isn't working"
+  - name: "enhancement"
+    color: "a2eeef"
+    description: "New feature or request"
+  - name: "documentation"
+    color: "0075ca"
+    description: "Improvements or additions to documentation"
+  - name: "question"
+    color: "d876e3"
+    description: "Further information is requested"
+
+  # Priority labels
+  - name: "priority: critical"
+    color: "b60205"
+    description: "Critical priority"
+  - name: "priority: high"
+    color: "d93f0b"
+    description: "High priority"
+  - name: "priority: medium"
+    color: "fbca04"
+    description: "Medium priority"
+  - name: "priority: low"
+    color: "0e8a16"
+    description: "Low priority"
+
+  # Status labels
+  - name: "needs-triage"
+    color: "ededed"
+    description: "Needs initial review and categorization"
+  - name: "needs-review"
+    color: "fbca04"
+    description: "Needs code review"
+  - name: "needs-testing"
+    color: "1d76db"
+    description: "Needs testing"
+  - name: "ready-to-merge"
+    color: "0e8a16"
+    description: "Ready to be merged"
+  - name: "blocked"
+    color: "b60205"
+    description: "Blocked by external dependency"
+  - name: "wip"
+    color: "fbca04"
+    description: "Work in progress"
+
+  # Package labels
+  - name: "client"
+    color: "c2e0c6"
+    description: "Browser client library"
+  - name: "cli"
+    color: "c2e0c6"
+    description: "CLI tool"
+  - name: "server"
+    color: "c2e0c6"
+    description: "Server package"
+  - name: "desktop"
+    color: "c2e0c6"
+    description: "Desktop application"
+  - name: "extensions"
+    color: "c2e0c6"
+    description: "Browser extensions"
+  - name: "shared"
+    color: "c2e0c6"
+    description: "Shared utilities"
+
+  # Special labels
+  - name: "breaking-change"
+    color: "b60205"
+    description: "Breaking change"
+  - name: "security"
+    color: "d73a4a"
+    description: "Security related"
+  - name: "performance"
+    color: "1d76db"
+    description: "Performance related"
+  - name: "dependencies"
+    color: "0366d6"
+    description: "Dependency updates"
+  - name: "automated"
+    color: "ededed"
+    description: "Automated by bots"
+  - name: "good-first-issue"
+    color: "7057ff"
+    description: "Good for newcomers"
+  - name: "help-wanted"
+    color: "008672"
+    description: "Extra attention is needed"
+
+# Branch protection rules
+branches:
+  - name: main
+    protection:
+      required_status_checks:
+        strict: true
+        contexts:
+          - "Code Quality & Security"
+          - "Test Suite (18)"
+          - "Build Packages"
+      enforce_admins: false
+      required_pull_request_reviews:
+        required_approving_review_count: 1
+        dismiss_stale_reviews: true
+        require_code_owner_reviews: true
+        dismissal_restrictions:
+          users: []
+          teams: []
+      restrictions:
+        users: []
+        teams: []
+      allow_force_pushes: false
+      allow_deletions: false
+
+  - name: develop
+    protection:
+      required_status_checks:
+        strict: true
+        contexts:
+          - "Code Quality & Security"
+          - "Test Suite (18)"
+      enforce_admins: false
+      required_pull_request_reviews:
+        required_approving_review_count: 1
+        dismiss_stale_reviews: true
+      allow_force_pushes: false
+      allow_deletions: false

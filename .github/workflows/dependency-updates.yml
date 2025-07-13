@@ -1,0 +1,245 @@
+name: Dependency Updates
+
+on:
+  schedule:
+    # Run every Monday at 9 AM UTC
+    - cron: "0 9 * * 1"
+  workflow_dispatch: # Allow manual triggering
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+
+jobs:
+  # Job 1: Security Updates
+  security-updates:
+    name: Security Updates
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run security audit
+        id: audit
+        run: |
+          npm audit --audit-level=moderate --json > audit-results.json || true
+
+          if [ -s audit-results.json ]; then
+            echo "vulnerabilities_found=true" >> $GITHUB_OUTPUT
+            echo "## Security Vulnerabilities Found" >> audit-summary.md
+            echo "" >> audit-summary.md
+            npm audit --audit-level=moderate >> audit-summary.md || true
+          else
+            echo "vulnerabilities_found=false" >> $GITHUB_OUTPUT
+            echo "No security vulnerabilities found." >> audit-summary.md
+          fi
+
+      - name: Apply security fixes
+        if: steps.audit.outputs.vulnerabilities_found == 'true'
+        run: |
+          npm audit fix --audit-level=moderate || true
+
+          # Check if any changes were made
+          if git diff --quiet; then
+            echo "No automatic fixes available"
+          else
+            echo "Security fixes applied"
+          fi
+
+      - name: Create security update PR
+        if: steps.audit.outputs.vulnerabilities_found == 'true'
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "fix(deps): apply security updates"
+          title: "🔒 Security Updates - Automated Dependency Fixes"
+          body: |
+            ## 🔒 Automated Security Updates
+
+            This PR contains automated security fixes for dependencies.
+
+            ### Changes
+            - Applied `npm audit fix` to resolve security vulnerabilities
+            - Updated vulnerable dependencies to secure versions
+
+            ### Audit Results
+            $(cat audit-summary.md)
+
+            ### Testing
+            - [ ] All tests pass
+            - [ ] No breaking changes introduced
+            - [ ] Security vulnerabilities resolved
+
+            **This PR was created automatically by the dependency update workflow.**
+          branch: security-updates/automated
+          delete-branch: true
+          labels: |
+            security
+            dependencies
+            automated
+
+  # Job 2: Dependency Updates
+  dependency-updates:
+    name: Dependency Updates
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check for outdated dependencies
+        id: outdated
+        run: |
+          npm outdated --json > outdated.json || true
+
+          if [ -s outdated.json ] && [ "$(cat outdated.json)" != "{}" ]; then
+            echo "updates_available=true" >> $GITHUB_OUTPUT
+            echo "## Outdated Dependencies" >> outdated-summary.md
+            echo "" >> outdated-summary.md
+            npm outdated >> outdated-summary.md || true
+          else
+            echo "updates_available=false" >> $GITHUB_OUTPUT
+            echo "All dependencies are up to date." >> outdated-summary.md
+          fi
+
+      - name: Update dependencies
+        if: steps.outdated.outputs.updates_available == 'true'
+        run: |
+          # Update patch and minor versions only (safer)
+          npm update
+
+          # Update devDependencies to latest
+          npm update --dev
+
+          # Run tests to ensure updates don't break anything
+          npm test -- --passWithNoTests || echo "Tests failed, will note in PR"
+
+      - name: Create dependency update PR
+        if: steps.outdated.outputs.updates_available == 'true'
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "chore(deps): update dependencies"
+          title: "📦 Dependency Updates - Weekly Automated Updates"
+          body: |
+            ## 📦 Automated Dependency Updates
+
+            This PR contains weekly dependency updates.
+
+            ### Changes
+            - Updated patch and minor versions of dependencies
+            - Updated development dependencies to latest versions
+
+            ### Outdated Dependencies
+            $(cat outdated-summary.md)
+
+            ### Testing
+            - [ ] All tests pass
+            - [ ] No breaking changes introduced
+            - [ ] Dependencies updated successfully
+
+            **This PR was created automatically by the dependency update workflow.**
+
+            ### Review Checklist
+            - [ ] Check for any breaking changes in updated packages
+            - [ ] Verify all tests pass
+            - [ ] Review changelog for major updates
+            - [ ] Test critical functionality manually
+          branch: dependency-updates/automated
+          delete-branch: true
+          labels: |
+            dependencies
+            automated
+            maintenance
+
+  # Job 3: Lerna Version Check
+  lerna-updates:
+    name: Lerna Package Updates
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check for package updates
+        run: |
+          echo "## Package Update Status" > lerna-status.md
+          echo "" >> lerna-status.md
+
+          # Check if any packages have changes since last release
+          npx lerna changed || echo "No packages have changed" >> lerna-status.md
+
+          # List current versions
+          echo "" >> lerna-status.md
+          echo "### Current Package Versions" >> lerna-status.md
+          npx lerna list --long >> lerna-status.md
+
+      - name: Create package status issue
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const fs = require('fs');
+            const status = fs.readFileSync('lerna-status.md', 'utf8');
+
+            // Check if there's already an open issue for package status
+            const { data: issues } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: 'package-status',
+              state: 'open'
+            });
+
+            if (issues.length === 0) {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: '📊 Weekly Package Status Report',
+                body: status + '\n\n**This issue was created automatically by the dependency update workflow.**',
+                labels: ['package-status', 'automated', 'maintenance']
+              });
+            } else {
+              // Update existing issue
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issues[0].number,
+                body: status + '\n\n**This issue was updated automatically by the dependency update workflow.**'
+              });
+            }

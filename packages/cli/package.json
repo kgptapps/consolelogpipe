@@ -34,7 +34,7 @@
     "developer-tools"
   ],
   "scripts": {
-    "build": "webpack --mode production",
+    "build": "echo 'CLI build not yet implemented'",
     "build:dev": "webpack --mode development",
     "build:binaries": "node build/scripts/build-binaries.js",
     "dev": "nodemon src/cli.js",

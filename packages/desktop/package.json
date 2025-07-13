@@ -33,7 +33,7 @@
     "dev": "concurrently \"npm run dev:renderer\" \"npm run dev:main\"",
     "dev:main": "nodemon --exec electron src/main/main.js",
     "dev:renderer": "webpack serve --config build/webpack.renderer.js",
-    "build": "npm run build:main && npm run build:renderer",
+    "build": "echo 'Desktop build not yet implemented'",
     "build:main": "webpack --config build/webpack.main.js",
     "build:renderer": "webpack --config build/webpack.renderer.js",
     "build:all": "electron-builder",

@@ -1,0 +1,257 @@
+name: Code Quality
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+  schedule:
+    # Run weekly on Sundays at 2 AM UTC
+    - cron: "0 2 * * 0"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # Job 1: Code Analysis
+  code-analysis:
+    name: Code Analysis
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run ESLint with SARIF output
+        run: |
+          npx eslint . --ext .js,.ts --format @microsoft/eslint-formatter-sarif --output-file eslint-results.sarif || true
+
+      - name: Upload ESLint results to GitHub
+        uses: github/codeql-action/upload-sarif@v2
+        if: always()
+        with:
+          sarif_file: eslint-results.sarif
+
+      - name: Run complexity analysis
+        run: |
+          echo "## Code Complexity Analysis" > complexity-report.md
+          echo "" >> complexity-report.md
+
+          # This would run complexity analysis tools
+          echo "Complexity analysis would be implemented here" >> complexity-report.md
+
+  # Job 2: Security Scanning
+  security-scan:
+    name: Security Scanning
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run npm audit
+        run: |
+          npm audit --audit-level=low --json > npm-audit.json || true
+
+          echo "## NPM Security Audit" > security-report.md
+          echo "" >> security-report.md
+
+          if [ -s npm-audit.json ]; then
+            npm audit --audit-level=low >> security-report.md || true
+          else
+            echo "No security vulnerabilities found." >> security-report.md
+          fi
+
+      - name: Run Snyk security scan
+        uses: snyk/actions/node@master
+        continue-on-error: true
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --severity-threshold=medium --json-file-output=snyk-results.json
+
+      - name: Upload Snyk results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: snyk-results
+          path: snyk-results.json
+          retention-days: 30
+
+  # Job 3: Code Coverage Analysis
+  coverage-analysis:
+    name: Coverage Analysis
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests with coverage
+        run: npm run test:coverage -- --passWithNoTests
+
+      - name: Generate coverage report
+        run: |
+          echo "## Test Coverage Report" > coverage-report.md
+          echo "" >> coverage-report.md
+
+          if [ -f coverage/lcov-report/index.html ]; then
+            echo "Coverage report generated successfully" >> coverage-report.md
+            
+            # Extract coverage percentages
+            if [ -f coverage/coverage-summary.json ]; then
+              echo "" >> coverage-report.md
+              echo "### Coverage Summary" >> coverage-report.md
+              echo "" >> coverage-report.md
+              node -e "
+                const coverage = require('./coverage/coverage-summary.json');
+                const total = coverage.total;
+                console.log('| Metric | Percentage | Covered | Total |');
+                console.log('|--------|------------|---------|-------|');
+                console.log(\`| Statements | \${total.statements.pct}% | \${total.statements.covered} | \${total.statements.total} |\`);
+                console.log(\`| Branches | \${total.branches.pct}% | \${total.branches.covered} | \${total.branches.total} |\`);
+                console.log(\`| Functions | \${total.functions.pct}% | \${total.functions.covered} | \${total.functions.total} |\`);
+                console.log(\`| Lines | \${total.lines.pct}% | \${total.lines.covered} | \${total.lines.total} |\`);
+              " >> coverage-report.md
+            fi
+          else
+            echo "No coverage report generated" >> coverage-report.md
+          fi
+
+      - name: Check coverage thresholds
+        run: |
+          if [ -f coverage/coverage-summary.json ]; then
+            node -e "
+              const coverage = require('./coverage/coverage-summary.json');
+              const total = coverage.total;
+              const threshold = 90;
+              
+              const metrics = ['statements', 'branches', 'functions', 'lines'];
+              let failed = false;
+              
+              metrics.forEach(metric => {
+                if (total[metric].pct < threshold) {
+                  console.error(\`❌ \${metric} coverage (\${total[metric].pct}%) is below threshold (\${threshold}%)\`);
+                  failed = true;
+                } else {
+                  console.log(\`✅ \${metric} coverage (\${total[metric].pct}%) meets threshold (\${threshold}%)\`);
+                }
+              });
+              
+              if (failed) {
+                console.error('Coverage thresholds not met!');
+                process.exit(1);
+              } else {
+                console.log('All coverage thresholds met!');
+              }
+            "
+          else
+            echo "No coverage data available to check thresholds"
+          fi
+
+      - name: Upload coverage reports
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage-reports
+          path: coverage/
+          retention-days: 30
+
+  # Job 4: Performance Analysis
+  performance-analysis:
+    name: Performance Analysis
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build packages
+        run: npm run build
+
+      - name: Analyze bundle sizes
+        run: |
+          echo "## Bundle Size Analysis" > performance-report.md
+          echo "" >> performance-report.md
+          echo "| Package | File | Size | Gzipped |" >> performance-report.md
+          echo "|---------|------|------|---------|" >> performance-report.md
+
+          # Analyze client package
+          if [ -d "packages/client/dist" ]; then
+            for file in packages/client/dist/*.js; do
+              if [ -f "$file" ]; then
+                size=$(stat -f%z "$file" 2>/dev/null || stat -c%s "$file" 2>/dev/null || echo "0")
+                gzipped=$(gzip -c "$file" | wc -c)
+                filename=$(basename "$file")
+                echo "| client | $filename | ${size} bytes | ${gzipped} bytes |" >> performance-report.md
+              fi
+            done
+          fi
+
+          # Analyze CLI package
+          if [ -d "packages/cli/build" ]; then
+            for file in packages/cli/build/dist/*.js; do
+              if [ -f "$file" ]; then
+                size=$(stat -f%z "$file" 2>/dev/null || stat -c%s "$file" 2>/dev/null || echo "0")
+                gzipped=$(gzip -c "$file" | wc -c)
+                filename=$(basename "$file")
+                echo "| cli | $filename | ${size} bytes | ${gzipped} bytes |" >> performance-report.md
+              fi
+            done
+          fi
+
+      - name: Performance benchmarks
+        run: |
+          echo "" >> performance-report.md
+          echo "## Performance Benchmarks" >> performance-report.md
+          echo "" >> performance-report.md
+          echo "Performance benchmarks would be implemented here" >> performance-report.md
+
+      - name: Upload performance reports
+        uses: actions/upload-artifact@v3
+        with:
+          name: performance-reports
+          path: performance-report.md
+          retention-days: 30

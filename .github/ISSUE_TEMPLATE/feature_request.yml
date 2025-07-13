@@ -1,0 +1,154 @@
+name: ✨ Feature Request
+description: Suggest a new feature or enhancement for Console Log Pipe
+title: "[Feature]: "
+labels: ["enhancement", "needs-triage"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting a new feature! Please fill out the form below to help us understand your request.
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Pre-submission Checklist
+      description: Please check the following before submitting
+      options:
+        - label: I have searched existing issues to ensure this feature hasn't been requested
+          required: true
+        - label: I have read the documentation to ensure this feature doesn't already exist
+          required: true
+        - label: This feature would benefit the broader community
+          required: true
+
+  - type: dropdown
+    id: package
+    attributes:
+      label: Package
+      description: Which package would this feature affect?
+      options:
+        - "@kansnpms/console-log-pipe-client (Browser client)"
+        - "console-log-pipe (CLI tool)"
+        - "@kansnpms/console-log-pipe-server (Server)"
+        - "@kansnpms/console-log-pipe-desktop (Desktop app)"
+        - "Browser Extension"
+        - "Documentation"
+        - "All packages"
+        - "Other"
+      default: 0
+    validations:
+      required: true
+
+  - type: dropdown
+    id: type
+    attributes:
+      label: Feature Type
+      description: What type of feature is this?
+      options:
+        - "New functionality"
+        - "Enhancement to existing feature"
+        - "Performance improvement"
+        - "Developer experience improvement"
+        - "Documentation improvement"
+        - "API change"
+        - "Configuration option"
+        - "Other"
+      default: 0
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem Statement
+      description: What problem does this feature solve? What use case does it address?
+      placeholder: |
+        Is your feature request related to a problem? Please describe.
+        A clear and concise description of what the problem is.
+        Ex. I'm always frustrated when [...]
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed Solution
+      description: Describe the solution you'd like to see implemented
+      placeholder: |
+        A clear and concise description of what you want to happen.
+        Include any specific API changes, configuration options, or behavior changes.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered
+      description: Describe any alternative solutions or features you've considered
+      placeholder: |
+        A clear and concise description of any alternative solutions or features you've considered.
+        Why would your proposed solution be better?
+
+  - type: textarea
+    id: examples
+    attributes:
+      label: Usage Examples
+      description: Provide examples of how this feature would be used
+      placeholder: |
+        Show how developers would use this feature:
+
+        ```javascript
+        // Example usage
+        ConsoleLogPipe.newFeature({
+          option: 'value'
+        });
+        ```
+      render: javascript
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: How important is this feature to you?
+      options:
+        - "Low - Nice to have"
+        - "Medium - Would improve my workflow"
+        - "High - Blocking my use case"
+        - "Critical - Essential for adoption"
+      default: 1
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: impact
+    attributes:
+      label: Impact Assessment
+      description: Please check all that apply
+      options:
+        - label: This would be a breaking change
+        - label: This requires documentation updates
+        - label: This affects the public API
+        - label: This requires new dependencies
+        - label: This affects performance
+        - label: This affects security
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Context
+      description: Add any other context, screenshots, or examples about the feature request
+      placeholder: |
+        Any additional information that would help us understand and implement this feature.
+        Screenshots, mockups, links to similar features in other tools, etc.
+
+  - type: checkboxes
+    id: contribution
+    attributes:
+      label: Contribution
+      description: Would you like to contribute to implementing this feature?
+      options:
+        - label: I would like to work on implementing this feature
+        - label: I can provide design input or feedback
+        - label: I can help with testing once implemented

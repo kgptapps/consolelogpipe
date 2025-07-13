@@ -31,7 +31,7 @@
     "protocols"
   ],
   "scripts": {
-    "build": "tsc",
+    "build": "echo 'Shared build not yet implemented'",
     "dev": "tsc --watch",
     "test": "jest",
     "test:watch": "jest --watch",

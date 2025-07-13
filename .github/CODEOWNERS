@@ -1,0 +1,55 @@
+# Code Owners for Console Log Pipe
+# This file defines who should review changes to specific parts of the codebase
+# See: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Global owners - these users will be requested for review on all PRs
+* @kgptapps
+
+# Documentation
+*.md @kgptapps
+docs/ @kgptapps
+
+# Configuration files
+*.json @kgptapps
+*.yml @kgptapps
+*.yaml @kgptapps
+*.js @kgptapps
+*.ts @kgptapps
+
+# Package-specific ownership
+packages/client/ @kgptapps
+packages/cli/ @kgptapps
+packages/server/ @kgptapps
+packages/desktop/ @kgptapps
+packages/shared/ @kgptapps
+packages/browser-extensions/ @kgptapps
+
+# Build and CI/CD
+.github/ @kgptapps
+tools/ @kgptapps
+scripts/ @kgptapps
+
+# Security-sensitive files
+.github/workflows/ @kgptapps
+package.json @kgptapps
+package-lock.json @kgptapps
+lerna.json @kgptapps
+
+# Test files
+tests/ @kgptapps
+**/*.test.js @kgptapps
+**/*.test.ts @kgptapps
+**/*.spec.js @kgptapps
+**/*.spec.ts @kgptapps
+
+# TypeScript configuration
+tsconfig*.json @kgptapps
+
+# Linting and formatting
+.eslintrc* @kgptapps
+.prettierrc* @kgptapps
+.commitlintrc* @kgptapps
+
+# Git configuration
+.gitignore @kgptapps
+.gitattributes @kgptapps
