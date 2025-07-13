@@ -61,6 +61,50 @@ clp start --app my-web-app --port 3001
 
 ### Add to your web application
 
+#### Option 1: NPM Package (Recommended)
+
+```bash
+npm install @kansnpms/console-log-pipe-client
+```
+
+```javascript
+import ConsoleLogPipe from '@kansnpms/console-log-pipe-client';
+
+ConsoleLogPipe.init({
+  applicationName: 'my-web-app', // Required: Must match CLI --app parameter
+  // sessionId is auto-generated, or use custom one from CLI output
+});
+```
+
+**Framework Examples:**
+
+```javascript
+// React
+import { useEffect } from 'react';
+import ConsoleLogPipe from '@kansnpms/console-log-pipe-client';
+
+function App() {
+  useEffect(() => {
+    ConsoleLogPipe.init({ applicationName: 'my-react-app' });
+  }, []);
+
+  return <div>My App</div>;
+}
+
+// Vue.js
+import { createApp } from 'vue';
+import ConsoleLogPipe from '@kansnpms/console-log-pipe-client';
+
+const app = createApp({});
+ConsoleLogPipe.init({ applicationName: 'my-vue-app' });
+
+// Node.js/Express (for server-side logging)
+const ConsoleLogPipe = require('@kansnpms/console-log-pipe-client');
+ConsoleLogPipe.init({ applicationName: 'my-api-server' });
+```
+
+#### Option 2: CDN
+
 ```html
 <script src="https://unpkg.com/@kansnpms/console-log-pipe-client"></script>
 <script>
