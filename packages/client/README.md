@@ -4,20 +4,26 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Coverage Status](https://img.shields.io/badge/coverage-96.77%25-brightgreen.svg)](https://github.com/kgptapps/consolelogpipe)
 
-Browser client library for Console Log Pipe with **multi-application support**. Captures console
-logs, errors, and network requests in real-time and streams them to your development environment
-with AI-friendly features.
+**Bring browser console logs to your IDE with Console Log Pipe.** Stream console logs, errors, and
+network requests from any browser application directly to your development environment.
+
+🚀 **AI-Friendly Web Console Integration for Faster Development** - Monitor multiple applications
+simultaneously with intelligent error categorization and structured metadata that AI tools can
+easily parse and understand.
 
 ## ✨ Key Features
 
+- **🤖 AI-Friendly Development** - Structured error categorization and metadata optimized for AI
+  tools and faster debugging
 - **🔄 Multi-Application Support** - Monitor multiple applications simultaneously with isolated
   sessions
-- **🎯 AI-Friendly Development** - Structured error categorization and metadata for AI tools
+- **🚀 IDE Integration** - Stream browser console logs directly to your development environment
 - **🌍 Environment Detection** - Automatic detection of development, staging, and production
   environments
-- **📊 Session Management** - Unique session IDs with beautiful console logging
+- **📊 Session Management** - Unique session IDs with beautiful console logging and tracking
 - **🔍 Smart Filtering** - Filter logs by level, patterns, and application-specific criteria
 - **⚡ Real-time Streaming** - Instant log delivery with WebSocket connections
+- **🎯 Developer Productivity** - Reduce context switching between browser and IDE
 
 ## 📦 Installation
 
@@ -44,6 +50,24 @@ ConsoleLogPipe.init({
 });
 ```
 
+## 🤖 AI-Friendly Development Workflow
+
+Console Log Pipe transforms your development experience by bringing browser console logs directly to
+your IDE with AI-optimized features:
+
+### **🎯 Faster Debugging with AI Tools**
+
+- **Structured Error Categories** - Logs are automatically categorized (Network, Validation,
+  Runtime, etc.) for AI parsing
+- **Rich Metadata** - Environment context, stack traces, and performance data included
+- **Session Isolation** - Each application gets its own log stream for focused debugging
+
+### **⚡ Reduced Context Switching**
+
+- **IDE Integration** - No more switching between browser DevTools and your editor
+- **Multi-App Monitoring** - Track logs from multiple applications simultaneously
+- **Real-time Streaming** - See logs instantly as they happen in the browser
+
 ## Features
 
 - ✅ Console log interception (log, error, warn, info, debug)
@@ -54,20 +78,28 @@ ConsoleLogPipe.init({
 - ✅ Configurable filtering
 - ✅ Minimal performance impact
 
-## Configuration
+## ⚙️ Configuration
 
 ```javascript
 ConsoleLogPipe.init({
-  sessionId: 'required-session-id',
-  serverUrl: 'http://localhost:3000',
-  enableNetworkCapture: true,
-  enableErrorCapture: true,
-  batchSize: 10,
-  batchInterval: 1000,
-  filters: {
-    excludeUrls: ['/health', '/metrics'],
-    excludeHeaders: ['authorization', 'cookie'],
-  },
+  applicationName: 'my-web-app', // Required: Application identifier
+  sessionId: 'custom-session-id', // Optional: Auto-generated if not provided
+  environment: 'development', // Optional: Auto-detected (development/staging/production)
+  developer: 'john-doe', // Optional: Developer identifier for AI context
+  branch: 'feature/new-feature', // Optional: Git branch for AI context
+
+  // AI-Friendly Features
+  enableMetadata: true, // Include rich metadata for AI parsing
+  enableNetworkCapture: true, // Capture network requests/responses
+
+  // Filtering Options
+  logLevels: ['log', 'error', 'warn'], // Filter by log levels
+  excludePatterns: ['/health', '/ping'], // Exclude URLs matching patterns
+  includePatterns: ['important'], // Only include logs matching patterns
+
+  // Performance Options
+  maxLogSize: 10000, // Max size per log entry
+  maxQueueSize: 1000, // Max logs in memory
 });
 ```
 
