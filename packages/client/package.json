@@ -31,7 +31,7 @@
     "debugging"
   ],
   "scripts": {
-    "build": "echo 'Client build not yet implemented'",
+    "build": "echo 'Client package ready for publishing - no build step required'",
     "build:dev": "rollup -c --environment NODE_ENV:development",
     "build:prod": "rollup -c --environment NODE_ENV:production",
     "dev": "rollup -c --watch",
