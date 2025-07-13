@@ -169,6 +169,22 @@ Context: This is a React e-commerce app with a Node.js backend.
 - **Network Details** - Complete request/response information
 - **Specific Questions** - Focused requests for actionable solutions
 
+### **Quick Start Prompt for AI Coding Assistants:**
+
+```
+Use https://www.npmjs.com/package/@kansnpms/console-log-pipe-client package to integrate browser console logs to the CLI console. Replace 'my-web-app' with my project name as mentioned in the documentation.
+```
+
+Copy this prompt to quickly get AI assistance with Console Log Pipe integration!
+
+### **Quick Start Prompt for AI Coding Assistants:**
+
+```
+Use https://www.npmjs.com/package/@kansnpms/console-log-pipe-client package to integrate browser console logs to the CLI console. Replace 'my-web-app' with my project name as mentioned in the documentation.
+```
+
+Copy this prompt to quickly get AI assistance with Console Log Pipe integration!
+
 ## 📦 Packages
 
 This monorepo contains the following packages:
