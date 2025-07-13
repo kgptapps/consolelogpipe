@@ -43,6 +43,25 @@ Every task must follow the **Understand → Develop → Test → Git Commit → 
 - **P2** - Medium priority, complete after P1
 - **P3** - Low priority, complete when time permits
 
+### 🚀 **UPDATED: Multi-Application Monitoring Support**
+
+**New Priority Tasks Added:**
+
+- **T004.1:** Multi-Application Support Enhancement (P0) - Application isolation with session IDs
+- **T004.2:** AI-Friendly Data Structure Implementation (P0) - Structured JSON with error
+  categorization
+- **T004.3:** Application-Specific Server Architecture (P0) - Isolated server instances per app
+- **T010:** CLI Multi-Application Commands (Updated) - Support for `clp start <app>`,
+  `clp monitor <app>`
+
+**Key Features:**
+
+- **5+ Application Support:** Each application gets isolated monitoring (ports 3001-3100)
+- **Auto-Generated Session IDs:** Logged to console for manual inspection
+- **AI-Friendly Development:** Structured data with error categorization and performance metrics
+- **Smart Event Routing:** No events sent if no listeners for application
+- **Real-Time Local Streaming:** Immediate log delivery within local machine
+
 ---
 
 ## PHASE 1: REPOSITORY SETUP & FOUNDATION
@@ -260,13 +279,231 @@ Every task must follow the **Understand → Develop → Test → Git Commit → 
   - [ ] Test with circular objects
   - [ ] Verify original console still works
   - [ ] Verify git commit and push completed successfully
+- **Completed:** ✅
+- **Verified:** ✅
+- **Notes:** Successfully implemented with 97.43% statement coverage, 89.53% branch coverage, 100%
+  function coverage. All 28 tests passing.
+
+### T004.1: Multi-Application Support Enhancement
+
+- **Priority:** P0
+- **Status:** 🔴 NOT_STARTED
+- **Estimated Time:** 180 minutes
+- **Dependencies:** T004
+- **Development Workflow:**
+
+  ```
+  🧠 UNDERSTAND:
+  1. Review Product PRD for multi-application requirements
+  2. Study application-specific server architecture
+  3. Understand session ID generation and logging requirements
+  4. Review AI-friendly data structure specifications
+
+  ⚙️ DEVELOP:
+  1. Enhance LogCapture.js with multi-application support
+  2. Add applicationName (required), sessionId (auto-generated)
+  3. Add environment, developer, branch detection
+  4. Implement application-specific port assignment (3001-3100)
+  5. Add session ID console logging for manual inspection
+  6. Implement smart event routing (no events if no listeners)
+
+  🧪 TEST:
+  1. UPDATE UNIT TESTS: packages/client/tests/core/LogCapture.test.js
+     - Test applicationName validation (required)
+     - Test auto-generated session ID functionality
+     - Test environment/developer/branch detection
+     - Test application-specific port assignment
+     - Test session ID console logging
+     - Mock git commands and environment detection
+  2. Run `npm test` and verify all tests pass
+  3. Test with multiple applications simultaneously
+  4. Verify session IDs are unique and logged to console
+
+  📝 GIT COMMIT:
+  git add packages/client/src/core/LogCapture.js packages/client/tests/core/LogCapture.test.js
+  git commit -m "feat(client): add multi-application support with ai-friendly features
+
+  - Add required applicationName parameter for app isolation
+  - Implement auto-generated session IDs with console logging
+  - Add environment, developer, and branch context detection
+  - Implement application-specific port assignment (3001-3100)
+  - Add smart event routing to prevent unnecessary network calls
+  - Enhance tests for multi-application scenarios
+  - Maintain >90% test coverage with comprehensive edge cases"
+
+  🚀 GIT PUSH & CI/CD VERIFICATION:
+  git push origin main && npm run ci:check
+  ```
+
+- **Acceptance Criteria:**
+  - [ ] applicationName parameter is required and validated
+  - [ ] Session IDs are auto-generated and logged to console
+  - [ ] Environment, developer, branch are auto-detected
+  - [ ] Application-specific ports assigned (3001-3100 range)
+  - [ ] Smart event routing prevents unnecessary calls
+  - [ ] **Unit tests updated with >90% coverage**
+  - [ ] **All tests pass**
+  - [ ] **GitHub Actions workflows pass**
+- **Verification Steps:**
+  - [ ] Test with applicationName: "ecommerce-frontend"
+  - [ ] Verify session ID logged to console on initialization
+  - [ ] Test environment detection (development/staging/production)
+  - [ ] Verify developer name from git config
+  - [ ] Test branch detection from git
+  - [ ] Verify port assignment: ecommerce-frontend → 3001
+  - [ ] Test multiple applications don't interfere
+- **Completed:** ❌
+- **Verified:** ❌
+- **Notes:**
+
+### T004.2: AI-Friendly Data Structure Implementation
+
+- **Priority:** P0
+- **Status:** 🔴 NOT_STARTED
+- **Estimated Time:** 150 minutes
+- **Dependencies:** T004.1
+- **Development Workflow:**
+
+  ```
+  🧠 UNDERSTAND:
+  1. Review Technical PRD for AI-friendly data structure
+  2. Study error categorization system requirements
+  3. Understand performance metrics collection
+  4. Review structured JSON format specifications
+
+  ⚙️ DEVELOP:
+  1. Implement structured JSON log format for AI analysis
+  2. Add error categorization system (syntax, runtime, network, user, system)
+  3. Add performance metrics collection (memory, timing, network)
+  4. Implement contextual metadata enrichment
+  5. Add error recovery suggestions and severity levels
+  6. Create AI-friendly tags and categorization
+
+  🧪 TEST:
+  1. CREATE NEW TESTS: packages/client/tests/core/AIDataStructure.test.js
+     - Test structured JSON format consistency
+     - Test error categorization accuracy
+     - Test performance metrics collection
+     - Test metadata enrichment
+     - Test AI-friendly tag generation
+     - Mock performance APIs and error scenarios
+  2. Run `npm test` and verify all tests pass
+  3. Validate JSON schema compliance
+  4. Test with various error types and log levels
+
+  📝 GIT COMMIT:
+  git add packages/client/src/core/ packages/client/tests/core/
+  git commit -m "feat(client): implement ai-friendly structured data format
+
+  - Add structured JSON format for AI analysis and parsing
+  - Implement error categorization system with 7 categories
+  - Add performance metrics collection (memory, timing, network)
+  - Enhance contextual metadata with user and session data
+  - Add error recovery suggestions and severity levels
+  - Create comprehensive tests for AI data structure
+  - Maintain >90% test coverage with edge case validation"
+
+  🚀 GIT PUSH & CI/CD VERIFICATION:
+  git push origin main && npm run ci:check
+  ```
+
+- **Acceptance Criteria:**
+  - [ ] Structured JSON format implemented consistently
+  - [ ] Error categorization system working (7 categories)
+  - [ ] Performance metrics collected automatically
+  - [ ] Contextual metadata enriched properly
+  - [ ] AI-friendly tags and severity levels assigned
+  - [ ] **Unit tests written with >90% coverage**
+  - [ ] **All tests pass**
+  - [ ] **GitHub Actions workflows pass**
+- **Verification Steps:**
+  - [ ] Generate sample logs and verify JSON structure
+  - [ ] Test error categorization with different error types
+  - [ ] Verify performance metrics are collected
+  - [ ] Test metadata enrichment accuracy
+  - [ ] Validate AI-friendly tag generation
+  - [ ] Test with AI parsing tools for compatibility
+- **Completed:** ❌
+- **Verified:** ❌
+- **Notes:**
+
+### T004.3: Application-Specific Server Architecture
+
+- **Priority:** P0
+- **Status:** 🔴 NOT_STARTED
+- **Estimated Time:** 240 minutes
+- **Dependencies:** T004.2
+- **Development Workflow:**
+
+  ```
+  🧠 UNDERSTAND:
+  1. Review Product PRD for application-specific server requirements
+  2. Study server instance isolation architecture
+  3. Understand WebSocket real-time streaming requirements
+  4. Review smart routing and listener detection
+
+  ⚙️ DEVELOP:
+  1. Create ApplicationServer.js in packages/server/src/core/
+  2. Implement application-specific server instances (ports 3001-3100)
+  3. Add WebSocket real-time streaming for local development
+  4. Implement smart routing (no events if no listeners)
+  5. Add listener detection and connection management
+  6. Create server discovery and auto-assignment logic
+
+  🧪 TEST:
+  1. CREATE UNIT TESTS: packages/server/tests/core/ApplicationServer.test.js
+     - Test application-specific port assignment
+     - Test WebSocket connection management
+     - Test smart routing and listener detection
+     - Test multiple server instances isolation
+     - Mock WebSocket connections and network calls
+  2. CREATE INTEGRATION TESTS: tests/integration/multi-app.test.js
+     - Test 5 applications with separate server instances
+     - Test cross-application isolation
+     - Test real-time log streaming
+     - Test listener detection and smart routing
+  3. Run `npm test` and `npm run test:integration`
+  4. Test with multiple applications simultaneously
+
+  📝 GIT COMMIT:
+  git add packages/server/src/core/ packages/server/tests/ tests/integration/
+  git commit -m "feat(server): implement application-specific server architecture
+
+  - Add ApplicationServer.js with isolated server instances
+  - Implement application-specific port assignment (3001-3100)
+  - Add WebSocket real-time streaming for local development
+  - Implement smart routing to prevent unnecessary events
+  - Add listener detection and connection management
+  - Create comprehensive unit and integration tests
+  - Support 5+ applications with complete isolation"
+
+  🚀 GIT PUSH & CI/CD VERIFICATION:
+  git push origin main && npm run ci:check
+  ```
+
+- **Acceptance Criteria:**
+  - [ ] Application-specific server instances created (ports 3001-3100)
+  - [ ] WebSocket real-time streaming implemented
+  - [ ] Smart routing prevents events when no listeners
+  - [ ] Multiple applications completely isolated
+  - [ ] Listener detection and connection management working
+  - [ ] **Unit and integration tests with >90% coverage**
+  - [ ] **All tests pass**
+  - [ ] **GitHub Actions workflows pass**
+- **Verification Steps:**
+  - [ ] Start 5 different application servers simultaneously
+  - [ ] Verify each app gets unique port (3001-3005)
+  - [ ] Test WebSocket connections for real-time streaming
+  - [ ] Verify cross-application isolation
+  - [ ] Test smart routing with/without listeners
+  - [ ] Test connection management and cleanup
 - **Completed:** ❌
 - **Verified:** ❌
 - **Notes:**
 
 ### T005: Error Capture Implementation
 
-- **Priority:** P0
+- **Priority:** P1
 - **Status:** 🔴 NOT_STARTED
 - **Estimated Time:** 90 minutes
 - **Dependencies:** T004
@@ -431,40 +668,47 @@ Every task must follow the **Understand → Develop → Test → Git Commit → 
 
 ## PHASE 3: CLI TOOL DEVELOPMENT
 
-### T010: CLI Core Commands Implementation
+### T010: CLI Multi-Application Commands Implementation
 
 - **Priority:** P0
 - **Status:** 🔴 NOT_STARTED
-- **Estimated Time:** 120 minutes
-- **Dependencies:** T002
+- **Estimated Time:** 180 minutes
+- **Dependencies:** T004.3
 - **AI Instructions:**
   ```
   1. Create cli.js main entry point in packages/cli/src/
-  2. Implement 'clp start' command with session display
-  3. Implement 'clp stream' command for real-time viewing
-  4. Implement 'clp config' command for configuration
-  5. Add colorful, user-friendly output with chalk
-  6. Add proper command-line argument parsing
-  7. CREATE UNIT TESTS: packages/cli/tests/commands/
-     - Test each CLI command functionality
+  2. Implement 'clp start <applicationName>' command with app-specific servers
+  3. Implement 'clp monitor <applicationName>' for real-time viewing
+  4. Implement 'clp list' to show all running application servers
+  5. Implement 'clp stop <applicationName>' to stop specific app server
+  6. Add session ID display in console when application starts
+  7. Add colorful, user-friendly output with chalk
+  8. Add proper command-line argument parsing with application names
+  9. CREATE UNIT TESTS: packages/cli/tests/commands/
+     - Test multi-application command functionality
+     - Test application-specific server management
+     - Test session ID generation and display
      - Test command-line argument parsing
-     - Test output formatting
+     - Test output formatting and colors
      - Mock file system and network operations
      - Test error handling and edge cases
   ```
 - **Acceptance Criteria:**
-  - [ ] All commands work from command line
-  - [ ] Session ID displayed on start
-  - [ ] Real-time streaming functional
-  - [ ] Configuration management working
+  - [ ] Multi-application commands work: `clp start <app>`, `clp monitor <app>`
+  - [ ] Application-specific server instances created (ports 3001-3100)
+  - [ ] Session ID displayed in console when application starts
+  - [ ] `clp list` shows all running application servers
+  - [ ] `clp stop <app>` stops specific application server
+  - [ ] Real-time streaming functional per application
   - [ ] **Unit tests written with >90% coverage**
   - [ ] **All tests pass**
 - **Verification Steps:**
-  - [ ] Run `npm test` and verify all tests pass
-  - [ ] Check coverage report for CLI commands
-  - [ ] Run each command and verify output
-  - [ ] Test with various command-line options
-  - [ ] Verify session ID generation and display
+  - [ ] Run `clp start ecommerce-frontend` and verify port 3001
+  - [ ] Run `clp start admin-panel` and verify port 3002
+  - [ ] Run `clp list` and see both applications
+  - [ ] Run `clp monitor ecommerce-frontend` for real-time logs
+  - [ ] Verify session IDs are unique and displayed
+  - [ ] Test `clp stop ecommerce-frontend` stops only that app
 - **Completed:** ❌
 - **Verified:** ❌
 - **Notes:**

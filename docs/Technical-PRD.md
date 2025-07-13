@@ -21,10 +21,24 @@ real-time log streaming from browser applications to developer environments.
 
 ## System Architecture
 
+### Multi-Application Architecture
+
 ```
-Browser App → Client Library → Transport Layer → Server/CLI → Developer Console
-     ↓              ↓              ↓              ↓              ↓
-  JavaScript    Log Capture    HTTP/WebSocket   Processing    Display
+App A (ecommerce-frontend) → Client Library → WebSocket → Server Instance A (Port 3001) → Monitor A
+App B (admin-panel)        → Client Library → WebSocket → Server Instance B (Port 3002) → Monitor B
+App C (mobile-api-client)  → Client Library → WebSocket → Server Instance C (Port 3003) → Monitor C
+App D (analytics-dashboard)→ Client Library → WebSocket → Server Instance D (Port 3004) → Monitor D
+App E (user-management)    → Client Library → WebSocket → Server Instance E (Port 3005) → Monitor E
+```
+
+### Data Flow Architecture
+
+```
+Browser App → Client Library → AI-Structured Data → Application-Specific Server → Developer Console
+     ↓              ↓                    ↓                      ↓                      ↓
+  JavaScript    Log Capture      JSON + Metadata         Processing              Display
+     ↓              ↓                    ↓                      ↓                      ↓
+Session ID     Error Categories    Performance Data      Smart Routing         AI Analysis
 ```
 
 ## Component Specifications
@@ -41,49 +55,71 @@ Browser App → Client Library → Transport Layer → Server/CLI → Developer 
 #### Core Functionality
 
 ```javascript
+// Multi-Application Support
+- Application name identification (required parameter)
+- Auto-generated session IDs with console logging
+- Environment context tracking (development/staging/production)
+- Developer and branch detection for AI-friendly development
+- Application-specific port assignment (3001-3100 range)
+
 // Log Interception
 - console.log/error/warn/info/debug capture
 - window.onerror handler
 - window.onunhandledrejection handler
 - fetch/XMLHttpRequest interception (enabled by default)
 
-// Data Processing
+// AI-Friendly Data Processing
+- Structured JSON format with consistent schema
+- Error categorization (syntax, runtime, network, user, system)
+- Performance metrics and timing data
 - Log serialization and sanitization
-- Metadata enrichment (timestamp, URL, user agent)
+- Metadata enrichment (timestamp, URL, user agent, context)
 - Circular reference handling
-- Error stack trace processing
-- Network request/response processing
+- Error stack trace processing with source mapping
+- Network request/response processing with timing
 
-// Transport
-- Asynchronous HTTP POST requests
-- Batch processing with configurable intervals
+// Smart Transport Layer
+- Real-time WebSocket for local development
+- Batched HTTP POST for remote logging
+- Application-specific routing (no events if no listeners)
 - Retry logic with exponential backoff
 - Connection health monitoring
+- Auto-discovery of application-specific servers
 ```
 
 #### API Design
 
 ```javascript
-import { ConsoleLogPipe } from 'console-log-pipe';
+import { ConsoleLogPipe } from '@kansnpms/console-log-pipe-client';
 
-// Basic usage with session ID
+// Multi-Application Usage (REQUIRED)
 const logger = new ConsoleLogPipe({
-  sessionId: 'clp_abc123def456', // From CLI output
-  endpoint: 'http://localhost:3000/logs',
-  batchSize: 10,
-  flushInterval: 1000,
+  applicationName: 'ecommerce-frontend', // REQUIRED - each app needs unique name
+  // sessionId auto-generated and logged to console
+  environment: 'development', // auto-detected or specified
+  developer: 'john-doe', // auto-detected from git config
+  branch: 'feature/checkout-redesign', // auto-detected from git
 });
 
-// Alternative: auto-discovery (finds local server)
+// AI-Friendly Development Context
 const logger = new ConsoleLogPipe({
-  autoDiscover: true,
-  sessionId: 'clp_abc123def456',
+  applicationName: 'admin-panel',
+  sessionId: 'custom-session-123', // optional override
+  environment: 'staging',
+  developer: 'jane-smith',
+  branch: 'main',
+  enableErrorCategorization: true, // default: true
+  enablePerformanceTracking: true, // default: true
 });
 
-// Advanced configuration
+// Advanced Multi-App Configuration
 const logger = new ConsoleLogPipe({
-  endpoint: 'https://api.consolelogpipe.com/logs',
-  apiKey: 'your-api-key',
+  applicationName: 'mobile-api-client',
+  serverPort: 3003, // auto-assigned based on app name if not specified
+  serverHost: 'localhost',
+  enableRemoteLogging: false, // default: false (local real-time)
+  batchSize: 10, // for remote logging
+  batchTimeout: 1000,
   captureNetwork: true, // enabled by default
   networkConfig: {
     captureHeaders: true,
@@ -100,6 +136,73 @@ const logger = new ConsoleLogPipe({
     sessionId: 'session456',
   },
 });
+```
+
+#### AI-Friendly Data Structure
+
+```javascript
+// Structured Log Entry Format for AI Analysis
+{
+  "id": "log_1234567890",
+  "timestamp": "2025-07-13T20:30:45.123Z",
+  "application": {
+    "name": "ecommerce-frontend",
+    "sessionId": "clp_abc123def456",
+    "environment": "development",
+    "developer": "john-doe",
+    "branch": "feature/checkout-redesign",
+    "version": "1.2.3"
+  },
+  "log": {
+    "level": "error",
+    "message": "Payment processing failed",
+    "args": ["Payment error:", { "code": "CARD_DECLINED", "amount": 99.99 }],
+    "category": "user_error", // AI categorization
+    "severity": "high",
+    "tags": ["payment", "checkout", "user-facing"]
+  },
+  "context": {
+    "url": "https://localhost:3000/checkout",
+    "userAgent": "Chrome/91.0.4472.124",
+    "viewport": { "width": 1920, "height": 1080 },
+    "userId": "user_123",
+    "sessionDuration": 45000
+  },
+  "error": {
+    "name": "PaymentError",
+    "message": "Card declined by issuer",
+    "stack": "PaymentError: Card declined...",
+    "category": "user_error",
+    "isRecoverable": true,
+    "suggestedAction": "retry_with_different_card"
+  },
+  "performance": {
+    "memoryUsage": 45.2,
+    "loadTime": 1250,
+    "renderTime": 850,
+    "networkLatency": 120
+  },
+  "network": {
+    "activeRequests": 2,
+    "failedRequests": 1,
+    "lastFailedUrl": "/api/payment/process"
+  }
+}
+```
+
+#### Error Categorization System
+
+```javascript
+// AI-Friendly Error Categories
+const ERROR_CATEGORIES = {
+  syntax_error: 'Code syntax issues',
+  runtime_error: 'Runtime execution errors',
+  network_error: 'API/network connectivity issues',
+  user_error: 'User input or interaction errors',
+  system_error: 'Browser/system level errors',
+  performance_error: 'Performance degradation issues',
+  security_error: 'Security or permission errors',
+};
 ```
 
 #### Network Capture Configuration

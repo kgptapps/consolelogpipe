@@ -31,12 +31,18 @@ developers need to constantly switch between browser dev tools and their develop
 - **Remote Debugging:** Difficult to debug applications running on different devices or environments
 - **Team Collaboration:** Hard to share browser logs with team members for debugging
 - **CI/CD Integration:** No easy way to capture browser logs during automated testing
+- **Multi-Application Chaos:** Developers working on multiple applications simultaneously cannot
+  isolate logs per application
+- **AI Development Friction:** Logs are not structured for AI tools to easily parse and analyze
+- **Session Tracking:** No way to track specific user sessions or development contexts across
+  applications
 
 ### Target Users
 
-- **Primary:** Frontend developers working on web applications
-- **Secondary:** QA engineers testing web applications
-- **Tertiary:** DevOps engineers setting up monitoring for web applications
+- **Primary:** Frontend developers working on multiple web applications simultaneously
+- **Secondary:** AI developers building tools that need structured browser log data
+- **Tertiary:** QA engineers testing web applications across different environments
+- **Quaternary:** DevOps engineers setting up monitoring for web applications
 
 ## Product Vision
 
@@ -82,7 +88,20 @@ integrate browser debugging into their existing development workflow.
 - **As a** QA engineer, **I want to** capture logs during automated tests **so that** I can debug
   test failures
 
-### Epic 3: Integration & Deployment
+### Epic 3: Multi-Application Monitoring
+
+- **As a** developer working on 5 different applications, **I want to** monitor each application
+  separately **so that** logs don't get mixed up
+- **As a** developer, **I want to** auto-generated session IDs logged to console **so that** I can
+  manually inspect specific sessions when needed
+- **As an** AI developer, **I want to** structured log data with error categorization **so that** my
+  tools can intelligently analyze application behavior
+- **As a** developer, **I want to** application-specific server instances **so that** each
+  application has isolated monitoring
+- **As a** developer, **I want to** smart event routing **so that** no events are sent when no one
+  is listening
+
+### Epic 4: Integration & Deployment
 
 - **As a** developer, **I want to** integrate with my existing build tools **so that** setup is
   minimal
@@ -114,14 +133,30 @@ integrate browser debugging into their existing development workflow.
 
 1. **Client Library (@console-log-pipe/client)**
 
-   - Capture console.log, console.error, console.warn
-   - Capture unhandled exceptions
-   - Capture network requests/responses (enabled by default)
-   - Browser-specific optimizations (Chrome DevTools, Firefox WebConsole)
-   - Lightweight (<10KB)
-   - Zero dependencies
-   - Easy integration (1-line setup)
-   - TypeScript definitions
+   - **Multi-Application Support**
+     - Application name identification (required)
+     - Auto-generated session IDs with console logging
+     - Environment context (development, staging, production)
+     - Developer and branch tracking for AI-friendly development
+   - **Log Capture**
+     - Capture console.log, console.error, console.warn, console.info, console.debug
+     - Capture unhandled exceptions with error categorization
+     - Capture network requests/responses (enabled by default)
+   - **AI-Friendly Features**
+     - Structured JSON data format for AI parsing
+     - Automatic error categorization and pattern recognition
+     - Performance metrics and timing data
+     - Contextual metadata for intelligent analysis
+   - **Smart Routing**
+     - Application-specific server instances
+     - No events sent if no listeners for application
+     - Real-time local streaming, batched remote logging
+   - **Technical Excellence**
+     - Browser-specific optimizations (Chrome DevTools, Firefox WebConsole)
+     - Lightweight (<10KB)
+     - Zero dependencies
+     - Easy integration (1-line setup)
+     - TypeScript definitions
 
 2. **CLI Tool (console-log-pipe)**
 
