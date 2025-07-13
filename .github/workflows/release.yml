@@ -70,7 +70,20 @@ jobs:
         run: npm run build
 
       - name: Publish to NPM
-        run: npm run publish
+        run: |
+          echo "Publishing packages to NPM..."
+
+          # Publish client package
+          cd packages/client
+          npm publish --access public
+          echo "✅ Published @kansnpms/console-log-pipe-client"
+          cd ../..
+
+          # Publish other packages when ready
+          # cd packages/cli && npm publish --access public && cd ../..
+          # cd packages/server && npm publish --access public && cd ../..
+
+          echo "🎉 All packages published successfully!"
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
