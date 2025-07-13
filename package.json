@@ -1,0 +1,62 @@
+{
+  "name": "console-log-pipe-monorepo",
+  "version": "1.0.0",
+  "description": "Browser Console Log Pipe - Real-time log streaming from browsers to developers",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kgptapps/consolelogpipe.git"
+  },
+  "author": "kgptapps",
+  "license": "MIT",
+  "homepage": "https://github.com/kgptapps/consolelogpipe#readme",
+  "bugs": {
+    "url": "https://github.com/kgptapps/consolelogpipe/issues"
+  },
+  "keywords": [
+    "console",
+    "logging",
+    "debugging",
+    "browser",
+    "real-time",
+    "streaming",
+    "developer-tools"
+  ],
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "bootstrap": "lerna bootstrap",
+    "build": "lerna run build",
+    "test": "lerna run test",
+    "test:coverage": "lerna run test:coverage",
+    "lint": "lerna run lint",
+    "clean": "lerna clean && rimraf node_modules",
+    "version": "lerna version",
+    "publish": "lerna publish",
+    "dev": "lerna run dev --parallel",
+    "start": "lerna run start --parallel",
+    "precommit": "lint-staged",
+    "prepare": "husky install"
+  },
+  "devDependencies": {
+    "lerna": "^6.6.2",
+    "husky": "^8.0.3",
+    "lint-staged": "^13.2.3",
+    "rimraf": "^5.0.1",
+    "concurrently": "^8.2.0"
+  },
+  "lint-staged": {
+    "*.{js,ts,jsx,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md,yml,yaml}": [
+      "prettier --write"
+    ]
+  },
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
+  }
+}

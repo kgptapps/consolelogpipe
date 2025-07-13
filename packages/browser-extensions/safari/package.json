@@ -1,0 +1,45 @@
+{
+  "name": "@console-log-pipe/safari-extension",
+  "version": "1.0.0",
+  "description": "Safari extension for Console Log Pipe - Browser DevTools integration",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kgptapps/consolelogpipe.git",
+    "directory": "packages/browser-extensions/safari"
+  },
+  "author": "kgptapps",
+  "license": "MIT",
+  "homepage": "https://github.com/kgptapps/consolelogpipe/tree/main/packages/browser-extensions/safari#readme",
+  "bugs": {
+    "url": "https://github.com/kgptapps/consolelogpipe/issues"
+  },
+  "keywords": [
+    "safari",
+    "extension",
+    "devtools",
+    "console",
+    "logging"
+  ],
+  "scripts": {
+    "build": "webpack --mode production",
+    "build:dev": "webpack --mode development",
+    "dev": "webpack --mode development --watch",
+    "test": "jest",
+    "test:coverage": "jest --coverage",
+    "lint": "eslint src --ext .js,.ts",
+    "lint:fix": "eslint src --ext .js,.ts --fix",
+    "clean": "rimraf dist"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.2",
+    "eslint": "^8.43.0",
+    "jest": "^29.5.0",
+    "rimraf": "^5.0.1",
+    "webpack": "^5.88.1",
+    "webpack-cli": "^5.1.4"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}

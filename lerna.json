@@ -1,0 +1,31 @@
+{
+  "$schema": "node_modules/lerna/schemas/lerna-schema.json",
+  "version": "independent",
+  "npmClient": "npm",
+  "command": {
+    "publish": {
+      "conventionalCommits": true,
+      "message": "chore(release): publish",
+      "registry": "https://registry.npmjs.org/"
+    },
+    "bootstrap": {
+      "ignore": "component-*",
+      "npmClientArgs": ["--no-package-lock"]
+    },
+    "version": {
+      "allowBranch": ["main", "release/*"],
+      "conventionalCommits": true,
+      "message": "chore(release): %s"
+    }
+  },
+  "packages": [
+    "packages/*"
+  ],
+  "ignoreChanges": [
+    "**/__fixtures__/**",
+    "**/__tests__/**",
+    "**/*.test.js",
+    "**/*.spec.js",
+    "**/*.md"
+  ]
+}
