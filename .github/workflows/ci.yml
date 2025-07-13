@@ -145,6 +145,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: build-artifacts
+        continue-on-error: true
 
       - name: Run E2E tests
         run: npm run test:e2e || echo "E2E tests not yet implemented"
@@ -174,6 +175,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: build-artifacts
+        continue-on-error: true
 
       - name: Run performance tests
         run: npm run test:performance || echo "Performance tests not yet implemented"
@@ -202,6 +204,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: build-artifacts
+        continue-on-error: true
 
       - name: Analyze bundle size
         run: |

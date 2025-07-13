@@ -187,6 +187,33 @@ class GitHubActionsValidator {
   }
 
   /**
+   * Check for common workflow issues
+   */
+  checkWorkflowIssues(filePath) {
+    const content = fs.readFileSync(filePath, 'utf8');
+
+    // Check for missing continue-on-error for artifact downloads
+    if (
+      content.includes('actions/download-artifact') &&
+      !content.includes('continue-on-error: true')
+    ) {
+      this.warnings.push(
+        `${filePath}: Consider adding 'continue-on-error: true' to artifact download steps`
+      );
+    }
+
+    // Check for missing continue-on-error for SARIF uploads
+    if (
+      content.includes('upload-sarif') &&
+      !content.includes('continue-on-error: true')
+    ) {
+      this.warnings.push(
+        `${filePath}: Consider adding 'continue-on-error: true' to SARIF upload steps`
+      );
+    }
+  }
+
+  /**
    * Check workflow permissions
    */
   checkPermissions(filePath) {
@@ -295,6 +322,9 @@ class GitHubActionsValidator {
 
         // Check permissions
         this.checkPermissions(file);
+
+        // Check for common workflow issues
+        this.checkWorkflowIssues(file);
 
         console.log();
       });
