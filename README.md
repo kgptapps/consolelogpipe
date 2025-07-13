@@ -49,7 +49,14 @@ npm install -g console-log-pipe
 ### Start the local server
 
 ```bash
-clp start
+# Start server for a specific application
+clp start --app my-web-app
+
+# Or start server for multiple applications
+clp start --app my-web-app --app admin-panel
+
+# Start with custom port (optional)
+clp start --app my-web-app --port 3001
 ```
 
 ### Add to your web application
@@ -58,10 +65,20 @@ clp start
 <script src="https://unpkg.com/@kansnpms/console-log-pipe-client"></script>
 <script>
   ConsoleLogPipe.init({
-    applicationName: 'my-web-app', // Required: Unique name for your application
-    sessionId: 'your-session-id', // Optional: Get this from CLI output
+    applicationName: 'my-web-app', // Required: Must match CLI --app parameter
+    // sessionId is auto-generated, or use custom one from CLI output
   });
 </script>
+```
+
+The CLI will display session information like:
+
+```
+🔍 Console Log Pipe Server Started
+📱 Application: my-web-app
+🆔 Session ID: clp_abc123_xyz789
+🌐 Server Port: 3001
+🔗 Ready to receive logs...
 ```
 
 ## 📦 Packages
