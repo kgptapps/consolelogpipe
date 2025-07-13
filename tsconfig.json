@@ -29,8 +29,16 @@
     "noPropertyAccessFromIndexSignature": true,
     "noUncheckedIndexedAccess": true
   },
-  "include": ["packages/*/src/**/*", "packages/*/*.ts", "tools/**/*"],
-  "exclude": ["node_modules", "dist", "build", "coverage", "**/*.test.js", "**/*.spec.js"],
+  "include": ["packages/*/src/**/*.ts", "packages/*/*.ts", "tools/**/*"],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "build",
+    "coverage",
+    "**/*.test.js",
+    "**/*.spec.js",
+    "packages/client/src/**/*.js"
+  ],
   "references": [
     { "path": "./packages/client" },
     { "path": "./packages/cli" },

@@ -196,7 +196,7 @@ Every task must follow the **Understand → Develop → Test → Git Commit → 
 ### T004: Core Log Capture Implementation
 
 - **Priority:** P0
-- **Status:** 🔴 NOT_STARTED
+- **Status:** 🟡 IN_PROGRESS
 - **Estimated Time:** 120 minutes
 - **Dependencies:** T002
 - **Development Workflow:**
