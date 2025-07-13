@@ -96,49 +96,7 @@ your IDE with AI-optimized features:
 - **Multi-App Monitoring** - Track logs from multiple applications simultaneously
 - **Real-time Streaming** - See logs instantly as they happen in the browser
 
-## 🤖 AI Coding Assistant Integration
-
-Console Log Pipe is designed to work seamlessly with AI coding tools. Here's a sample prompt to get
-the most out of your AI assistant:
-
-### **Sample AI Prompt:**
-
-```
-I'm using Console Log Pipe to stream browser console logs directly to my IDE.
-I have the following error logs from my React application:
-
-[ERROR] TypeError: Cannot read property 'map' of undefined
-  at UserList.jsx:15:23
-  Application: ecommerce-frontend
-  Environment: development
-  Session: clp_abc123_xyz789
-  Category: Runtime Error
-  Stack: UserList.jsx -> App.jsx -> index.js
-
-[NETWORK] Failed to fetch /api/users - 404 Not Found
-  Application: ecommerce-frontend
-  Environment: development
-  Response: {"error": "Users endpoint not found"}
-
-Please help me:
-1. Identify the root cause of both issues
-2. Suggest fixes for the undefined array issue
-3. Explain why the API endpoint is returning 404
-4. Provide code examples for the fixes
-5. Recommend best practices to prevent similar issues
-
-Context: This is a React e-commerce app with a Node.js backend.
-```
-
-### **Why This Works:**
-
-- **Structured Error Data** - AI can easily parse categorized errors
-- **Rich Context** - Application name, environment, and session info
-- **Stack Traces** - Clear error location and call chain
-- **Network Details** - Complete request/response information
-- **Specific Questions** - Focused requests for actionable solutions
-
-### **Quick Start Prompt for AI Coding Assistants:**
+## 🤖 Quick Start Prompt for AI Coding Assistants
 
 ```
 Use https://www.npmjs.com/package/@kansnpms/console-log-pipe-client package to integrate browser console logs to the CLI console. Replace 'my-web-app' with my project name as mentioned in the documentation.
