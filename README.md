@@ -6,13 +6,24 @@
 [![npm version](https://badge.fury.io/js/@kansnpms%2Fconsole-log-pipe-client.svg)](https://badge.fury.io/js/@kansnpms%2Fconsole-log-pipe-client)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Node.js Version](https://img.shields.io/node/v/@kansnpms/console-log-pipe-client.svg)](https://nodejs.org/)
-[![Coverage Status](https://img.shields.io/badge/coverage-97%25-brightgreen.svg)](https://github.com/kgptapps/consolelogpipe/actions/workflows/ci.yml)
+[![Coverage Status](https://img.shields.io/badge/coverage-96.77%25-brightgreen.svg)](https://github.com/kgptapps/consolelogpipe/actions/workflows/ci.yml)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/kgptapps/consolelogpipe/blob/main/CONTRIBUTING.md)
 [![GitHub issues](https://img.shields.io/github/issues/kgptapps/consolelogpipe.svg)](https://github.com/kgptapps/consolelogpipe/issues)
 [![GitHub stars](https://img.shields.io/github/stars/kgptapps/consolelogpipe.svg)](https://github.com/kgptapps/consolelogpipe/stargazers)
 
 Real-time log streaming from browsers to developers. Stream console logs, errors, and network
 requests from any browser application directly to your development environment.
+
+## ✨ Key Features
+
+- **🔄 Multi-Application Support** - Monitor multiple applications simultaneously with isolated
+  sessions
+- **🎯 AI-Friendly Development** - Structured error categorization and metadata for AI tools
+- **🌍 Environment Detection** - Automatic detection of development, staging, and production
+  environments
+- **📊 Session Management** - Unique session IDs with beautiful console logging
+- **🔍 Smart Filtering** - Filter logs by level, patterns, and application-specific criteria
+- **⚡ Real-time Streaming** - Instant log delivery with WebSocket connections
 
 ## 📊 Project Status
 
@@ -21,7 +32,7 @@ requests from any browser application directly to your development environment.
 | 🏗️ **Project Setup**      | ✅ Complete    | 100%     | Monorepo structure, CI/CD, tooling |
 | 📋 **Documentation**      | ✅ Complete    | 100%     | Technical PRDs, architecture docs  |
 | 🔧 **GitHub Actions**     | ✅ Complete    | 100%     | CI/CD validation and automation    |
-| 📦 **Client Library**     | ✅ Complete    | 97%      | Browser console log capture        |
+| 📦 **Client Library**     | ✅ Complete    | 96.77%   | Multi-app console log capture      |
 | 🖥️ **CLI Tool**           | 🔄 In Progress | -        | Command-line interface             |
 | 🌐 **Server**             | 🔄 In Progress | -        | WebSocket server implementation    |
 | 🖱️ **Browser Extensions** | ⏳ Planned     | -        | Chrome, Firefox, Safari, Edge      |
@@ -47,7 +58,8 @@ clp start
 <script src="https://unpkg.com/@kansnpms/console-log-pipe-client"></script>
 <script>
   ConsoleLogPipe.init({
-    sessionId: 'your-session-id', // Get this from CLI output
+    applicationName: 'my-web-app', // Required: Unique name for your application
+    sessionId: 'your-session-id', // Optional: Get this from CLI output
   });
 </script>
 ```
@@ -114,13 +126,14 @@ This project maintains high quality standards through comprehensive automation:
 
 ### 🔧 Development Workflow
 
-All changes follow a mandatory 5-step workflow:
+All changes follow a mandatory 6-step workflow:
 
 1. **🧠 UNDERSTAND** - Analyze requirements and dependencies
 2. **⚙️ DEVELOP** - Implement functionality with comprehensive tests
 3. **🧪 TEST** - Run full test suite with coverage validation
 4. **📝 GIT COMMIT** - Commit with conventional format and hooks
-5. **🚀 GIT PUSH & CI/CD VERIFICATION** - Validate all workflows pass
+5. **🚀 GIT PUSH** - Push changes to repository
+6. **✅ GITHUB ACTIONS VALIDATION** - Validate all CI/CD workflows pass
 
 ## 🤝 Contributing
 
