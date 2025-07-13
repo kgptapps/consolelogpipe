@@ -664,5 +664,136 @@ describe('LogCapture', () => {
       expect(capture.options.enableErrorCategorization).toBe(true);
       expect(capture.options.enablePerformanceTracking).toBe(true);
     });
+
+    it('should detect staging environment', () => {
+      const originalLocation = global.window?.location;
+
+      // Test staging hostname
+      global.window = {
+        location: { hostname: 'staging.example.com', port: '3000' },
+      };
+      const capture = new LogCapture({ applicationName: 'test-app' });
+      expect(capture.options.environment).toBe('staging');
+
+      // Test with 'dev' in hostname
+      global.window = {
+        location: { hostname: 'dev.example.com', port: '3000' },
+      };
+      const capture2 = new LogCapture({ applicationName: 'test-app-2' });
+      expect(capture2.options.environment).toBe('staging');
+
+      // Restore original location
+      if (originalLocation) {
+        global.window.location = originalLocation;
+      } else {
+        delete global.window;
+      }
+    });
+
+    it('should detect production environment', () => {
+      const originalLocation = global.window?.location;
+
+      // Test production hostname (not localhost, not staging/dev)
+      global.window = { location: { hostname: 'example.com', port: '443' } };
+      const capture = new LogCapture({ applicationName: 'test-app' });
+      expect(capture.options.environment).toBe('production');
+
+      // Restore original location
+      if (originalLocation) {
+        global.window.location = originalLocation;
+      } else {
+        delete global.window;
+      }
+    });
+
+    it('should fallback to development environment when no window', () => {
+      const originalWindow = global.window;
+      delete global.window;
+
+      const capture = new LogCapture({ applicationName: 'test-app' });
+      expect(capture.options.environment).toBe('development');
+
+      // Restore original window
+      if (originalWindow) {
+        global.window = originalWindow;
+      }
+    });
+  });
+
+  describe('Error Handling Edge Cases', () => {
+    it('should handle JSON.stringify errors in log size calculation', () => {
+      const capture = new LogCapture({ applicationName: 'test-app' });
+
+      // Mock JSON.stringify to throw an error
+      const originalStringify = JSON.stringify;
+      JSON.stringify = jest.fn(() => {
+        throw new Error('JSON stringify error');
+      });
+
+      const logEntry = { args: ['test'] };
+      const size = capture._getLogSize(logEntry);
+
+      expect(size).toBe(0);
+      expect(JSON.stringify).toHaveBeenCalled();
+
+      // Restore original JSON.stringify
+      JSON.stringify = originalStringify;
+    });
+
+    it('should handle errors in log processing gracefully', () => {
+      const capture = new LogCapture({ applicationName: 'test-app' });
+
+      // Mock console.error to capture error logging
+      const originalConsoleError = capture.originalConsole.error;
+      const mockConsoleError = jest.fn();
+      capture.originalConsole.error = mockConsoleError;
+
+      // Mock _processLogEntry to throw an error
+      const originalProcessLogEntry = capture._processLogEntry;
+      capture._processLogEntry = jest.fn(() => {
+        throw new Error('Processing error');
+      });
+
+      capture.start();
+
+      // This should trigger the error handling in handleLog
+      console.log('test message');
+
+      // Verify error was logged
+      expect(mockConsoleError).toHaveBeenCalledWith(
+        'LogCapture error:',
+        expect.any(Error)
+      );
+
+      // Restore original methods
+      capture._processLogEntry = originalProcessLogEntry;
+      capture.originalConsole.error = originalConsoleError;
+      capture.stop();
+    });
+
+    it('should handle errors when preserveOriginal is false', () => {
+      const capture = new LogCapture({
+        applicationName: 'test-app',
+        preserveOriginal: false,
+      });
+
+      // Mock _processLogEntry to throw an error
+      const originalProcessLogEntry = capture._processLogEntry;
+      capture._processLogEntry = jest.fn(() => {
+        throw new Error('Processing error');
+      });
+
+      capture.start();
+
+      // This should trigger the error handling but not log to console
+      console.log('test message');
+
+      // The error should be caught silently
+      expect(capture._processLogEntry).toHaveBeenCalled();
+
+      // Restore original method
+      capture._processLogEntry = originalProcessLogEntry;
+      capture.stop();
+    });
   });
 });
