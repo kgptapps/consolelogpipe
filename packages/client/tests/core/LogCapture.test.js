@@ -223,11 +223,28 @@ describe('LogCapture', () => {
 
       expect(listener).toHaveBeenCalledWith(
         expect.objectContaining({
-          metadata: expect.objectContaining({
-            url: expect.any(String),
-            pathname: expect.any(String),
-            userAgent: expect.any(String),
-            timestamp: expect.any(Number),
+          // AI-friendly structure
+          application: expect.objectContaining({
+            name: 'test-app',
+            environment: 'development',
+          }),
+          category: expect.any(String),
+          severity: expect.objectContaining({
+            level: expect.any(String),
+            score: expect.any(Number),
+          }),
+          tags: expect.arrayContaining(['log']),
+          context: expect.objectContaining({
+            url: expect.objectContaining({
+              href: expect.any(String),
+              pathname: expect.any(String),
+            }),
+            browser: expect.objectContaining({
+              userAgent: expect.any(String),
+            }),
+            timing: expect.objectContaining({
+              timestamp: expect.any(Number),
+            }),
           }),
         })
       );
@@ -508,7 +525,7 @@ describe('LogCapture', () => {
 
       expect(listener).toHaveBeenCalledWith(
         expect.objectContaining({
-          metadata: expect.any(Object),
+          context: expect.any(Object),
         })
       );
 
@@ -530,7 +547,7 @@ describe('LogCapture', () => {
 
       expect(listener).toHaveBeenCalledWith(
         expect.objectContaining({
-          metadata: expect.any(Object),
+          context: expect.any(Object),
         })
       );
 

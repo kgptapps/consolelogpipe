@@ -257,24 +257,53 @@ class LogCapture {
   }
 
   /**
-   * Create log entry with metadata
+   * Create log entry with metadata and AI-friendly structure
    * @param {string} level - Log level
    * @param {Array} args - Log arguments
    * @returns {Object} Log entry object
    * @private
    */
   _createLogEntry(level, args) {
-    const logEntry = {
-      level,
-      message: this._argsToString(args),
-      args: this._serializeArgs(args),
-      timestamp: new Date().toISOString(),
-    };
+    const timestamp = new Date().toISOString();
+    const message = this._argsToString(args);
 
-    // Add metadata if enabled
-    if (this.options.captureMetadata) {
-      logEntry.metadata = this._collectMetadata();
-    }
+    // Create structured log entry with AI-friendly format
+    const logEntry = {
+      // Core log data
+      level,
+      message,
+      args: this._serializeArgs(args),
+      timestamp,
+
+      // Application context
+      application: {
+        name: this.options.applicationName,
+        sessionId: this.sessionId,
+        environment: this.options.environment,
+        developer: this.options.developer,
+        branch: this.options.branch,
+        port: this.options.port,
+      },
+
+      // AI-friendly categorization
+      category: this._categorizeLog(level, message, args),
+      severity: this._calculateSeverity(level, message, args),
+      tags: this._generateAITags(level, message, args),
+
+      // Performance metrics (if enabled)
+      performance: this.options.enablePerformanceTracking
+        ? this._collectPerformanceMetrics()
+        : null,
+
+      // Error analysis (for error logs)
+      errorAnalysis:
+        level === 'error' ? this._analyzeError(message, args) : null,
+
+      // Contextual metadata
+      context: this.options.captureMetadata
+        ? this._collectEnhancedMetadata()
+        : null,
+    };
 
     return logEntry;
   }
@@ -357,42 +386,259 @@ class LogCapture {
   }
 
   /**
-   * Collect metadata about the current context
+   * Collect enhanced metadata about the current context for AI analysis
+   * @returns {Object} Enhanced metadata object
+   * @private
+   */
+  _collectEnhancedMetadata() {
+    const metadata = {};
+
+    try {
+      // URL and navigation information
+      if (typeof window !== 'undefined' && window.location) {
+        metadata.url = {
+          href: window.location.href,
+          pathname: window.location.pathname,
+          search: window.location.search,
+          hash: window.location.hash,
+          origin: window.location.origin,
+        };
+      }
+
+      // Browser and device information
+      if (typeof navigator !== 'undefined') {
+        metadata.browser = {
+          userAgent: navigator.userAgent,
+          language: navigator.language,
+          platform: navigator.platform,
+          cookieEnabled: navigator.cookieEnabled,
+          onLine: navigator.onLine,
+        };
+      }
+
+      // Viewport and screen information
+      if (typeof window !== 'undefined') {
+        metadata.viewport = {
+          width: window.innerWidth,
+          height: window.innerHeight,
+          screenWidth: window.screen?.width,
+          screenHeight: window.screen?.height,
+          devicePixelRatio: window.devicePixelRatio,
+        };
+      }
+
+      // Timing information
+      metadata.timing = {
+        timestamp: Date.now(),
+        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        locale: Intl.DateTimeFormat().resolvedOptions().locale,
+      };
+
+      // Stack trace for debugging
+      if (Error.captureStackTrace) {
+        const stack = {};
+        Error.captureStackTrace(stack, this.handleLog);
+        metadata.stack = this._parseStackTrace(stack.stack);
+      } else {
+        metadata.stack = this._parseStackTrace(new Error().stack);
+      }
+
+      // Document state
+      if (typeof document !== 'undefined') {
+        metadata.document = {
+          readyState: document.readyState,
+          title: document.title,
+          referrer: document.referrer,
+          visibilityState: document.visibilityState,
+        };
+      }
+    } catch (error) {
+      // Fail silently but log the error
+      metadata.metadataError = error.message;
+    }
+
+    return metadata;
+  }
+
+  /**
+   * Collect metadata about the current context (legacy method for backward compatibility)
    * @returns {Object} Metadata object
    * @private
    */
   _collectMetadata() {
-    const metadata = {};
+    return this._collectEnhancedMetadata();
+  }
 
-    try {
-      // URL information
-      if (typeof window !== 'undefined' && window.location) {
-        metadata.url = window.location.href;
-        metadata.pathname = window.location.pathname;
-        metadata.search = window.location.search;
+  /**
+   * Categorize log entry for AI analysis
+   * @param {string} level - Log level
+   * @param {string} message - Log message
+   * @param {Array} args - Log arguments
+   * @returns {string} Category
+   * @private
+   */
+  _categorizeLog(level, message, _args) {
+    const lowerMessage = message.toLowerCase();
+
+    // Error categorization
+    if (level === 'error') {
+      if (
+        lowerMessage.includes('syntaxerror') ||
+        lowerMessage.includes('unexpected token')
+      ) {
+        return 'syntax_error';
       }
-
-      // User agent
-      if (typeof navigator !== 'undefined' && navigator.userAgent) {
-        metadata.userAgent = navigator.userAgent;
+      if (
+        lowerMessage.includes('typeerror') ||
+        lowerMessage.includes('referenceerror')
+      ) {
+        return 'runtime_error';
       }
-
-      // Timestamp
-      metadata.timestamp = Date.now();
-
-      // Stack trace (for debugging)
-      if (Error.captureStackTrace) {
-        const stack = {};
-        Error.captureStackTrace(stack, this.handleLog);
-        metadata.stack = stack.stack;
-      } else {
-        metadata.stack = new Error().stack;
+      if (
+        lowerMessage.includes('fetch') ||
+        lowerMessage.includes('network') ||
+        lowerMessage.includes('xhr') ||
+        lowerMessage.includes('ajax')
+      ) {
+        return 'network_error';
       }
-    } catch (error) {
-      // Fail silently
+      if (
+        lowerMessage.includes('permission') ||
+        lowerMessage.includes('security') ||
+        lowerMessage.includes('cors') ||
+        lowerMessage.includes('csp')
+      ) {
+        return 'security_error';
+      }
+      if (
+        lowerMessage.includes('performance') ||
+        lowerMessage.includes('memory') ||
+        lowerMessage.includes('timeout') ||
+        lowerMessage.includes('slow')
+      ) {
+        return 'performance_error';
+      }
+      return 'runtime_error'; // Default for errors
     }
 
-    return metadata;
+    // Warning categorization
+    if (level === 'warn') {
+      if (
+        lowerMessage.includes('deprecated') ||
+        lowerMessage.includes('obsolete')
+      ) {
+        return 'deprecation_warning';
+      }
+      if (
+        lowerMessage.includes('performance') ||
+        lowerMessage.includes('slow')
+      ) {
+        return 'performance_warning';
+      }
+      return 'general_warning';
+    }
+
+    // Info and debug categorization
+    if (level === 'info') {
+      if (
+        lowerMessage.includes('api') ||
+        lowerMessage.includes('request') ||
+        lowerMessage.includes('response')
+      ) {
+        return 'api_info';
+      }
+      if (
+        lowerMessage.includes('user') ||
+        lowerMessage.includes('click') ||
+        lowerMessage.includes('interaction')
+      ) {
+        return 'user_action';
+      }
+      return 'general_info';
+    }
+
+    return 'general_log';
+  }
+
+  /**
+   * Calculate severity level for AI analysis
+   * @param {string} level - Log level
+   * @param {string} message - Log message
+   * @param {Array} args - Log arguments
+   * @returns {Object} Severity information
+   * @private
+   */
+  _calculateSeverity(level, message, _args) {
+    const lowerMessage = message.toLowerCase();
+
+    // Base severity by log level
+    const baseSeverity = {
+      error: { level: 'high', score: 8 },
+      warn: { level: 'medium', score: 5 },
+      info: { level: 'low', score: 2 },
+      log: { level: 'low', score: 1 },
+      debug: { level: 'low', score: 1 },
+    }[level] || { level: 'low', score: 1 };
+
+    // Adjust severity based on content
+    let adjustedScore = baseSeverity.score;
+
+    if (level === 'error') {
+      // Critical errors
+      if (
+        lowerMessage.includes('uncaught') ||
+        lowerMessage.includes('fatal') ||
+        lowerMessage.includes('critical') ||
+        lowerMessage.includes('crash')
+      ) {
+        adjustedScore = 10;
+      }
+      // Security errors
+      else if (
+        lowerMessage.includes('security') ||
+        lowerMessage.includes('xss') ||
+        lowerMessage.includes('csrf') ||
+        lowerMessage.includes('injection')
+      ) {
+        adjustedScore = 9;
+      }
+      // Network errors
+      else if (
+        lowerMessage.includes('network') ||
+        lowerMessage.includes('timeout') ||
+        lowerMessage.includes('connection')
+      ) {
+        adjustedScore = 7;
+      }
+    }
+
+    // Determine final severity level
+    let finalLevel = 'low';
+    if (adjustedScore >= 8) finalLevel = 'critical';
+    else if (adjustedScore >= 6) finalLevel = 'high';
+    else if (adjustedScore >= 4) finalLevel = 'medium';
+
+    return {
+      level: finalLevel,
+      score: adjustedScore,
+      description: this._getSeverityDescription(finalLevel),
+    };
+  }
+
+  /**
+   * Get severity description for AI understanding
+   * @param {string} level - Severity level
+   * @returns {string} Description
+   * @private
+   */
+  _getSeverityDescription(level) {
+    const descriptions = {
+      critical: 'Requires immediate attention - may cause application failure',
+      high: 'Important issue that should be addressed soon',
+      medium: 'Moderate issue that should be investigated',
+      low: 'Informational - no immediate action required',
+    };
+    return descriptions[level] || descriptions.low;
   }
 
   /**
@@ -509,6 +755,158 @@ class LogCapture {
   }
 
   /**
+   * Generate AI-friendly tags for log analysis
+   * @param {string} level - Log level
+   * @param {string} message - Log message
+   * @param {Array} args - Log arguments
+   * @returns {Array} Array of tags
+   * @private
+   */
+  _generateAITags(level, message, _args) {
+    const tags = [level]; // Always include log level
+    const lowerMessage = message.toLowerCase();
+
+    // Technology tags
+    if (lowerMessage.includes('react') || lowerMessage.includes('jsx'))
+      tags.push('react');
+    if (lowerMessage.includes('vue') || lowerMessage.includes('vuejs'))
+      tags.push('vue');
+    if (lowerMessage.includes('angular')) tags.push('angular');
+    if (
+      lowerMessage.includes('api') ||
+      lowerMessage.includes('fetch') ||
+      lowerMessage.includes('xhr') ||
+      lowerMessage.includes('ajax')
+    )
+      tags.push('api');
+    if (lowerMessage.includes('websocket') || lowerMessage.includes('ws'))
+      tags.push('websocket');
+    if (lowerMessage.includes('database') || lowerMessage.includes('sql'))
+      tags.push('database');
+
+    // Error type tags
+    if (level === 'error') {
+      if (lowerMessage.includes('typeerror')) tags.push('type-error');
+      if (lowerMessage.includes('referenceerror')) tags.push('reference-error');
+      if (lowerMessage.includes('syntaxerror')) tags.push('syntax-error');
+      if (lowerMessage.includes('rangeerror')) tags.push('range-error');
+      if (lowerMessage.includes('urierror')) tags.push('uri-error');
+    }
+
+    // Feature tags
+    if (
+      lowerMessage.includes('auth') ||
+      lowerMessage.includes('login') ||
+      lowerMessage.includes('token')
+    )
+      tags.push('authentication');
+    if (lowerMessage.includes('permission') || lowerMessage.includes('access'))
+      tags.push('authorization');
+    if (lowerMessage.includes('validation') || lowerMessage.includes('invalid'))
+      tags.push('validation');
+    if (
+      lowerMessage.includes('performance') ||
+      lowerMessage.includes('slow') ||
+      lowerMessage.includes('timeout')
+    )
+      tags.push('performance');
+    if (lowerMessage.includes('memory') || lowerMessage.includes('leak'))
+      tags.push('memory');
+    if (
+      lowerMessage.includes('security') ||
+      lowerMessage.includes('xss') ||
+      lowerMessage.includes('csrf')
+    )
+      tags.push('security');
+
+    // User interaction tags
+    if (lowerMessage.includes('click') || lowerMessage.includes('button'))
+      tags.push('user-interaction');
+    if (lowerMessage.includes('form') || lowerMessage.includes('input'))
+      tags.push('form');
+    if (lowerMessage.includes('navigation') || lowerMessage.includes('route'))
+      tags.push('navigation');
+
+    // Environment tags
+    tags.push(`env:${this.options.environment}`);
+    tags.push(`app:${this.options.applicationName}`);
+
+    return [...new Set(tags)]; // Remove duplicates
+  }
+
+  /**
+   * Analyze error for AI-friendly insights
+   * @param {string} message - Error message
+   * @param {Array} args - Error arguments
+   * @returns {Object} Error analysis
+   * @private
+   */
+  _analyzeError(message, _args) {
+    const lowerMessage = message.toLowerCase();
+    const analysis = {
+      type: 'unknown',
+      cause: 'unknown',
+      suggestions: [],
+      recoverable: false,
+      impact: 'medium',
+    };
+
+    // Analyze error type and provide suggestions
+    if (lowerMessage.includes('typeerror')) {
+      analysis.type = 'TypeError';
+      analysis.cause =
+        'Attempting to use a value as a different type than expected';
+      analysis.suggestions = [
+        'Check if the variable is defined before using it',
+        'Verify the data type matches the expected type',
+        'Add null/undefined checks',
+        'Use optional chaining (?.) for object properties',
+      ];
+      analysis.recoverable = true;
+      analysis.impact = 'high';
+    } else if (lowerMessage.includes('referenceerror')) {
+      analysis.type = 'ReferenceError';
+      analysis.cause = 'Trying to access a variable that is not defined';
+      analysis.suggestions = [
+        'Check if the variable is declared',
+        'Verify the variable scope',
+        'Check for typos in variable names',
+        'Ensure imports/requires are correct',
+      ];
+      analysis.recoverable = true;
+      analysis.impact = 'high';
+    } else if (lowerMessage.includes('syntaxerror')) {
+      analysis.type = 'SyntaxError';
+      analysis.cause = 'Invalid JavaScript syntax';
+      analysis.suggestions = [
+        'Check for missing brackets, parentheses, or semicolons',
+        'Verify proper string quoting',
+        'Check for invalid characters',
+        'Use a linter to identify syntax issues',
+      ];
+      analysis.recoverable = false;
+      analysis.impact = 'critical';
+    } else if (
+      lowerMessage.includes('network') ||
+      lowerMessage.includes('fetch')
+    ) {
+      analysis.type = 'NetworkError';
+      analysis.cause = 'Network request failed';
+      analysis.suggestions = [
+        'Check internet connectivity',
+        'Verify API endpoint URL',
+        'Check CORS configuration',
+        'Add retry logic for failed requests',
+        'Implement proper error handling',
+      ];
+      analysis.recoverable = true;
+      analysis.impact = 'medium';
+    }
+
+    return analysis;
+  }
+
+  /**
    * Initialize error categorization system
    * @returns {Object} Error categories
    * @private
@@ -523,6 +921,109 @@ class LogCapture {
       performance_error: 'Performance degradation issues',
       security_error: 'Security or permission errors',
     };
+  }
+
+  /**
+   * Collect performance metrics for AI analysis
+   * @returns {Object} Performance metrics
+   * @private
+   */
+  _collectPerformanceMetrics() {
+    const metrics = {};
+
+    try {
+      // Memory information
+      if (performance.memory) {
+        metrics.memory = {
+          used: performance.memory.usedJSHeapSize,
+          total: performance.memory.totalJSHeapSize,
+          limit: performance.memory.jsHeapSizeLimit,
+          usage: Math.round(
+            (performance.memory.usedJSHeapSize /
+              performance.memory.totalJSHeapSize) *
+              100
+          ),
+        };
+      }
+
+      // Timing information
+      if (performance.now) {
+        metrics.timing = {
+          now: performance.now(),
+          timeOrigin: performance.timeOrigin,
+        };
+      }
+
+      // Navigation timing
+      if (performance.getEntriesByType) {
+        const navigation = performance.getEntriesByType('navigation')[0];
+        if (navigation) {
+          metrics.navigation = {
+            domContentLoaded:
+              navigation.domContentLoadedEventEnd -
+              navigation.domContentLoadedEventStart,
+            loadComplete: navigation.loadEventEnd - navigation.loadEventStart,
+            domInteractive: navigation.domInteractive - navigation.fetchStart,
+            firstPaint: navigation.responseEnd - navigation.requestStart,
+          };
+        }
+      }
+
+      // Resource timing summary
+      if (performance.getEntriesByType) {
+        const resources = performance.getEntriesByType('resource');
+        if (resources.length > 0) {
+          const totalDuration = resources.reduce(
+            (sum, resource) => sum + resource.duration,
+            0
+          );
+          metrics.resources = {
+            count: resources.length,
+            averageDuration: Math.round(totalDuration / resources.length),
+            totalDuration: Math.round(totalDuration),
+          };
+        }
+      }
+    } catch (error) {
+      metrics.error = 'Performance metrics collection failed';
+    }
+
+    return metrics;
+  }
+
+  /**
+   * Parse stack trace for AI-friendly format
+   * @param {string} stack - Stack trace string
+   * @returns {Object} Parsed stack trace
+   * @private
+   */
+  _parseStackTrace(stack) {
+    if (!stack) return null;
+
+    try {
+      const lines = stack.split('\n').slice(1); // Remove first line (error message)
+      const frames = lines
+        .map(line => {
+          const match = line.match(/at\s+(.+?)\s+\((.+?):(\d+):(\d+)\)/);
+          if (match) {
+            return {
+              function: match[1],
+              file: match[2],
+              line: parseInt(match[3]),
+              column: parseInt(match[4]),
+            };
+          }
+          return { raw: line.trim() };
+        })
+        .filter(frame => frame.function || frame.raw);
+
+      return {
+        frames: frames.slice(0, 10), // Limit to top 10 frames
+        raw: stack,
+      };
+    } catch (error) {
+      return { raw: stack, parseError: error.message };
+    }
   }
 
   /**
