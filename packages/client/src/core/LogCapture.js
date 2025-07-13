@@ -278,11 +278,11 @@ class LogCapture {
       // Application context
       application: {
         name: this.options.applicationName,
-        sessionId: this.sessionId,
+        sessionId: this.options.sessionId,
         environment: this.options.environment,
         developer: this.options.developer,
         branch: this.options.branch,
-        port: this.options.port,
+        port: this.options.serverPort,
       },
 
       // AI-friendly categorization
@@ -815,7 +815,8 @@ class LogCapture {
     if (
       lowerMessage.includes('security') ||
       lowerMessage.includes('xss') ||
-      lowerMessage.includes('csrf')
+      lowerMessage.includes('csrf') ||
+      lowerMessage.includes('cors')
     )
       tags.push('security');
 
