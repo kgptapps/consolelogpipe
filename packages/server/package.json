@@ -1,5 +1,5 @@
 {
-  "name": "@console-log-pipe/server",
+  "name": "@kansnpms/console-log-pipe-server",
   "version": "1.0.0",
   "description": "Server package for Console Log Pipe - Hosted log streaming service",
   "main": "src/api/server.js",

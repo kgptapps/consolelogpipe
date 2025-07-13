@@ -1,5 +1,5 @@
 {
-  "name": "@console-log-pipe/chrome-extension",
+  "name": "@kansnpms/console-log-pipe-chrome-extension",
   "version": "1.0.0",
   "description": "Chrome extension for Console Log Pipe - Browser DevTools integration",
   "private": true,

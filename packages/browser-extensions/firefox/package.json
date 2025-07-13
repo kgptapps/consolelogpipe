@@ -1,5 +1,5 @@
 {
-  "name": "@console-log-pipe/firefox-extension",
+  "name": "@kansnpms/console-log-pipe-firefox-extension",
   "version": "1.0.0",
   "description": "Firefox extension for Console Log Pipe - Browser DevTools integration",
   "private": true,

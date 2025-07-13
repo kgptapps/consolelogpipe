@@ -1,6 +1,7 @@
 # console-log-pipe
 
-Global CLI tool for Console Log Pipe. Start a local server to receive real-time logs from browser applications.
+Global CLI tool for Console Log Pipe. Start a local server to receive real-time logs from browser
+applications.
 
 ## Installation
 
@@ -34,6 +35,7 @@ clp config get
 Start the local log server.
 
 Options:
+
 - `--port, -p <port>` - Server port (default: 3000)
 - `--host <host>` - Server host (default: localhost)
 - `--session-name <name>` - Create named session
@@ -44,6 +46,7 @@ Options:
 Stream logs in real-time to the console.
 
 Options:
+
 - `--session <id>` - Stream specific session
 - `--filter <pattern>` - Filter logs by pattern
 - `--format <format>` - Output format (json, pretty, compact)
@@ -53,6 +56,7 @@ Options:
 Manage logging sessions.
 
 Commands:
+
 - `list` - List all sessions
 - `create` - Create new session
 - `delete <id>` - Delete session
@@ -63,6 +67,7 @@ Commands:
 Manage CLI configuration.
 
 Commands:
+
 - `get [key]` - Get configuration value
 - `set <key> <value>` - Set configuration value
 - `reset` - Reset to defaults
@@ -85,6 +90,7 @@ The CLI stores configuration in `~/.console-log-pipe/config.json`:
 ## Session Management
 
 Sessions are automatically created when the server starts. Each session has:
+
 - Unique ID for client connection
 - Optional human-readable name
 - Creation timestamp

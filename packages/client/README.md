@@ -1,27 +1,29 @@
-# @console-log-pipe/client
+# @kansnpms/console-log-pipe-client
 
-Browser client library for Console Log Pipe. Captures console logs, errors, and network requests in real-time and streams them to your development environment.
+Browser client library for Console Log Pipe. Captures console logs, errors, and network requests in
+real-time and streams them to your development environment.
 
 ## Installation
 
 ```bash
-npm install @console-log-pipe/client
+npm install @kansnpms/console-log-pipe-client
 ```
 
 Or via CDN:
+
 ```html
-<script src="https://unpkg.com/@console-log-pipe/client"></script>
+<script src="https://unpkg.com/@kansnpms/console-log-pipe-client"></script>
 ```
 
 ## Quick Start
 
 ```javascript
-import ConsoleLogPipe from '@console-log-pipe/client';
+import ConsoleLogPipe from '@kansnpms/console-log-pipe-client';
 
 // Initialize with session ID from CLI
 ConsoleLogPipe.init({
   sessionId: 'your-session-id',
-  serverUrl: 'http://localhost:3000' // Optional, auto-discovered by default
+  serverUrl: 'http://localhost:3000', // Optional, auto-discovered by default
 });
 ```
 
@@ -47,8 +49,8 @@ ConsoleLogPipe.init({
   batchInterval: 1000,
   filters: {
     excludeUrls: ['/health', '/metrics'],
-    excludeHeaders: ['authorization', 'cookie']
-  }
+    excludeHeaders: ['authorization', 'cookie'],
+  },
 });
 ```
 

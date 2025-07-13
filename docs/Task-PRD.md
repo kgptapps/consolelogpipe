@@ -1,7 +1,9 @@
 # Task Requirements Document (Task PRD)
+
 ## Browser Console Log Pipe - AI-Executable Tasks
 
 ### Document Information
+
 - **Version:** 1.0
 - **Date:** July 13, 2025
 - **Author:** AI Task Management System
@@ -15,6 +17,7 @@
 ## Task Execution Framework
 
 ### Task Status Definitions
+
 - **🔴 NOT_STARTED** - Task not yet begun
 - **🟡 IN_PROGRESS** - Task currently being worked on
 - **🟢 COMPLETED** - Task implementation finished
@@ -24,6 +27,7 @@
 - **🚫 BLOCKED** - Task blocked by dependencies
 
 ### Development Workflow Pattern
+
 Every task must follow the **Understand → Develop → Test → Git Commit → Git Push** pattern:
 
 1. **🧠 UNDERSTAND** - Read requirements, dependencies, and acceptance criteria
@@ -33,6 +37,7 @@ Every task must follow the **Understand → Develop → Test → Git Commit → 
 5. **🚀 GIT PUSH** - Push to repository for backup and collaboration
 
 ### Task Priority Levels
+
 - **P0** - Critical path, must complete first
 - **P1** - High priority, complete after P0
 - **P2** - Medium priority, complete after P1
@@ -43,11 +48,13 @@ Every task must follow the **Understand → Develop → Test → Git Commit → 
 ## PHASE 1: REPOSITORY SETUP & FOUNDATION
 
 ### T001: Repository Structure Setup
+
 - **Priority:** P0
 - **Status:** ✅ VERIFIED
 - **Estimated Time:** 30 minutes
 - **Dependencies:** None
 - **Development Workflow:**
+
   ```
   🧠 UNDERSTAND:
   1. Review Architecture PRD for complete directory structure
@@ -80,6 +87,7 @@ Every task must follow the **Understand → Develop → Test → Git Commit → 
   🚀 GIT PUSH:
   git push origin main
   ```
+
 - **Acceptance Criteria:**
   - [x] All directories from Architecture PRD exist
   - [x] Each package has proper package.json
@@ -106,8 +114,9 @@ Every task must follow the **Understand → Develop → Test → Git Commit → 
   - ✅ Repository structure verified and ready for development
 
 ### T002: Development Environment Setup
+
 - **Priority:** P0
-- **Status:** 🔴 NOT_STARTED
+- **Status:** 🟡 IN_PROGRESS
 - **Estimated Time:** 45 minutes
 - **Dependencies:** T001
 - **AI Instructions:**
@@ -141,6 +150,7 @@ Every task must follow the **Understand → Develop → Test → Git Commit → 
 - **Notes:**
 
 ### T003: CI/CD Pipeline Setup
+
 - **Priority:** P1
 - **Status:** 🔴 NOT_STARTED
 - **Estimated Time:** 60 minutes
@@ -164,18 +174,20 @@ Every task must follow the **Understand → Develop → Test → Git Commit → 
   - [ ] Verify artifacts are generated
 - **Completed:** ❌
 - **Verified:** ❌
-- **Notes:** 
+- **Notes:**
 
 ---
 
 ## PHASE 2: CLIENT LIBRARY DEVELOPMENT
 
 ### T004: Core Log Capture Implementation
+
 - **Priority:** P0
 - **Status:** 🔴 NOT_STARTED
 - **Estimated Time:** 120 minutes
 - **Dependencies:** T002
 - **Development Workflow:**
+
   ```
   🧠 UNDERSTAND:
   1. Review Technical PRD for log capture requirements
@@ -218,6 +230,7 @@ Every task must follow the **Understand → Develop → Test → Git Commit → 
   🚀 GIT PUSH:
   git push origin main
   ```
+
 - **Acceptance Criteria:**
   - [ ] All console methods intercepted correctly
   - [ ] Metadata properly attached to logs
@@ -239,6 +252,7 @@ Every task must follow the **Understand → Develop → Test → Git Commit → 
 - **Notes:**
 
 ### T005: Error Capture Implementation
+
 - **Priority:** P0
 - **Status:** 🔴 NOT_STARTED
 - **Estimated Time:** 90 minutes
@@ -275,6 +289,7 @@ Every task must follow the **Understand → Develop → Test → Git Commit → 
 - **Notes:**
 
 ### T006: Network Capture Implementation
+
 - **Priority:** P0
 - **Status:** 🔴 NOT_STARTED
 - **Estimated Time:** 150 minutes
@@ -315,6 +330,7 @@ Every task must follow the **Understand → Develop → Test → Git Commit → 
 - **Notes:**
 
 ### T007: Transport Layer Implementation
+
 - **Priority:** P0
 - **Status:** 🔴 NOT_STARTED
 - **Estimated Time:** 120 minutes
@@ -340,9 +356,10 @@ Every task must follow the **Understand → Develop → Test → Git Commit → 
   - [ ] Test auto-discovery feature
 - **Completed:** ❌
 - **Verified:** ❌
-- **Notes:** 
+- **Notes:**
 
 ### T008: Client Library Main API
+
 - **Priority:** P0
 - **Status:** 🔴 NOT_STARTED
 - **Estimated Time:** 90 minutes
@@ -368,9 +385,10 @@ Every task must follow the **Understand → Develop → Test → Git Commit → 
   - [ ] Test cleanup on page unload
 - **Completed:** ❌
 - **Verified:** ❌
-- **Notes:** 
+- **Notes:**
 
 ### T009: Client Library Build & Package
+
 - **Priority:** P1
 - **Status:** 🔴 NOT_STARTED
 - **Estimated Time:** 75 minutes
@@ -394,13 +412,14 @@ Every task must follow the **Understand → Develop → Test → Git Commit → 
   - [ ] Verify TypeScript definitions work
 - **Completed:** ❌
 - **Verified:** ❌
-- **Notes:** 
+- **Notes:**
 
 ---
 
 ## PHASE 3: CLI TOOL DEVELOPMENT
 
 ### T010: CLI Core Commands Implementation
+
 - **Priority:** P0
 - **Status:** 🔴 NOT_STARTED
 - **Estimated Time:** 120 minutes
@@ -438,6 +457,7 @@ Every task must follow the **Understand → Develop → Test → Git Commit → 
 - **Notes:**
 
 ### T011: Session Management System
+
 - **Priority:** P0
 - **Status:** 🔴 NOT_STARTED
 - **Estimated Time:** 90 minutes
@@ -461,9 +481,10 @@ Every task must follow the **Understand → Develop → Test → Git Commit → 
   - [ ] Test session deletion
 - **Completed:** ❌
 - **Verified:** ❌
-- **Notes:** 
+- **Notes:**
 
 ### T012: Local Server Implementation
+
 - **Priority:** P0
 - **Status:** 🔴 NOT_STARTED
 - **Estimated Time:** 150 minutes
@@ -503,6 +524,7 @@ Every task must follow the **Understand → Develop → Test → Git Commit → 
 - **Notes:**
 
 ### T013: CLI Global Package Setup
+
 - **Priority:** P1
 - **Status:** 🔴 NOT_STARTED
 - **Estimated Time:** 60 minutes
@@ -533,6 +555,7 @@ Every task must follow the **Understand → Develop → Test → Git Commit → 
 ## PHASE 4: SERVER PACKAGE DEVELOPMENT
 
 ### T014: Server API Implementation
+
 - **Priority:** P1
 - **Status:** 🔴 NOT_STARTED
 - **Estimated Time:** 120 minutes
@@ -560,6 +583,7 @@ Every task must follow the **Understand → Develop → Test → Git Commit → 
 - **Notes:**
 
 ### T015: WebSocket Streaming Implementation
+
 - **Priority:** P1
 - **Status:** 🔴 NOT_STARTED
 - **Estimated Time:** 90 minutes
@@ -587,6 +611,7 @@ Every task must follow the **Understand → Develop → Test → Git Commit → 
 - **Notes:**
 
 ### T016: Server Storage Implementation
+
 - **Priority:** P1
 - **Status:** 🔴 NOT_STARTED
 - **Estimated Time:** 75 minutes
@@ -617,6 +642,7 @@ Every task must follow the **Understand → Develop → Test → Git Commit → 
 ## PHASE 5: INTEGRATION & TESTING
 
 ### T017: End-to-End Integration
+
 - **Priority:** P0
 - **Status:** 🔴 NOT_STARTED
 - **Estimated Time:** 120 minutes
@@ -643,6 +669,7 @@ Every task must follow the **Understand → Develop → Test → Git Commit → 
 - **Notes:**
 
 ### T018: Test Coverage Validation & Enhancement
+
 - **Priority:** P1
 - **Status:** 🔴 NOT_STARTED
 - **Estimated Time:** 120 minutes
@@ -672,6 +699,7 @@ Every task must follow the **Understand → Develop → Test → Git Commit → 
 - **Notes:**
 
 ### T019: Documentation Creation
+
 - **Priority:** P1
 - **Status:** 🔴 NOT_STARTED
 - **Estimated Time:** 150 minutes
@@ -703,6 +731,7 @@ Every task must follow the **Understand → Develop → Test → Git Commit → 
 ## PHASE 6: RELEASE PREPARATION
 
 ### T020: Package Publishing Setup
+
 - **Priority:** P1
 - **Status:** 🔴 NOT_STARTED
 - **Estimated Time:** 90 minutes
@@ -729,6 +758,7 @@ Every task must follow the **Understand → Develop → Test → Git Commit → 
 - **Notes:**
 
 ### T021: Security Audit & Performance
+
 - **Priority:** P1
 - **Status:** 🔴 NOT_STARTED
 - **Estimated Time:** 120 minutes
@@ -755,6 +785,7 @@ Every task must follow the **Understand → Develop → Test → Git Commit → 
 - **Notes:**
 
 ### T022: Beta Release & Testing
+
 - **Priority:** P2
 - **Status:** 🔴 NOT_STARTED
 - **Estimated Time:** 60 minutes
@@ -785,6 +816,7 @@ Every task must follow the **Understand → Develop → Test → Git Commit → 
 ## PHASE 7: BROWSER EXTENSIONS & ACCESSIBILITY
 
 ### T023: Chrome Extension Development
+
 - **Priority:** P2
 - **Status:** 🔴 NOT_STARTED
 - **Estimated Time:** 180 minutes
@@ -820,6 +852,7 @@ Every task must follow the **Understand → Develop → Test → Git Commit → 
 - **Notes:**
 
 ### T024: Security Audit & Penetration Testing
+
 - **Priority:** P1
 - **Status:** 🔴 NOT_STARTED
 - **Estimated Time:** 240 minutes
@@ -854,6 +887,7 @@ Every task must follow the **Understand → Develop → Test → Git Commit → 
 - **Notes:**
 
 ### T025: Performance Optimization & Benchmarking
+
 - **Priority:** P1
 - **Status:** 🔴 NOT_STARTED
 - **Estimated Time:** 180 minutes
@@ -888,6 +922,7 @@ Every task must follow the **Understand → Develop → Test → Git Commit → 
 - **Notes:**
 
 ### T026: Accessibility Implementation
+
 - **Priority:** P2
 - **Status:** 🔴 NOT_STARTED
 - **Estimated Time:** 120 minutes
@@ -926,6 +961,7 @@ Every task must follow the **Understand → Develop → Test → Git Commit → 
 ## PHASE 8: DEPLOYMENT & OPERATIONS
 
 ### T027: Production Infrastructure Setup
+
 - **Priority:** P1
 - **Status:** 🔴 NOT_STARTED
 - **Estimated Time:** 300 minutes
@@ -960,6 +996,7 @@ Every task must follow the **Understand → Develop → Test → Git Commit → 
 - **Notes:**
 
 ### T028: Monitoring & Alerting Setup
+
 - **Priority:** P1
 - **Status:** 🔴 NOT_STARTED
 - **Estimated Time:** 180 minutes
@@ -994,6 +1031,7 @@ Every task must follow the **Understand → Develop → Test → Git Commit → 
 - **Notes:**
 
 ### T029: Disaster Recovery Implementation
+
 - **Priority:** P2
 - **Status:** 🔴 NOT_STARTED
 - **Estimated Time:** 240 minutes
@@ -1032,9 +1070,11 @@ Every task must follow the **Understand → Develop → Test → Git Commit → 
 ## TASK EXECUTION GUIDELINES FOR AI TOOLS
 
 ### Mandatory Development Workflow
+
 **EVERY TASK MUST FOLLOW THE 5-STEP PATTERN:**
 
 #### 🧠 UNDERSTAND Phase
+
 1. **Check Dependencies:** Ensure all dependent tasks are COMPLETED and VERIFIED
 2. **Read All Documentation:** Review relevant PRDs and specifications
 3. **Understand Requirements:** Study acceptance criteria and verification steps
@@ -1042,24 +1082,28 @@ Every task must follow the **Understand → Develop → Test → Git Commit → 
 5. **Plan Implementation:** Break down the work into logical steps
 
 #### ⚙️ DEVELOP Phase
+
 1. **Follow Workflow Instructions:** Implement exactly as specified in Development Workflow
 2. **Write Clean Code:** Follow coding standards and best practices
 3. **Implement Incrementally:** Build and test each component as you develop
 4. **Document Decisions:** Add any assumptions or decisions to Notes section
 
 #### 🧪 TEST Phase
+
 1. **Write Unit Tests:** Create comprehensive tests with >90% coverage
 2. **Run All Tests:** Execute `npm test` and ensure all tests pass
 3. **Manual Testing:** Perform verification steps as specified
 4. **Fix Issues:** Address any test failures or verification problems
 
 #### 📝 GIT COMMIT Phase
+
 1. **Stage Changes:** Add all relevant files with `git add`
 2. **Write Descriptive Commit:** Use the exact commit message format provided
 3. **Include Details:** Commit message should explain what, why, and how
 4. **Verify Commit:** Ensure all changes are properly committed
 
 #### 🚀 GIT PUSH Phase
+
 1. **Push to Repository:** Execute `git push origin main`
 2. **Verify Push:** Confirm changes are visible in remote repository
 3. **Update Status:** Change to 🟢 COMPLETED
@@ -1067,6 +1111,7 @@ Every task must follow the **Understand → Develop → Test → Git Commit → 
 5. **Update to VERIFIED:** Change to ✅ VERIFIED if all verification passes
 
 ### Critical Rules for Git Workflow:
+
 - **NEVER skip git commit/push** - Every task must be version controlled
 - **ALWAYS use provided commit messages** - Follow the exact format specified
 - **COMMIT frequently** - Don't wait until task completion to commit
@@ -1074,6 +1119,7 @@ Every task must follow the **Understand → Develop → Test → Git Commit → 
 - **VERIFY git operations** - Confirm commits and pushes succeeded
 
 ### Error Handling:
+
 1. **Mark as Failed:** Change status to ❌ FAILED if task cannot be completed
 2. **ALWAYS commit partial work** before marking as failed
 3. **Document Reason:** Clearly explain why the task failed in Notes
@@ -1081,6 +1127,7 @@ Every task must follow the **Understand → Develop → Test → Git Commit → 
 5. **Reset for Retry:** Can be reset to 🔴 NOT_STARTED for retry
 
 ### Pause/Resume Support:
+
 1. **Pause Anytime:** Change status to ⏸️ PAUSED with current progress in Notes
 2. **CRITICAL:** Always commit and push work before pausing
 3. **Resume Later:** Any AI tool can pick up paused tasks and continue
@@ -1088,7 +1135,9 @@ Every task must follow the **Understand → Develop → Test → Git Commit → 
 5. **State Preservation:** Git repository must contain all work for seamless handoffs
 
 ### Git Workflow Verification:
+
 Before marking any task as COMPLETED, verify:
+
 - [ ] All code changes committed with descriptive message
 - [ ] All test files committed
 - [ ] Changes pushed to remote repository
@@ -1100,48 +1149,56 @@ Before marking any task as COMPLETED, verify:
 ## TASK TRACKING SUMMARY
 
 ### Phase 1: Repository Setup (3 tasks)
+
 - 🔴 NOT_STARTED: 3 tasks
 - 🟡 IN_PROGRESS: 0 tasks
 - 🟢 COMPLETED: 0 tasks
 - ✅ VERIFIED: 0 tasks
 
 ### Phase 2: Client Library (6 tasks)
+
 - 🔴 NOT_STARTED: 6 tasks
 - 🟡 IN_PROGRESS: 0 tasks
 - 🟢 COMPLETED: 0 tasks
 - ✅ VERIFIED: 0 tasks
 
 ### Phase 3: CLI Tool (4 tasks)
+
 - 🔴 NOT_STARTED: 4 tasks
 - 🟡 IN_PROGRESS: 0 tasks
 - 🟢 COMPLETED: 0 tasks
 - ✅ VERIFIED: 0 tasks
 
 ### Phase 4: Server Package (3 tasks)
+
 - 🔴 NOT_STARTED: 3 tasks
 - 🟡 IN_PROGRESS: 0 tasks
 - 🟢 COMPLETED: 0 tasks
 - ✅ VERIFIED: 0 tasks
 
 ### Phase 5: Integration & Testing (3 tasks)
+
 - 🔴 NOT_STARTED: 3 tasks
 - 🟡 IN_PROGRESS: 0 tasks
 - 🟢 COMPLETED: 0 tasks
 - ✅ VERIFIED: 0 tasks
 
 ### Phase 6: Release Preparation (3 tasks)
+
 - 🔴 NOT_STARTED: 3 tasks
 - 🟡 IN_PROGRESS: 0 tasks
 - 🟢 COMPLETED: 0 tasks
 - ✅ VERIFIED: 0 tasks
 
 ### Phase 7: Browser Extensions & Accessibility (4 tasks)
+
 - 🔴 NOT_STARTED: 4 tasks
 - 🟡 IN_PROGRESS: 0 tasks
 - 🟢 COMPLETED: 0 tasks
 - ✅ VERIFIED: 0 tasks
 
 ### Phase 8: Deployment & Operations (3 tasks)
+
 - 🔴 NOT_STARTED: 3 tasks
 - 🟡 IN_PROGRESS: 0 tasks
 - 🟢 COMPLETED: 0 tasks
@@ -1172,6 +1229,7 @@ T018 (Unit Tests) → T019 (Documentation) → T020 (Publishing) → T021 (Secur
 ---
 
 ## CRITICAL PATH TASKS (P0 Priority)
+
 1. **T001** - Repository Structure Setup
 2. **T002** - Development Environment Setup
 3. **T004** - Core Log Capture Implementation
@@ -1189,6 +1247,7 @@ T018 (Unit Tests) → T019 (Documentation) → T020 (Publishing) → T021 (Secur
 ## AI TOOL EXECUTION INSTRUCTIONS
 
 ### Quick Start for AI Tools:
+
 1. **Read this Task PRD completely** before starting any work
 2. **Always start with T001** unless specifically instructed otherwise
 3. **Check dependencies** before starting any task
@@ -1198,6 +1257,7 @@ T018 (Unit Tests) → T019 (Documentation) → T020 (Publishing) → T021 (Secur
 7. **Document everything** in the Notes section
 
 ### Task Selection Algorithm:
+
 ```
 1. Find all tasks with status 🔴 NOT_STARTED
 2. Filter to only tasks where all dependencies are ✅ VERIFIED
@@ -1207,6 +1267,7 @@ T018 (Unit Tests) → T019 (Documentation) → T020 (Publishing) → T021 (Secur
 ```
 
 ### Status Update Protocol:
+
 ```
 When starting: 🔴 NOT_STARTED → 🟡 IN_PROGRESS
 When done coding: 🟡 IN_PROGRESS → 🟢 COMPLETED
@@ -1217,6 +1278,7 @@ If blocked: Any status → 🚫 BLOCKED
 ```
 
 ### Error Recovery:
+
 - If a task fails, mark as ❌ FAILED and document the issue
 - Failed tasks can be reset to 🔴 NOT_STARTED for retry
 - If blocked by external dependencies, mark as 🚫 BLOCKED
@@ -1225,15 +1287,18 @@ If blocked: Any status → 🚫 BLOCKED
 ---
 
 ## NEXT RECOMMENDED TASK
+
 **Task T001: Repository Structure Setup** - This is the foundation task that all others depend on.
 
 ### Why Start Here:
+
 - No dependencies, can start immediately
 - Creates the foundation for all other work
 - Enables other AI tools to pick up subsequent tasks
 - Establishes the project structure and standards
 
 ### After T001 Completion:
+
 - Next task will be **T002: Development Environment Setup**
 - Then **T004: Core Log Capture Implementation** (T003 can run in parallel)
 - Follow the dependency graph for optimal task ordering

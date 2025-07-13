@@ -1,5 +1,5 @@
 {
-  "name": "@console-log-pipe/desktop",
+  "name": "@kansnpms/console-log-pipe-desktop",
   "version": "1.0.0",
   "description": "Desktop application for Console Log Pipe - Electron-based log viewer",
   "main": "src/main/main.js",

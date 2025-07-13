@@ -1,5 +1,5 @@
 {
-  "name": "@console-log-pipe/shared",
+  "name": "@kansnpms/console-log-pipe-shared",
   "version": "1.0.0",
   "description": "Shared utilities and types for Console Log Pipe packages",
   "main": "index.js",

@@ -1,5 +1,5 @@
 {
-  "name": "@console-log-pipe/client",
+  "name": "@kansnpms/console-log-pipe-client",
   "version": "1.0.0",
   "description": "Browser client library for Console Log Pipe - Real-time log streaming",
   "main": "dist/index.js",

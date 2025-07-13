@@ -1,5 +1,5 @@
 {
-  "name": "@console-log-pipe/safari-extension",
+  "name": "@kansnpms/console-log-pipe-safari-extension",
   "version": "1.0.0",
   "description": "Safari extension for Console Log Pipe - Browser DevTools integration",
   "private": true,

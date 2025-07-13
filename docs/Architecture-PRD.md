@@ -1,7 +1,9 @@
 # Architecture Requirements Document (ARD)
+
 ## Browser Console Log Pipe
 
 ### Document Information
+
 - **Version:** 1.0
 - **Date:** July 13, 2025
 - **Author:** Architecture Team
@@ -14,7 +16,9 @@
 
 ## Architecture Overview
 
-Browser Console Log Pipe follows a distributed, event-driven architecture that enables real-time log streaming from browser applications to developer environments with minimal latency and maximum reliability.
+Browser Console Log Pipe follows a distributed, event-driven architecture that enables real-time log
+streaming from browser applications to developer environments with minimal latency and maximum
+reliability.
 
 ## System Architecture Diagram
 
@@ -45,6 +49,7 @@ Browser Console Log Pipe follows a distributed, event-driven architecture that e
 ### 1. Client-Side Library Architecture
 
 #### Repository Directory Structure
+
 ```
 console-log-pipe/                     // Root repository
 ├── packages/                         // All deliverable packages
@@ -421,6 +426,7 @@ console-log-pipe/                     // Root repository
 ```
 
 #### Event-Driven Architecture
+
 ```javascript
 class ConsoleLogPipe extends EventEmitter {
   constructor(config) {
@@ -431,13 +437,13 @@ class ConsoleLogPipe extends EventEmitter {
     this.batchProcessor = new BatchProcessor(config);
 
     // Event flow
-    this.logCapture.on('log', (log) => {
+    this.logCapture.on('log', log => {
       log.sessionId = this.sessionId; // Add session ID to all logs
       this.emit('log-captured', log);
       this.batchProcessor.add(log);
     });
 
-    this.batchProcessor.on('batch-ready', (batch) => {
+    this.batchProcessor.on('batch-ready', batch => {
       this.transport.send(batch);
     });
   }
@@ -449,6 +455,7 @@ class ConsoleLogPipe extends EventEmitter {
 ```
 
 #### CLI Startup Flow
+
 ```javascript
 // CLI startup sequence
 class CLIStartup {
@@ -469,7 +476,9 @@ class CLIStartup {
     console.log(chalk.green('✅ Console Log Pipe Server started'));
     console.log(chalk.blue(`🌐 Server: http://localhost:${server.port}`));
     console.log(chalk.yellow(`📱 Session ID: ${session.id}`));
-    console.log(chalk.cyan(`📋 Add to your app: new ConsoleLogPipe({ sessionId: '${session.id}' })`));
+    console.log(
+      chalk.cyan(`📋 Add to your app: new ConsoleLogPipe({ sessionId: '${session.id}' })`)
+    );
     console.log(chalk.magenta(`🔗 Stream: clp stream --session ${session.id}`));
     console.log('');
     console.log(chalk.gray('Press Ctrl+C to stop the server'));
@@ -478,18 +487,19 @@ class CLIStartup {
 ```
 
 #### Plugin Architecture
+
 ```javascript
 // Plugin system for extensibility
 class PluginManager {
   constructor() {
     this.plugins = new Map();
   }
-  
+
   register(name, plugin) {
     this.plugins.set(name, plugin);
     plugin.initialize(this.context);
   }
-  
+
   execute(hook, data) {
     for (const plugin of this.plugins.values()) {
       if (plugin[hook]) {
@@ -505,20 +515,21 @@ const networkPlugin = {
   initialize(context) {
     this.context = context;
   },
-  
+
   beforeSend(log) {
     // Add network timing data
     if (performance.getEntriesByType) {
       log.metadata.networkTiming = performance.getEntriesByType('navigation')[0];
     }
     return log;
-  }
+  },
 };
 ```
 
 ### 2. Server Architecture
 
 #### Layered Architecture
+
 ```
 ┌─────────────────────────────────────────┐
 │              API Layer                  │
@@ -541,32 +552,33 @@ const networkPlugin = {
 ```
 
 #### Microservices Architecture (Hosted Service)
+
 ```yaml
 # Service mesh architecture
 services:
   api-gateway:
     image: nginx:alpine
-    ports: ["80:80", "443:443"]
-    
+    ports: ['80:80', '443:443']
+
   log-ingestion:
     image: consolelogpipe/ingestion:latest
     replicas: 3
     resources:
-      limits: {memory: "512Mi", cpu: "500m"}
-      
+      limits: { memory: '512Mi', cpu: '500m' }
+
   stream-service:
     image: consolelogpipe/streaming:latest
     replicas: 2
     resources:
-      limits: {memory: "256Mi", cpu: "250m"}
-      
+      limits: { memory: '256Mi', cpu: '250m' }
+
   auth-service:
     image: consolelogpipe/auth:latest
     replicas: 2
-    
+
   redis:
     image: redis:alpine
-    
+
   postgres:
     image: postgres:13
 ```
@@ -574,6 +586,7 @@ services:
 ### 3. Data Architecture
 
 #### Data Flow
+
 ```
 Browser → Serialization → Transport → Validation → Processing → Storage → Streaming
     ↓           ↓            ↓           ↓            ↓          ↓          ↓
@@ -581,6 +594,7 @@ Browser → Serialization → Transport → Validation → Processing → Storag
 ```
 
 #### Data Models
+
 ```typescript
 // Core data structures
 interface LogEntry {
@@ -611,22 +625,23 @@ interface LogBatch {
 ```
 
 #### Storage Strategy
+
 ```javascript
 // Multi-tier storage architecture
 class StorageManager {
   constructor() {
-    this.memoryStore = new MemoryStore(10000);     // Hot data
-    this.fileStore = new FileStore('./logs');      // Warm data
-    this.archiveStore = new ArchiveStore();        // Cold data
+    this.memoryStore = new MemoryStore(10000); // Hot data
+    this.fileStore = new FileStore('./logs'); // Warm data
+    this.archiveStore = new ArchiveStore(); // Cold data
   }
-  
+
   async store(log) {
     // Always store in memory for real-time access
     await this.memoryStore.add(log);
-    
+
     // Async write to file for persistence
     setImmediate(() => this.fileStore.append(log));
-    
+
     // Archive old logs
     if (this.shouldArchive(log)) {
       await this.archiveStore.archive(log);
@@ -640,6 +655,7 @@ class StorageManager {
 ### 1. Transport Protocols
 
 #### HTTP/HTTPS for Log Ingestion
+
 ```javascript
 // Optimized HTTP transport
 class HttpTransport {
@@ -649,44 +665,45 @@ class HttpTransport {
     this.keepAlive = true;
     this.timeout = config.timeout || 5000;
   }
-  
+
   async send(batch) {
     const compressed = await this.compress(batch);
-    
+
     return fetch(this.endpoint, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Content-Encoding': this.compression,
-        'Authorization': `Bearer ${this.apiKey}`
+        Authorization: `Bearer ${this.apiKey}`,
       },
       body: compressed,
-      keepalive: true
+      keepalive: true,
     });
   }
 }
 ```
 
 #### WebSocket for Real-time Streaming
+
 ```javascript
 // WebSocket server implementation
 class StreamServer {
   constructor(server) {
     this.wss = new WebSocket.Server({ server });
     this.clients = new Map();
-    
+
     this.wss.on('connection', (ws, req) => {
       const clientId = this.generateClientId();
       const filters = this.parseFilters(req.url);
-      
+
       this.clients.set(clientId, { ws, filters });
-      
+
       ws.on('close', () => {
         this.clients.delete(clientId);
       });
     });
   }
-  
+
   broadcast(log) {
     for (const [clientId, client] of this.clients) {
       if (this.matchesFilters(log, client.filters)) {
@@ -698,21 +715,22 @@ class StreamServer {
 ```
 
 #### Server-Sent Events (SSE) Alternative
+
 ```javascript
 // SSE implementation for broader compatibility
 app.get('/api/events', (req, res) => {
   res.writeHead(200, {
     'Content-Type': 'text/event-stream',
     'Cache-Control': 'no-cache',
-    'Connection': 'keep-alive',
-    'Access-Control-Allow-Origin': '*'
+    Connection: 'keep-alive',
+    'Access-Control-Allow-Origin': '*',
   });
-  
+
   const clientId = generateClientId();
   const filters = parseFilters(req.query);
-  
+
   sseClients.set(clientId, { res, filters });
-  
+
   req.on('close', () => {
     sseClients.delete(clientId);
   });
@@ -722,20 +740,21 @@ app.get('/api/events', (req, res) => {
 ### 2. Message Queuing Architecture
 
 #### Event-Driven Processing
+
 ```javascript
 // Event bus for decoupled communication
 class EventBus {
   constructor() {
     this.subscribers = new Map();
   }
-  
+
   subscribe(event, handler) {
     if (!this.subscribers.has(event)) {
       this.subscribers.set(event, []);
     }
     this.subscribers.get(event).push(handler);
   }
-  
+
   async publish(event, data) {
     const handlers = this.subscribers.get(event) || [];
     await Promise.all(handlers.map(handler => handler(data)));
@@ -743,7 +762,7 @@ class EventBus {
 }
 
 // Usage
-eventBus.subscribe('log.received', async (log) => {
+eventBus.subscribe('log.received', async log => {
   await logProcessor.process(log);
   await streamManager.broadcast(log);
   await metricsCollector.record(log);
@@ -753,6 +772,7 @@ eventBus.subscribe('log.received', async (log) => {
 ## Security Architecture
 
 ### 1. Authentication & Authorization
+
 ```javascript
 // JWT-based authentication
 class AuthService {
@@ -760,12 +780,12 @@ class AuthService {
     this.secret = secret;
     this.tokenCache = new Map();
   }
-  
+
   async validateToken(token) {
     if (this.tokenCache.has(token)) {
       return this.tokenCache.get(token);
     }
-    
+
     try {
       const payload = jwt.verify(token, this.secret);
       this.tokenCache.set(token, payload);
@@ -774,7 +794,7 @@ class AuthService {
       throw new UnauthorizedError('Invalid token');
     }
   }
-  
+
   async authorize(user, resource, action) {
     return this.rbac.check(user.role, resource, action);
   }
@@ -782,6 +802,7 @@ class AuthService {
 ```
 
 ### 2. Data Security
+
 ```javascript
 // End-to-end encryption for sensitive logs
 class EncryptionService {
@@ -789,20 +810,20 @@ class EncryptionService {
     this.publicKey = publicKey;
     this.privateKey = privateKey;
   }
-  
+
   encrypt(data) {
     const key = crypto.randomBytes(32);
     const iv = crypto.randomBytes(16);
-    
+
     const cipher = crypto.createCipher('aes-256-cbc', key, iv);
     const encrypted = Buffer.concat([cipher.update(data), cipher.final()]);
-    
+
     const encryptedKey = crypto.publicEncrypt(this.publicKey, key);
-    
+
     return {
       data: encrypted.toString('base64'),
       key: encryptedKey.toString('base64'),
-      iv: iv.toString('base64')
+      iv: iv.toString('base64'),
     };
   }
 }
@@ -811,6 +832,7 @@ class EncryptionService {
 ## Scalability Architecture
 
 ### 1. Horizontal Scaling
+
 ```yaml
 # Auto-scaling configuration
 apiVersion: autoscaling/v2
@@ -825,21 +847,22 @@ spec:
   minReplicas: 2
   maxReplicas: 10
   metrics:
-  - type: Resource
-    resource:
-      name: cpu
-      target:
-        type: Utilization
-        averageUtilization: 70
-  - type: Resource
-    resource:
-      name: memory
-      target:
-        type: Utilization
-        averageUtilization: 80
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 80
 ```
 
 ### 2. Load Balancing Strategy
+
 ```javascript
 // Consistent hashing for WebSocket connections
 class LoadBalancer {
@@ -847,16 +870,16 @@ class LoadBalancer {
     this.servers = servers;
     this.ring = new ConsistentHashRing(servers);
   }
-  
+
   getServer(sessionId) {
     return this.ring.get(sessionId);
   }
-  
+
   addServer(server) {
     this.servers.push(server);
     this.ring.add(server);
   }
-  
+
   removeServer(server) {
     this.servers = this.servers.filter(s => s !== server);
     this.ring.remove(server);
@@ -865,28 +888,29 @@ class LoadBalancer {
 ```
 
 ### 3. Caching Strategy
+
 ```javascript
 // Multi-level caching
 class CacheManager {
   constructor() {
-    this.l1Cache = new Map();           // In-memory
-    this.l2Cache = new RedisCache();    // Redis
-    this.l3Cache = new FileCache();     // Disk
+    this.l1Cache = new Map(); // In-memory
+    this.l2Cache = new RedisCache(); // Redis
+    this.l3Cache = new FileCache(); // Disk
   }
-  
+
   async get(key) {
     // L1 cache
     if (this.l1Cache.has(key)) {
       return this.l1Cache.get(key);
     }
-    
+
     // L2 cache
     const l2Value = await this.l2Cache.get(key);
     if (l2Value) {
       this.l1Cache.set(key, l2Value);
       return l2Value;
     }
-    
+
     // L3 cache
     const l3Value = await this.l3Cache.get(key);
     if (l3Value) {
@@ -894,7 +918,7 @@ class CacheManager {
       this.l1Cache.set(key, l3Value);
       return l3Value;
     }
-    
+
     return null;
   }
 }
@@ -903,6 +927,7 @@ class CacheManager {
 ## Monitoring & Observability Architecture
 
 ### 1. Metrics Collection
+
 ```javascript
 // Prometheus metrics
 const promClient = require('prom-client');
@@ -911,23 +936,24 @@ const metrics = {
   logsReceived: new promClient.Counter({
     name: 'logs_received_total',
     help: 'Total number of logs received',
-    labelNames: ['source', 'level']
+    labelNames: ['source', 'level'],
   }),
-  
+
   processingTime: new promClient.Histogram({
     name: 'log_processing_duration_seconds',
     help: 'Time spent processing logs',
-    buckets: [0.001, 0.005, 0.01, 0.05, 0.1, 0.5, 1]
+    buckets: [0.001, 0.005, 0.01, 0.05, 0.1, 0.5, 1],
   }),
-  
+
   activeConnections: new promClient.Gauge({
     name: 'active_websocket_connections',
-    help: 'Number of active WebSocket connections'
-  })
+    help: 'Number of active WebSocket connections',
+  }),
 };
 ```
 
 ### 2. Distributed Tracing
+
 ```javascript
 // OpenTelemetry integration
 const { trace } = require('@opentelemetry/api');
@@ -936,17 +962,17 @@ class TracingService {
   constructor() {
     this.tracer = trace.getTracer('console-log-pipe');
   }
-  
+
   async processLog(log) {
     const span = this.tracer.startSpan('process-log');
-    
+
     try {
       span.setAttributes({
         'log.level': log.level,
         'log.source': log.source,
-        'log.size': JSON.stringify(log).length
+        'log.size': JSON.stringify(log).length,
       });
-      
+
       await this.doProcessing(log);
       span.setStatus({ code: trace.SpanStatusCode.OK });
     } catch (error) {
@@ -963,6 +989,7 @@ class TracingService {
 ## Deployment Architecture
 
 ### 1. Container Strategy
+
 ```dockerfile
 # Multi-stage build for optimization
 FROM node:18-alpine AS builder
@@ -979,6 +1006,7 @@ CMD ["node", "server.js"]
 ```
 
 ### 2. Infrastructure as Code
+
 ```terraform
 # Terraform configuration
 resource "aws_ecs_cluster" "console_log_pipe" {
@@ -990,7 +1018,7 @@ resource "aws_ecs_service" "api" {
   cluster         = aws_ecs_cluster.console_log_pipe.id
   task_definition = aws_ecs_task_definition.api.arn
   desired_count   = 3
-  
+
   load_balancer {
     target_group_arn = aws_lb_target_group.api.arn
     container_name   = "api"
@@ -1004,6 +1032,7 @@ resource "aws_ecs_service" "api" {
 ## Architecture Decisions
 
 ### 1. Technology Choices
+
 - **JavaScript/Node.js:** Universal language for client and server
 - **WebSocket/SSE:** Real-time communication protocols
 - **HTTP/JSON:** Standard web protocols for compatibility
@@ -1011,12 +1040,14 @@ resource "aws_ecs_service" "api" {
 - **Container deployment:** Scalable and portable deployment
 
 ### 2. Trade-offs
+
 - **Performance vs. Features:** Prioritize low latency over advanced features
 - **Simplicity vs. Flexibility:** Simple API with plugin extensibility
 - **Security vs. Usability:** Secure by default with easy configuration
 - **Cost vs. Reliability:** Optimize for cost while maintaining reliability
 
 ### 3. Future Considerations
+
 - **GraphQL API:** For more flexible querying
 - **gRPC:** For high-performance communication
 - **Event sourcing:** For audit trails and replay capabilities
@@ -1027,6 +1058,7 @@ resource "aws_ecs_service" "api" {
 ## Architecture Implementation Status
 
 ### Repository Information
+
 - **GitHub Repository:** https://github.com/kgptapps/consolelogpipe
 - **Publisher:** kgptapps
 - **License:** MIT
@@ -1036,6 +1068,7 @@ resource "aws_ecs_service" "api" {
 ### Architecture Components Status
 
 #### Core Architecture - **Design Complete**
+
 - [x] **System Architecture Design** - High-level component interaction
 - [x] **Data Flow Architecture** - Log processing pipeline design
 - [x] **Communication Protocols** - HTTP/WebSocket/SSE specifications
@@ -1045,6 +1078,7 @@ resource "aws_ecs_service" "api" {
 - [ ] **Documentation** - In progress
 
 #### Client-Side Architecture - **Design Complete**
+
 - [x] **Modular Design** - Component separation and plugin system
 - [x] **Event-Driven Architecture** - Event flow and handling
 - [x] **Browser-Specific Implementations** - Platform optimizations
@@ -1054,6 +1088,7 @@ resource "aws_ecs_service" "api" {
 - [ ] **Performance Validation** - Not started
 
 #### Server Architecture - **Design Complete**
+
 - [x] **Layered Architecture** - API, Service, and Data layers
 - [x] **Microservices Design** - Service decomposition for hosted version
 - [x] **Storage Strategy** - Multi-tier storage architecture
@@ -1063,6 +1098,7 @@ resource "aws_ecs_service" "api" {
 - [ ] **Deployment** - Not started
 
 #### Communication Architecture - **Design Complete**
+
 - [x] **Transport Protocols** - HTTP/WebSocket/SSE implementation
 - [x] **Message Queuing** - Event-driven processing design
 - [x] **Real-time Streaming** - WebSocket and SSE architecture
@@ -1071,6 +1107,7 @@ resource "aws_ecs_service" "api" {
 - [ ] **Reliability Testing** - Not started
 
 #### Security Architecture - **Design Complete**
+
 - [x] **Authentication & Authorization** - JWT and RBAC design
 - [x] **Data Security** - Encryption and sanitization strategies
 - [x] **Network Security** - TLS and secure communication
@@ -1079,6 +1116,7 @@ resource "aws_ecs_service" "api" {
 - [ ] **Penetration Testing** - Not started
 
 #### Scalability Architecture - **Design Complete**
+
 - [x] **Horizontal Scaling** - Auto-scaling and load balancing
 - [x] **Caching Strategy** - Multi-level caching design
 - [x] **Database Architecture** - Storage and indexing strategy
@@ -1087,6 +1125,7 @@ resource "aws_ecs_service" "api" {
 - [ ] **Capacity Planning** - Not started
 
 #### Monitoring & Observability - **Design Complete**
+
 - [x] **Metrics Collection** - Prometheus and custom metrics
 - [x] **Distributed Tracing** - OpenTelemetry integration
 - [x] **Logging Strategy** - Structured logging and aggregation
@@ -1095,6 +1134,7 @@ resource "aws_ecs_service" "api" {
 - [ ] **Dashboard Creation** - Not started
 
 #### Deployment Architecture - **Design Complete**
+
 - [x] **Container Strategy** - Docker and Kubernetes design
 - [x] **Infrastructure as Code** - Terraform and deployment automation
 - [x] **CI/CD Pipeline** - Build, test, and deployment workflow
@@ -1105,6 +1145,7 @@ resource "aws_ecs_service" "api" {
 ### Architecture Validation Checklist
 
 #### Design Validation - **In Progress**
+
 - [x] **Requirements Alignment** - Architecture meets all functional requirements
 - [x] **Non-Functional Requirements** - Performance, security, scalability addressed
 - [x] **Technology Stack Validation** - Appropriate technology choices
@@ -1114,6 +1155,7 @@ resource "aws_ecs_service" "api" {
 - [ ] **Security Review** - External security architecture review
 
 #### Implementation Readiness - **Not Started**
+
 - [ ] **Development Environment** - Set up development infrastructure
 - [ ] **Build System** - Configure build and packaging systems
 - [ ] **Testing Framework** - Set up automated testing infrastructure
@@ -1124,12 +1166,15 @@ resource "aws_ecs_service" "api" {
 ### Architecture Risks & Mitigation
 
 #### High Priority Risks
+
 1. **Browser Compatibility**
+
    - **Risk:** Different browser APIs and limitations
    - **Mitigation:** Progressive enhancement and feature detection
    - **Status:** Mitigation strategy defined
 
 2. **Performance Impact**
+
    - **Risk:** Client library affecting host application performance
    - **Mitigation:** Asynchronous processing and resource limits
    - **Status:** Performance budgets defined
@@ -1140,7 +1185,9 @@ resource "aws_ecs_service" "api" {
    - **Status:** Security controls designed
 
 #### Medium Priority Risks
+
 1. **Scalability Bottlenecks**
+
    - **Risk:** Server performance under high load
    - **Mitigation:** Horizontal scaling and caching
    - **Status:** Scaling strategy defined
@@ -1153,24 +1200,28 @@ resource "aws_ecs_service" "api" {
 ### Next Steps
 
 #### Immediate (Week 1)
+
 1. Set up repository structure according to architecture design
 2. Initialize development environment and build tools
 3. Create architectural decision records (ADRs)
 4. Set up basic CI/CD pipeline
 
 #### Short Term (Weeks 2-4)
+
 1. Implement core client library architecture
 2. Build basic server architecture with API layer
 3. Set up testing framework and initial tests
 4. Create proof-of-concept for critical components
 
 #### Medium Term (Weeks 5-12)
+
 1. Complete all component implementations
 2. Integrate components and test end-to-end workflows
 3. Implement monitoring and observability
 4. Conduct performance and security testing
 
 #### Long Term (Months 4-6)
+
 1. Deploy to production environment
 2. Monitor and optimize based on real-world usage
 3. Iterate on architecture based on feedback
