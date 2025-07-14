@@ -105,30 +105,204 @@ global.sessionStorage = { ...localStorageMock };
 
 // Mock URL and URLSearchParams
 global.URL = class URL {
-  constructor(url) {
+  constructor(url, base) {
     this.href = url;
-    this.origin = 'http://localhost:3000';
-    this.pathname = '/';
-    this.search = '';
-    this.hash = '';
+
+    // Simple URL parsing for test purposes
+    try {
+      const match = url.match(
+        /^(https?):\/\/([^/]+)(\/[^?]*)?(\?[^#]*)?(#.*)?$/
+      );
+      if (match) {
+        this.protocol = `${match[1]}:`;
+        this.host = match[2];
+        this.hostname = match[2].split(':')[0];
+        this.port =
+          match[2].split(':')[1] || (match[1] === 'https' ? '443' : '80');
+        this.pathname = match[3] || '/';
+        this.search = match[4] || '';
+        this.hash = match[5] || '';
+        this.origin = `${this.protocol}//${this.host}`;
+      } else {
+        // Fallback for relative URLs or simple cases
+        this.protocol = 'http:';
+        this.host = 'localhost:3000';
+        this.hostname = 'localhost';
+        this.port = '3000';
+        this.pathname = url.startsWith('/') ? url : `/${url}`;
+        this.search = '';
+        this.hash = '';
+        this.origin = 'http://localhost:3000';
+      }
+    } catch (e) {
+      // Fallback
+      this.href = url;
+      this.protocol = 'http:';
+      this.host = 'localhost:3000';
+      this.hostname = 'localhost';
+      this.port = '3000';
+      this.pathname = '/';
+      this.search = '';
+      this.hash = '';
+      this.origin = 'http://localhost:3000';
+    }
+
+    this.searchParams = new URLSearchParams(this.search);
+  }
+
+  toString() {
+    // Reconstruct URL with potentially modified search params
+    const searchString = this.searchParams.toString();
+    const baseUrl = `${this.protocol}//${this.host}${this.pathname}`;
+    return searchString
+      ? `${baseUrl}?${searchString}${this.hash}`
+      : `${baseUrl}${this.hash}`;
   }
 };
 
 global.URLSearchParams = class URLSearchParams {
-  constructor() {
+  constructor(init) {
     this.params = new Map();
+    if (typeof init === 'string') {
+      // Parse query string
+      const pairs = init.replace(/^\?/, '').split('&');
+      pairs.forEach(pair => {
+        if (pair) {
+          const [key, value] = pair.split('=');
+          this.params.set(
+            decodeURIComponent(key),
+            decodeURIComponent(value || '')
+          );
+        }
+      });
+    }
   }
+
   get(key) {
     return this.params.get(key);
   }
+
   set(key, value) {
     this.params.set(key, value);
   }
+
   has(key) {
     return this.params.has(key);
   }
+
   delete(key) {
     this.params.delete(key);
+  }
+
+  entries() {
+    return this.params.entries();
+  }
+
+  keys() {
+    return this.params.keys();
+  }
+
+  values() {
+    return this.params.values();
+  }
+
+  toString() {
+    const pairs = [];
+    for (const [key, value] of this.params) {
+      pairs.push(`${encodeURIComponent(key)}=${encodeURIComponent(value)}`);
+    }
+    return pairs.join('&');
+  }
+};
+
+// Mock Headers
+global.Headers = class Headers {
+  constructor(init = {}) {
+    this.headers = new Map();
+    if (init) {
+      if (init instanceof Headers) {
+        for (const [key, value] of init.entries()) {
+          this.headers.set(key.toLowerCase(), value);
+        }
+      } else {
+        Object.entries(init).forEach(([key, value]) => {
+          this.headers.set(key.toLowerCase(), value);
+        });
+      }
+    }
+  }
+
+  get(name) {
+    return this.headers.get(name.toLowerCase());
+  }
+
+  set(name, value) {
+    this.headers.set(name.toLowerCase(), value);
+  }
+
+  has(name) {
+    return this.headers.has(name.toLowerCase());
+  }
+
+  entries() {
+    return this.headers.entries();
+  }
+
+  keys() {
+    return this.headers.keys();
+  }
+
+  values() {
+    return this.headers.values();
+  }
+
+  forEach(callback) {
+    this.headers.forEach(callback);
+  }
+};
+
+// Mock FormData
+global.FormData = class FormData {
+  constructor() {
+    this.data = new Map();
+  }
+
+  append(name, value) {
+    if (!this.data.has(name)) {
+      this.data.set(name, []);
+    }
+    this.data.get(name).push(value);
+  }
+
+  set(name, value) {
+    this.data.set(name, [value]);
+  }
+
+  get(name) {
+    const values = this.data.get(name);
+    return values ? values[0] : null;
+  }
+
+  has(name) {
+    return this.data.has(name);
+  }
+
+  entries() {
+    const entries = [];
+    for (const [key, values] of this.data) {
+      for (const value of values) {
+        entries.push([key, value]);
+      }
+    }
+    return entries[Symbol.iterator]();
+  }
+};
+
+// Mock Blob
+global.Blob = class Blob {
+  constructor(parts = [], options = {}) {
+    this.size = parts.reduce((size, part) => size + (part.length || 0), 0);
+    this.type = options.type || '';
   }
 };
 
