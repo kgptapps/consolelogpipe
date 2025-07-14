@@ -234,12 +234,12 @@ class NetworkInterceptor {
     }
 
     // Restore XMLHttpRequest
-    if (this.originalXHROpen) {
+    if (this.originalXHROpen && typeof XMLHttpRequest !== 'undefined') {
       XMLHttpRequest.prototype.open = this.originalXHROpen;
       this.originalXHROpen = null;
     }
 
-    if (this.originalXHRSend) {
+    if (this.originalXHRSend && typeof XMLHttpRequest !== 'undefined') {
       XMLHttpRequest.prototype.send = this.originalXHRSend;
       this.originalXHRSend = null;
     }

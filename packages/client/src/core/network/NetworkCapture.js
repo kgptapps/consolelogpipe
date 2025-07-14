@@ -115,8 +115,10 @@ class NetworkCapture {
     // Store original methods for backward compatibility
     if (typeof window !== 'undefined') {
       this.originalFetch = window.fetch;
-      this.originalXHROpen = XMLHttpRequest.prototype.open;
-      this.originalXHRSend = XMLHttpRequest.prototype.send;
+      if (typeof XMLHttpRequest !== 'undefined') {
+        this.originalXHROpen = XMLHttpRequest.prototype.open;
+        this.originalXHRSend = XMLHttpRequest.prototype.send;
+      }
     }
 
     this.interceptor.setupInterception();

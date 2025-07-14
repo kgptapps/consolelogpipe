@@ -93,7 +93,9 @@ class NetworkAnalyzer {
         url.includes('/api/') ||
         url.includes('/v1/') ||
         url.includes('/v2/') ||
-        url.includes('/graphql')
+        url.includes('/graphql') ||
+        url.includes('api.') ||
+        url.includes('.api.')
       ) {
         return 'API Success';
       }
@@ -117,7 +119,12 @@ class NetworkAnalyzer {
     if (status >= 400) return 'Client Error';
     if (status >= 300) return 'Redirect';
     if (status >= 200) {
-      if (url.includes('/api/')) return 'API Success';
+      if (
+        url.includes('/api/') ||
+        url.includes('api.') ||
+        url.includes('.api.')
+      )
+        return 'API Success';
       return 'Success';
     }
 
@@ -157,7 +164,7 @@ class NetworkAnalyzer {
       score = 9;
       factors.push('server-error');
     } else if (response.status >= 400) {
-      score = 4; // Changed to 4 for medium level
+      score = 6; // Client errors should be medium severity (score 6)
       factors.push('client-error');
     } else if (response.status >= 300) {
       score = 3;
@@ -178,9 +185,9 @@ class NetworkAnalyzer {
     return {
       score,
       level:
-        score >= 8
+        score >= 9
           ? 'critical'
-          : score >= 6
+          : score >= 7
           ? 'high'
           : score >= 4
           ? 'medium'
@@ -204,7 +211,7 @@ class NetworkAnalyzer {
       score = 9;
       factors.push('server-error');
     } else if (xhr.status >= 400) {
-      score = 4; // Changed to 4 for medium level
+      score = 6; // Client errors should be medium severity (score 6)
       factors.push('client-error');
     } else if (xhr.status >= 300) {
       score = 3;
@@ -225,9 +232,9 @@ class NetworkAnalyzer {
     return {
       score,
       level:
-        score >= 8
+        score >= 9
           ? 'critical'
-          : score >= 6
+          : score >= 7
           ? 'high'
           : score >= 4
           ? 'medium'
@@ -243,7 +250,7 @@ class NetworkAnalyzer {
    * @returns {Object} Severity information
    */
   calculateErrorSeverity(error, _timing) {
-    let score = 8; // Network errors are generally high severity
+    let score = 8; // Network errors are generally high severity (score 8)
     const factors = ['network-failure'];
 
     const message = error.message.toLowerCase();
@@ -252,7 +259,7 @@ class NetworkAnalyzer {
       score = 7;
       factors.push('cors-issue');
     } else if (message.includes('timeout')) {
-      score = 4; // Changed to 4 for medium level
+      score = 6; // Timeout errors should be high severity
       factors.push('timeout');
     } else if (message.includes('abort')) {
       score = 4;
@@ -262,9 +269,9 @@ class NetworkAnalyzer {
     return {
       score,
       level:
-        score >= 8
+        score >= 9
           ? 'critical'
-          : score >= 6
+          : score >= 7
           ? 'high'
           : score >= 4
           ? 'medium'
@@ -291,7 +298,9 @@ class NetworkAnalyzer {
       url.includes('/api/') ||
       url.includes('/v1/') ||
       url.includes('/v2/') ||
-      url.includes('/graphql')
+      url.includes('/graphql') ||
+      url.includes('api.') ||
+      url.includes('.api.')
     ) {
       tags.push('api');
     }
