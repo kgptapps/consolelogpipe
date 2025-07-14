@@ -79,8 +79,13 @@ jobs:
           echo "✅ Published @kansnpms/console-log-pipe-client"
           cd ../..
 
-          # Publish other packages when ready
-          # cd packages/cli && npm publish --access public && cd ../..
+          # Publish CLI package
+          cd packages/cli
+          npm publish --access public
+          echo "✅ Published @kansnpms/console-log-pipe-cli"
+          cd ../..
+
+          # Publish server package when ready
           # cd packages/server && npm publish --access public && cd ../..
 
           echo "🎉 All packages published successfully!"
