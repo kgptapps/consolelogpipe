@@ -8,15 +8,17 @@ const os = require('os');
 const ConfigManager = require('../../src/utils/ConfigManager');
 
 // Mock fs module
+const mockFs = {
+  mkdir: jest.fn(),
+  writeFile: jest.fn(),
+  readFile: jest.fn(),
+  readdir: jest.fn(),
+  unlink: jest.fn(),
+  stat: jest.fn(),
+};
+
 jest.mock('fs', () => ({
-  promises: {
-    mkdir: jest.fn(),
-    writeFile: jest.fn(),
-    readFile: jest.fn(),
-    readdir: jest.fn(),
-    unlink: jest.fn(),
-    stat: jest.fn(),
-  },
+  promises: mockFs,
 }));
 
 // Mock os module
@@ -29,19 +31,25 @@ jest.mock('os', () => ({
 describe('ConfigManager', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    // Reset all mock implementations
+    Object.values(mockFs).forEach(mock => {
+      if (typeof mock.mockResolvedValue === 'function') {
+        mock.mockResolvedValue();
+      }
+    });
   });
 
   describe('ensureConfigDir', () => {
     it('should create config directories successfully', async () => {
-      fs.mkdir.mockResolvedValue();
+      mockFs.mkdir.mockResolvedValue();
 
       await ConfigManager.ensureConfigDir();
 
-      expect(fs.mkdir).toHaveBeenCalledWith(
+      expect(mockFs.mkdir).toHaveBeenCalledWith(
         path.join('/mock/home', '.console-log-pipe'),
         { recursive: true }
       );
-      expect(fs.mkdir).toHaveBeenCalledWith(
+      expect(mockFs.mkdir).toHaveBeenCalledWith(
         path.join('/mock/home', '.console-log-pipe', 'servers'),
         { recursive: true }
       );
@@ -50,7 +58,7 @@ describe('ConfigManager', () => {
     it('should handle existing directories gracefully', async () => {
       const existsError = new Error('Directory exists');
       existsError.code = 'EEXIST';
-      fs.mkdir.mockRejectedValue(existsError);
+      mockFs.mkdir.mockRejectedValue(existsError);
 
       await expect(ConfigManager.ensureConfigDir()).resolves.not.toThrow();
     });
@@ -58,7 +66,7 @@ describe('ConfigManager', () => {
     it('should throw non-EEXIST errors', async () => {
       const otherError = new Error('Permission denied');
       otherError.code = 'EACCES';
-      fs.mkdir.mockRejectedValue(otherError);
+      mockFs.mkdir.mockRejectedValue(otherError);
 
       await expect(ConfigManager.ensureConfigDir()).rejects.toThrow(
         'Permission denied'
@@ -68,8 +76,8 @@ describe('ConfigManager', () => {
 
   describe('saveServerConfig', () => {
     it('should save server configuration successfully', async () => {
-      fs.mkdir.mockResolvedValue();
-      fs.writeFile.mockResolvedValue();
+      mockFs.mkdir.mockResolvedValue();
+      mockFs.writeFile.mockResolvedValue();
 
       const config = {
         appName: 'test-app',
@@ -79,8 +87,8 @@ describe('ConfigManager', () => {
 
       await ConfigManager.saveServerConfig('test-app', config);
 
-      expect(fs.mkdir).toHaveBeenCalled();
-      expect(fs.writeFile).toHaveBeenCalledWith(
+      expect(mockFs.mkdir).toHaveBeenCalled();
+      expect(mockFs.writeFile).toHaveBeenCalledWith(
         path.join(
           '/mock/home',
           '.console-log-pipe',
@@ -92,13 +100,13 @@ describe('ConfigManager', () => {
     });
 
     it('should add lastUpdated timestamp', async () => {
-      fs.mkdir.mockResolvedValue();
-      fs.writeFile.mockResolvedValue();
+      mockFs.mkdir.mockResolvedValue();
+      mockFs.writeFile.mockResolvedValue();
 
       const config = { appName: 'test-app' };
       await ConfigManager.saveServerConfig('test-app', config);
 
-      const writeCall = fs.writeFile.mock.calls[0];
+      const writeCall = mockFs.writeFile.mock.calls[0];
       const savedData = JSON.parse(writeCall[1]);
 
       expect(savedData.lastUpdated).toBeDefined();
@@ -114,11 +122,11 @@ describe('ConfigManager', () => {
         lastUpdated: '2023-01-01T00:00:00.000Z',
       };
 
-      fs.readFile.mockResolvedValue(JSON.stringify(mockConfig));
+      mockFs.readFile.mockResolvedValue(JSON.stringify(mockConfig));
 
       const result = await ConfigManager.getServerConfig('test-app');
 
-      expect(fs.readFile).toHaveBeenCalledWith(
+      expect(mockFs.readFile).toHaveBeenCalledWith(
         path.join(
           '/mock/home',
           '.console-log-pipe',
@@ -133,7 +141,7 @@ describe('ConfigManager', () => {
     it('should return null when file does not exist', async () => {
       const notFoundError = new Error('File not found');
       notFoundError.code = 'ENOENT';
-      fs.readFile.mockRejectedValue(notFoundError);
+      mockFs.readFile.mockRejectedValue(notFoundError);
 
       const result = await ConfigManager.getServerConfig('test-app');
 
@@ -143,7 +151,7 @@ describe('ConfigManager', () => {
     it('should throw non-ENOENT errors', async () => {
       const permissionError = new Error('Permission denied');
       permissionError.code = 'EACCES';
-      fs.readFile.mockRejectedValue(permissionError);
+      mockFs.readFile.mockRejectedValue(permissionError);
 
       await expect(ConfigManager.getServerConfig('test-app')).rejects.toThrow(
         'Permission denied'
@@ -151,7 +159,7 @@ describe('ConfigManager', () => {
     });
 
     it('should handle invalid JSON gracefully', async () => {
-      fs.readFile.mockResolvedValue('invalid json');
+      mockFs.readFile.mockResolvedValue('invalid json');
 
       await expect(ConfigManager.getServerConfig('test-app')).rejects.toThrow();
     });
@@ -159,8 +167,12 @@ describe('ConfigManager', () => {
 
   describe('getAllServerConfigs', () => {
     it('should return all server configurations', async () => {
-      fs.readdir.mockResolvedValue(['app1.json', 'app2.json', 'not-json.txt']);
-      fs.readFile
+      mockFs.readdir.mockResolvedValue([
+        'app1.json',
+        'app2.json',
+        'not-json.txt',
+      ]);
+      mockFs.readFile
         .mockResolvedValueOnce(JSON.stringify({ appName: 'app1' }))
         .mockResolvedValueOnce(JSON.stringify({ appName: 'app2' }));
 
@@ -172,7 +184,7 @@ describe('ConfigManager', () => {
     });
 
     it('should handle empty servers directory', async () => {
-      fs.readdir.mockResolvedValue([]);
+      mockFs.readdir.mockResolvedValue([]);
 
       const result = await ConfigManager.getAllServerConfigs();
 
@@ -182,7 +194,7 @@ describe('ConfigManager', () => {
     it('should handle directory read errors', async () => {
       const dirError = new Error('Directory not found');
       dirError.code = 'ENOENT';
-      fs.readdir.mockRejectedValue(dirError);
+      mockFs.readdir.mockRejectedValue(dirError);
 
       const result = await ConfigManager.getAllServerConfigs();
 
@@ -190,8 +202,8 @@ describe('ConfigManager', () => {
     });
 
     it('should skip files that fail to read', async () => {
-      fs.readdir.mockResolvedValue(['app1.json', 'corrupted.json']);
-      fs.readFile
+      mockFs.readdir.mockResolvedValue(['app1.json', 'corrupted.json']);
+      mockFs.readFile
         .mockResolvedValueOnce(JSON.stringify({ appName: 'app1' }))
         .mockRejectedValueOnce(new Error('Corrupted file'));
 
@@ -204,11 +216,11 @@ describe('ConfigManager', () => {
 
   describe('deleteServerConfig', () => {
     it('should delete server configuration successfully', async () => {
-      fs.unlink.mockResolvedValue();
+      mockFs.unlink.mockResolvedValue();
 
       await ConfigManager.deleteServerConfig('test-app');
 
-      expect(fs.unlink).toHaveBeenCalledWith(
+      expect(mockFs.unlink).toHaveBeenCalledWith(
         path.join('/mock/home', '.console-log-pipe', 'servers', 'test-app.json')
       );
     });
@@ -216,7 +228,7 @@ describe('ConfigManager', () => {
     it('should handle file not found gracefully', async () => {
       const notFoundError = new Error('File not found');
       notFoundError.code = 'ENOENT';
-      fs.unlink.mockRejectedValue(notFoundError);
+      mockFs.unlink.mockRejectedValue(notFoundError);
 
       await expect(
         ConfigManager.deleteServerConfig('test-app')
@@ -226,7 +238,7 @@ describe('ConfigManager', () => {
     it('should throw non-ENOENT errors', async () => {
       const permissionError = new Error('Permission denied');
       permissionError.code = 'EACCES';
-      fs.unlink.mockRejectedValue(permissionError);
+      mockFs.unlink.mockRejectedValue(permissionError);
 
       await expect(
         ConfigManager.deleteServerConfig('test-app')
@@ -237,7 +249,7 @@ describe('ConfigManager', () => {
   describe('getGlobalConfig', () => {
     it('should return global configuration when file exists', async () => {
       const mockConfig = { theme: 'dark', autoStart: true };
-      fs.readFile.mockResolvedValue(JSON.stringify(mockConfig));
+      mockFs.readFile.mockResolvedValue(JSON.stringify(mockConfig));
 
       const result = await ConfigManager.getGlobalConfig();
 
@@ -247,7 +259,7 @@ describe('ConfigManager', () => {
     it('should return default config when file does not exist', async () => {
       const notFoundError = new Error('File not found');
       notFoundError.code = 'ENOENT';
-      fs.readFile.mockRejectedValue(notFoundError);
+      mockFs.readFile.mockRejectedValue(notFoundError);
 
       const result = await ConfigManager.getGlobalConfig();
 
@@ -262,13 +274,13 @@ describe('ConfigManager', () => {
 
   describe('saveGlobalConfig', () => {
     it('should save global configuration successfully', async () => {
-      fs.mkdir.mockResolvedValue();
-      fs.writeFile.mockResolvedValue();
+      mockFs.mkdir.mockResolvedValue();
+      mockFs.writeFile.mockResolvedValue();
 
       const config = { theme: 'dark', autoStart: true };
       await ConfigManager.saveGlobalConfig(config);
 
-      expect(fs.writeFile).toHaveBeenCalledWith(
+      expect(mockFs.writeFile).toHaveBeenCalledWith(
         path.join('/mock/home', '.console-log-pipe', 'config.json'),
         expect.stringContaining('"theme": "dark"')
       );
@@ -278,15 +290,15 @@ describe('ConfigManager', () => {
   describe('updateServerStatus', () => {
     it('should update server status', async () => {
       const mockConfig = { appName: 'test-app', port: 3001 };
-      fs.readFile.mockResolvedValue(JSON.stringify(mockConfig));
-      fs.mkdir.mockResolvedValue();
-      fs.writeFile.mockResolvedValue();
+      mockFs.readFile.mockResolvedValue(JSON.stringify(mockConfig));
+      mockFs.mkdir.mockResolvedValue();
+      mockFs.writeFile.mockResolvedValue();
 
       await ConfigManager.updateServerStatus('test-app', 'running', {
         uptime: 1000,
       });
 
-      expect(fs.writeFile).toHaveBeenCalled();
+      expect(mockFs.writeFile).toHaveBeenCalled();
     });
   });
 });
