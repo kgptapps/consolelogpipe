@@ -766,34 +766,33 @@ describe('LogCapture', () => {
       JSON.stringify = originalStringify;
     });
 
-    it('should handle errors in handleLog and call original console.error', () => {
+    it('should handle errors in interceptor and call original console.error', () => {
       const capture = new LogCapture({ applicationName: 'test-app' });
       const mockConsoleError = jest.fn();
 
       // Store original console.error and replace with mock
       const originalError = console.error;
       console.error = mockConsoleError;
-      capture.originalConsole.error = mockConsoleError;
 
-      // Mock _createLogEntry to throw an error
-      const originalCreateLogEntry = capture._createLogEntry;
-      capture._createLogEntry = jest.fn(() => {
-        throw new Error('Test error in handleLog');
+      // Mock the interceptor's createLogEntry to throw an error
+      const originalCreateLogEntry = capture.interceptor.createLogEntry;
+      capture.interceptor.createLogEntry = jest.fn(() => {
+        throw new Error('Test error in interceptor');
       });
 
       capture.start();
 
-      // This should trigger the error handling in handleLog
+      // This should trigger the error handling in interceptor
       console.log('test message that will cause error');
 
-      // Should have called the original console.error
+      // Should have called the original console.error with LogInterceptor error
       expect(mockConsoleError).toHaveBeenCalledWith(
-        'LogCapture error:',
+        'LogInterceptor error:',
         expect.any(Error)
       );
 
       // Restore everything
-      capture._createLogEntry = originalCreateLogEntry;
+      capture.interceptor.createLogEntry = originalCreateLogEntry;
       console.error = originalError;
       capture.stop();
     });
@@ -844,6 +843,446 @@ describe('LogCapture', () => {
       } else {
         delete global.window;
       }
+    });
+  });
+
+  describe('Public API Methods', () => {
+    let capture;
+
+    beforeEach(() => {
+      capture = new LogCapture({ applicationName: 'test-app' });
+      capture.start();
+
+      // Add some test logs
+      console.log('Test message 1');
+      console.error('Error message');
+      console.warn('Warning message');
+      console.info('Info message');
+    });
+
+    afterEach(() => {
+      capture.stop();
+    });
+
+    describe('getLogSummary', () => {
+      it('should return log summary', () => {
+        const summary = capture.getLogSummary();
+
+        expect(summary).toHaveProperty('total');
+        expect(summary).toHaveProperty('byLevel');
+        expect(summary).toHaveProperty('byCategory');
+        expect(summary).toHaveProperty('bySeverity');
+        expect(summary.total).toBeGreaterThan(0);
+      });
+    });
+
+    describe('filterLogs', () => {
+      it('should filter logs by level', () => {
+        const filtered = capture.filterLogs({ levels: ['error'] });
+
+        expect(Array.isArray(filtered)).toBe(true);
+        if (filtered.length > 0) {
+          expect(filtered.every(log => log.level === 'error')).toBe(true);
+        }
+      });
+
+      it('should filter logs by application', () => {
+        const filtered = capture.filterLogs({ applications: ['test-app'] });
+
+        expect(Array.isArray(filtered)).toBe(true);
+        if (filtered.length > 0) {
+          expect(
+            filtered.every(log => log.application?.name === 'test-app')
+          ).toBe(true);
+        }
+      });
+
+      it('should return all logs when no filters provided', () => {
+        const filtered = capture.filterLogs();
+
+        expect(Array.isArray(filtered)).toBe(true);
+        expect(filtered).toHaveLength(capture.logQueue.length);
+      });
+    });
+
+    describe('exportLogs', () => {
+      it('should export logs in JSON format by default', () => {
+        const exported = capture.exportLogs();
+
+        expect(Array.isArray(exported)).toBe(true);
+        if (exported.length > 0) {
+          expect(typeof exported[0]).toBe('string');
+          expect(() => JSON.parse(exported[0])).not.toThrow();
+        }
+      });
+
+      it('should export logs in console format', () => {
+        const exported = capture.exportLogs('console');
+
+        expect(Array.isArray(exported)).toBe(true);
+        if (exported.length > 0) {
+          expect(typeof exported[0]).toBe('string');
+          expect(exported[0]).toContain('[test-app]');
+        }
+      });
+
+      it('should export logs in transmission format', () => {
+        const exported = capture.exportLogs('transmission');
+
+        expect(Array.isArray(exported)).toBe(true);
+        if (exported.length > 0) {
+          expect(typeof exported[0]).toBe('object');
+          expect(exported[0]).toHaveProperty('transmission');
+        }
+      });
+
+      it('should default to JSON for unknown format', () => {
+        const exported = capture.exportLogs('unknown');
+
+        expect(Array.isArray(exported)).toBe(true);
+        if (exported.length > 0) {
+          expect(typeof exported[0]).toBe('string');
+          expect(() => JSON.parse(exported[0])).not.toThrow();
+        }
+      });
+    });
+  });
+
+  describe('Filter Management', () => {
+    let capture;
+
+    beforeEach(() => {
+      capture = new LogCapture({ applicationName: 'test-app' });
+      capture.start();
+    });
+
+    afterEach(() => {
+      capture.stop();
+    });
+
+    describe('addFilter', () => {
+      it('should add exclude filter', () => {
+        capture.addFilter('exclude', 'password');
+
+        const filters = capture.getFilters();
+        expect(filters.excludePatterns).toContain('password');
+      });
+
+      it('should add include filter', () => {
+        capture.addFilter('include', 'important');
+
+        const filters = capture.getFilters();
+        expect(filters.includePatterns).toContain('important');
+      });
+    });
+
+    describe('removeFilter', () => {
+      beforeEach(() => {
+        capture.addFilter('exclude', 'password');
+        capture.addFilter('include', 'important');
+      });
+
+      it('should remove exclude filter', () => {
+        capture.removeFilter('exclude', 'password');
+
+        const filters = capture.getFilters();
+        expect(filters.excludePatterns).not.toContain('password');
+      });
+
+      it('should remove include filter', () => {
+        capture.removeFilter('include', 'important');
+
+        const filters = capture.getFilters();
+        expect(filters.includePatterns).not.toContain('important');
+      });
+    });
+
+    describe('clearFilters', () => {
+      beforeEach(() => {
+        capture.addFilter('exclude', 'password');
+        capture.addFilter('include', 'important');
+        capture.setLevelFilter(['error']);
+      });
+
+      it('should clear all filters by default', () => {
+        capture.clearFilters();
+
+        const filters = capture.getFilters();
+        expect(filters.excludePatterns).toEqual([]);
+        expect(filters.includePatterns).toEqual([]);
+        expect(filters.levels).toBeNull();
+      });
+
+      it('should clear specific filter type', () => {
+        capture.clearFilters('exclude');
+
+        const filters = capture.getFilters();
+        expect(filters.excludePatterns).toEqual([]);
+        expect(filters.includePatterns).toContain('important');
+        expect(filters.levels).toEqual(['error']);
+      });
+    });
+
+    describe('setLevelFilter', () => {
+      it('should set level filter', () => {
+        capture.setLevelFilter(['error', 'warn']);
+
+        const filters = capture.getFilters();
+        expect(filters.levels).toEqual(['error', 'warn']);
+      });
+
+      it('should clear level filter when set to null', () => {
+        capture.setLevelFilter(['error']);
+        capture.setLevelFilter(null);
+
+        const filters = capture.getFilters();
+        expect(filters.levels).toBeNull();
+      });
+    });
+
+    describe('getFilters', () => {
+      it('should return current filter configuration', () => {
+        capture.addFilter('exclude', 'test');
+        capture.setLevelFilter(['error']);
+
+        const filters = capture.getFilters();
+
+        expect(filters).toHaveProperty('excludePatterns');
+        expect(filters).toHaveProperty('includePatterns');
+        expect(filters).toHaveProperty('levels');
+        expect(filters.excludePatterns).toContain('test');
+        expect(filters.levels).toEqual(['error']);
+      });
+    });
+  });
+
+  describe('Legacy Compatibility Methods', () => {
+    let capture;
+
+    beforeEach(() => {
+      capture = new LogCapture({ applicationName: 'test-app' });
+      capture.start();
+    });
+
+    afterEach(() => {
+      capture.stop();
+    });
+
+    describe('handleLog', () => {
+      it('should be a legacy compatibility method that works without errors', () => {
+        // Verify the interceptor has the handleLog method
+        expect(typeof capture.interceptor.handleLog).toBe('function');
+
+        // Test that the legacy method can be called without throwing
+        expect(() => {
+          capture.handleLog('info', ['test message']);
+        }).not.toThrow();
+
+        // Test with different log levels
+        expect(() => {
+          capture.handleLog('error', ['error message']);
+          capture.handleLog('warn', ['warn message']);
+          capture.handleLog('debug', ['debug message']);
+        }).not.toThrow();
+      });
+    });
+
+    describe('_shouldCapture', () => {
+      it('should delegate to interceptor shouldCapture', () => {
+        const spy = jest.spyOn(capture.interceptor, 'shouldCapture');
+
+        capture._shouldCapture('info', ['test message']);
+
+        expect(spy).toHaveBeenCalledWith('info', ['test message']);
+      });
+    });
+
+    describe('_createLogEntry', () => {
+      it('should create log entry successfully', () => {
+        const entry = capture._createLogEntry('info', ['test message']);
+
+        expect(entry).toHaveProperty('level', 'info');
+        expect(entry).toHaveProperty('message');
+        expect(entry).toHaveProperty('timestamp');
+      });
+
+      it('should handle errors gracefully', () => {
+        const mockError = new Error('Test error');
+        jest
+          .spyOn(capture.formatter, 'createLogEntry')
+          .mockImplementation(() => {
+            throw mockError;
+          });
+
+        const mockConsoleError = jest.fn();
+        capture.originalConsole = { error: mockConsoleError };
+
+        const entry = capture._createLogEntry('info', ['test message']);
+
+        expect(entry).toHaveProperty('level', 'info');
+        expect(entry).toHaveProperty('message', '[Error creating log entry]');
+        expect(entry).toHaveProperty('error', 'Test error');
+        expect(mockConsoleError).toHaveBeenCalledWith(
+          'LogCapture error:',
+          mockError
+        );
+      });
+
+      it('should handle errors when no originalConsole available', () => {
+        const mockError = new Error('Test error');
+        jest
+          .spyOn(capture.formatter, 'createLogEntry')
+          .mockImplementation(() => {
+            throw mockError;
+          });
+
+        capture.originalConsole = null;
+
+        const entry = capture._createLogEntry('info', ['test message']);
+
+        expect(entry).toHaveProperty('level', 'info');
+        expect(entry).toHaveProperty('message', '[Error creating log entry]');
+        expect(entry).toHaveProperty('error', 'Test error');
+      });
+    });
+  });
+
+  describe('Utility Wrapper Methods', () => {
+    let capture;
+
+    beforeEach(() => {
+      capture = new LogCapture({ applicationName: 'test-app' });
+    });
+
+    it('should delegate _argsToString to LogUtils', () => {
+      const result = capture._argsToString(['test', 123]);
+      expect(typeof result).toBe('string');
+    });
+
+    it('should delegate _serializeArgs to LogUtils', () => {
+      const result = capture._serializeArgs(['test', { key: 'value' }]);
+      expect(Array.isArray(result)).toBe(true);
+    });
+
+    it('should delegate _circularReplacer to LogUtils', () => {
+      const replacer = capture._circularReplacer();
+      expect(typeof replacer).toBe('function');
+    });
+
+    it('should delegate _collectEnhancedMetadata to LogUtils', () => {
+      const metadata = capture._collectEnhancedMetadata();
+      expect(typeof metadata).toBe('object');
+    });
+
+    it('should delegate _collectMetadata to LogUtils', () => {
+      const metadata = capture._collectMetadata();
+      expect(typeof metadata).toBe('object');
+    });
+
+    it('should delegate _categorizeLog to formatter analyzer', () => {
+      const category = capture._categorizeLog('error', 'test error', []);
+      expect(typeof category).toBe('string');
+    });
+
+    it('should delegate _calculateSeverity to formatter analyzer', () => {
+      const severity = capture._calculateSeverity('error', 'test error', []);
+      expect(typeof severity).toBe('object');
+      expect(severity).toHaveProperty('level');
+      expect(severity).toHaveProperty('score');
+    });
+
+    it('should delegate _getSeverityDescription to formatter analyzer', () => {
+      const description = capture._getSeverityDescription('error');
+      expect(typeof description).toBe('string');
+    });
+
+    it('should delegate _getLogSize to LogUtils', () => {
+      const size = capture._getLogSize({ message: 'test' });
+      expect(typeof size).toBe('number');
+    });
+
+    it('should delegate _notifyListeners to notifyListeners', () => {
+      const spy = jest.spyOn(capture, 'notifyListeners');
+      const logEntry = { level: 'info', message: 'test' };
+
+      capture._notifyListeners(logEntry);
+
+      expect(spy).toHaveBeenCalledWith(logEntry);
+    });
+
+    it('should delegate _generateSessionId to LogUtils', () => {
+      const sessionId = capture._generateSessionId();
+      expect(typeof sessionId).toBe('string');
+    });
+
+    it('should delegate _getApplicationPort to LogUtils', () => {
+      const port = capture._getApplicationPort('test-app');
+      expect(typeof port).toBe('number');
+    });
+
+    it('should delegate _detectEnvironment to LogUtils', () => {
+      const env = capture._detectEnvironment();
+      expect(typeof env).toBe('string');
+    });
+
+    it('should delegate _detectDeveloper to LogUtils', () => {
+      const dev = capture._detectDeveloper();
+      expect(dev === null || typeof dev === 'string').toBe(true);
+    });
+
+    it('should delegate _detectBranch to LogUtils', () => {
+      const branch = capture._detectBranch();
+      expect(branch === null || typeof branch === 'string').toBe(true);
+    });
+
+    it('should delegate _generateAITags to formatter analyzer', () => {
+      const tags = capture._generateAITags('error', 'test error', []);
+      expect(Array.isArray(tags)).toBe(true);
+    });
+
+    it('should delegate _analyzeError to formatter analyzer', () => {
+      const analysis = capture._analyzeError('test error', []);
+      expect(typeof analysis).toBe('object');
+    });
+
+    it('should delegate _initializeErrorCategories to formatter analyzer', () => {
+      const categories = capture._initializeErrorCategories();
+      expect(typeof categories).toBe('object');
+    });
+
+    it('should delegate _collectPerformanceMetrics to LogUtils', () => {
+      const metrics = capture._collectPerformanceMetrics();
+      expect(typeof metrics).toBe('object');
+    });
+
+    it('should delegate _parseStackTrace to LogUtils', () => {
+      const stack = 'Error\n    at test';
+      const parsed = capture._parseStackTrace(stack);
+      expect(Array.isArray(parsed)).toBe(true);
+    });
+
+    it('should delegate _logSessionInfo to logSessionInfo', () => {
+      const spy = jest.spyOn(capture, 'logSessionInfo');
+
+      capture._logSessionInfo();
+
+      expect(spy).toHaveBeenCalled();
+    });
+
+    it('should delegate _interceptConsole to interceptor', () => {
+      const spy = jest.spyOn(capture.interceptor, 'interceptConsole');
+
+      capture._interceptConsole();
+
+      expect(spy).toHaveBeenCalled();
+    });
+
+    it('should delegate _restoreConsole to interceptor', () => {
+      const spy = jest.spyOn(capture.interceptor, 'restoreConsole');
+
+      capture._restoreConsole();
+
+      expect(spy).toHaveBeenCalled();
     });
   });
 });
