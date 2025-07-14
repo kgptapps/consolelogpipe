@@ -215,6 +215,86 @@ describe('NetworkInterceptor', () => {
         })
       );
     });
+
+    it('should handle fetch errors and capture error data', async () => {
+      const error = new Error('Network error');
+      interceptor.setupFetchInterception();
+      interceptor.originalFetch = jest.fn().mockRejectedValue(error);
+
+      let caughtError;
+      try {
+        await global.window.fetch('https://api.example.com/users', {
+          method: 'POST',
+          body: JSON.stringify({ name: 'John' }),
+        });
+      } catch (e) {
+        caughtError = e;
+      }
+
+      expect(caughtError).toBe(error);
+      expect(mockFormatter.createRequestEntry).toHaveBeenCalled();
+      expect(mockFormatter.createErrorEntry).toHaveBeenCalledWith(
+        'req-123',
+        error,
+        expect.objectContaining({
+          url: 'https://api.example.com/users',
+          method: 'POST',
+        })
+      );
+      expect(mockOnNetworkData).toHaveBeenCalledTimes(2); // Request + Error
+    });
+
+    it('should handle fetch errors with Request object input', async () => {
+      const error = new Error('Network error');
+      const request = { url: 'https://api.example.com/users' };
+      interceptor.setupFetchInterception();
+      interceptor.originalFetch = jest.fn().mockRejectedValue(error);
+
+      let caughtError;
+      try {
+        await global.window.fetch(request, { method: 'PUT' });
+      } catch (e) {
+        caughtError = e;
+      }
+
+      expect(caughtError).toBe(error);
+      expect(mockFormatter.createErrorEntry).toHaveBeenCalledWith(
+        'req-123',
+        error,
+        expect.objectContaining({
+          url: 'https://api.example.com/users',
+          method: 'PUT',
+        })
+      );
+    });
+
+    it('should track active requests and clean up after completion', async () => {
+      const mockResponse = { ok: true, status: 200 };
+      interceptor.originalFetch = jest.fn().mockResolvedValue(mockResponse);
+      interceptor.setupFetchInterception();
+
+      expect(interceptor.activeRequests.size).toBe(0);
+
+      await global.window.fetch('https://api.example.com/users');
+
+      expect(interceptor.activeRequests.size).toBe(0); // Should be cleaned up
+    });
+
+    it('should track active requests and clean up after error', async () => {
+      const error = new Error('Network error');
+      interceptor.originalFetch = jest.fn().mockRejectedValue(error);
+      interceptor.setupFetchInterception();
+
+      expect(interceptor.activeRequests.size).toBe(0);
+
+      try {
+        await global.window.fetch('https://api.example.com/users');
+      } catch (e) {
+        // Expected error
+      }
+
+      expect(interceptor.activeRequests.size).toBe(0); // Should be cleaned up
+    });
   });
 
   describe('setupXHRInterception', () => {
@@ -290,6 +370,213 @@ describe('NetworkInterceptor', () => {
       // Verify interception is set up even for excluded URLs
       expect(interceptor.originalXHROpen).toBeDefined();
       expect(interceptor.originalXHRSend).toBeDefined();
+    });
+
+    it('should properly intercept XHR open method with all parameters', () => {
+      interceptor.setupXHRInterception();
+
+      const xhr = new global.XMLHttpRequest();
+
+      // Call the intercepted open method
+      global.XMLHttpRequest.prototype.open.call(
+        xhr,
+        'POST',
+        'https://api.example.com/users',
+        true,
+        'user',
+        'pass'
+      );
+
+      expect(xhr._networkCapture).toEqual({
+        requestId: 'xhr-123',
+        method: 'POST',
+        url: 'https://api.example.com/users',
+        async: true,
+        startTime: null,
+      });
+    });
+
+    it('should handle XHR send with network capture metadata', () => {
+      interceptor.setupXHRInterception();
+
+      const xhr = new global.XMLHttpRequest();
+      xhr._networkCapture = {
+        requestId: 'xhr-123',
+        method: 'POST',
+        url: 'https://api.example.com/users',
+        startTime: null,
+      };
+
+      // Call the intercepted send method
+      global.XMLHttpRequest.prototype.send.call(xhr, '{"name": "John"}');
+
+      expect(mockFormatter.createRequestEntry).toHaveBeenCalledWith(
+        'xhr-123',
+        expect.objectContaining({
+          url: 'https://api.example.com/users',
+          method: 'POST',
+          body: '{"name": "John"}',
+          type: 'xhr',
+        })
+      );
+      expect(mockOnNetworkData).toHaveBeenCalled();
+      expect(interceptor.activeRequests.has('xhr-123')).toBe(true);
+    });
+
+    it('should handle XHR send without network capture metadata', () => {
+      interceptor.setupXHRInterception();
+
+      const xhr = new global.XMLHttpRequest();
+      // No _networkCapture property
+
+      // Call the intercepted send method
+      global.XMLHttpRequest.prototype.send.call(xhr, '{"name": "John"}');
+
+      // Should call the original send method
+      expect(interceptor.originalXHRSend).toHaveBeenCalledWith(
+        '{"name": "John"}'
+      );
+      expect(mockFormatter.createRequestEntry).not.toHaveBeenCalled();
+    });
+
+    it('should skip XHR send for excluded URLs', () => {
+      const NetworkUtils = require('../../../src/core/network/NetworkUtils');
+      jest.spyOn(NetworkUtils, 'shouldCaptureUrl').mockReturnValue(false);
+
+      interceptor.setupXHRInterception();
+
+      const xhr = new global.XMLHttpRequest();
+      xhr._networkCapture = {
+        requestId: 'xhr-123',
+        method: 'GET',
+        url: 'https://excluded.com/api',
+        startTime: null,
+      };
+
+      // Call the intercepted send method
+      global.XMLHttpRequest.prototype.send.call(xhr);
+
+      // Should call the original send method
+      expect(interceptor.originalXHRSend).toHaveBeenCalled();
+      expect(mockFormatter.createRequestEntry).not.toHaveBeenCalled();
+    });
+
+    it('should handle XHR response completion successfully', () => {
+      interceptor.setupXHRInterception();
+
+      const xhr = new global.XMLHttpRequest();
+      xhr._networkCapture = {
+        requestId: 'xhr-123',
+        method: 'GET',
+        url: 'https://api.example.com/users',
+        startTime: 1000,
+      };
+
+      // Call the intercepted send method to set up the response handler
+      global.XMLHttpRequest.prototype.send.call(xhr);
+
+      // Simulate response completion
+      xhr.readyState = 4; // XMLHttpRequest.DONE
+      if (xhr.onreadystatechange) {
+        xhr.onreadystatechange();
+      }
+
+      expect(mockFormatter.createXHRResponseEntry).toHaveBeenCalledWith(
+        'xhr-123',
+        xhr,
+        expect.objectContaining({
+          url: 'https://api.example.com/users',
+          method: 'GET',
+        })
+      );
+      expect(mockOnNetworkData).toHaveBeenCalledTimes(2); // Request + Response
+      expect(interceptor.activeRequests.has('xhr-123')).toBe(false);
+    });
+
+    it('should handle XHR response errors during processing', () => {
+      mockFormatter.createXHRResponseEntry.mockImplementation(() => {
+        throw new Error('Response processing error');
+      });
+
+      interceptor.setupXHRInterception();
+
+      const xhr = new global.XMLHttpRequest();
+      xhr._networkCapture = {
+        requestId: 'xhr-123',
+        method: 'GET',
+        url: 'https://api.example.com/users',
+        startTime: 1000,
+      };
+
+      // Call the intercepted send method to set up the response handler
+      global.XMLHttpRequest.prototype.send.call(xhr);
+
+      // Simulate response completion with error
+      xhr.readyState = 4; // XMLHttpRequest.DONE
+      if (xhr.onreadystatechange) {
+        xhr.onreadystatechange();
+      }
+
+      expect(mockFormatter.createErrorEntry).toHaveBeenCalledWith(
+        'xhr-123',
+        expect.any(Error),
+        expect.objectContaining({
+          url: 'https://api.example.com/users',
+          method: 'GET',
+        })
+      );
+      expect(interceptor.activeRequests.has('xhr-123')).toBe(false);
+    });
+
+    it('should preserve original onreadystatechange handler', () => {
+      const originalHandler = jest.fn();
+      interceptor.setupXHRInterception();
+
+      const xhr = new global.XMLHttpRequest();
+      xhr._networkCapture = {
+        requestId: 'xhr-123',
+        method: 'GET',
+        url: 'https://api.example.com/users',
+        startTime: 1000,
+      };
+
+      xhr.onreadystatechange = originalHandler;
+
+      // Call the intercepted send method to set up the response handler
+      global.XMLHttpRequest.prototype.send.call(xhr);
+
+      // Simulate response completion
+      xhr.readyState = 4; // XMLHttpRequest.DONE
+      if (xhr.onreadystatechange) {
+        xhr.onreadystatechange();
+      }
+
+      expect(originalHandler).toHaveBeenCalled();
+      expect(mockFormatter.createXHRResponseEntry).toHaveBeenCalled();
+    });
+
+    it('should handle XHR readyState changes other than DONE', () => {
+      interceptor.setupXHRInterception();
+
+      const xhr = new global.XMLHttpRequest();
+      xhr._networkCapture = {
+        requestId: 'xhr-123',
+        method: 'GET',
+        url: 'https://api.example.com/users',
+        startTime: 1000,
+      };
+
+      // Call the intercepted send method to set up the response handler
+      global.XMLHttpRequest.prototype.send.call(xhr);
+
+      // Simulate readyState change that's not DONE
+      xhr.readyState = 2; // HEADERS_RECEIVED
+      if (xhr.onreadystatechange) {
+        xhr.onreadystatechange();
+      }
+
+      expect(mockFormatter.createXHRResponseEntry).not.toHaveBeenCalled();
+      expect(interceptor.activeRequests.has('xhr-123')).toBe(true);
     });
   });
 
