@@ -3,10 +3,8 @@
  */
 
 const chalk = require('chalk');
-const TableFormatter = require('../../src/utils/TableFormatter');
-
 // Mock chalk
-const mockChalk = {
+jest.mock('chalk', () => ({
   cyan: Object.assign(
     jest.fn(text => `CYAN(${text})`),
     {
@@ -25,9 +23,9 @@ const mockChalk = {
     }
   ),
   bold: jest.fn(text => `BOLD(${text})`),
-};
+}));
 
-jest.mock('chalk', () => mockChalk);
+const TableFormatter = require('../../src/utils/TableFormatter');
 
 // Mock console.log to capture output
 let mockConsoleLog;
