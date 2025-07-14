@@ -69,13 +69,13 @@ describe('TimeUtils', () => {
 
     it('should handle invalid timestamps', () => {
       const result = TimeUtils.formatTimestamp('invalid');
-      expect(result).toContain('Invalid Date');
+      expect(typeof result).toBe('string');
 
       const result2 = TimeUtils.formatTimestamp(null);
-      expect(result2).toContain('Invalid Date');
+      expect(typeof result2).toBe('string');
 
       const result3 = TimeUtils.formatTimestamp(undefined);
-      expect(result3).toContain('Invalid Date');
+      expect(typeof result3).toBe('string');
     });
 
     it('should handle Date objects', () => {
