@@ -322,7 +322,7 @@ class NetworkCapture {
   }
 
   _sanitizeBody(body) {
-    return this.sanitizer.sanitizeBody(body);
+    return this.sanitizer.sanitizeBody(body, this.options);
   }
 
   _sanitizeUrl(url) {

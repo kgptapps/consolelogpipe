@@ -255,7 +255,7 @@ class LogUtils {
           used: performance.memory.usedJSHeapSize,
           total: performance.memory.totalJSHeapSize,
           limit: performance.memory.jsHeapSizeLimit,
-          percentage: Math.round(
+          usage: Math.round(
             (performance.memory.usedJSHeapSize /
               performance.memory.totalJSHeapSize) *
               100
@@ -301,7 +301,7 @@ class LogUtils {
         }
       }
     } catch (error) {
-      metrics.error = error.message;
+      metrics.error = 'Performance metrics collection failed';
     }
 
     return metrics;

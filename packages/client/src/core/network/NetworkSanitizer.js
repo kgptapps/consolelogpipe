@@ -73,9 +73,12 @@ class NetworkSanitizer {
   /**
    * Sanitize request/response body
    * @param {any} body - Body to sanitize
+   * @param {Object} options - Override options
    * @returns {string|null} Sanitized body
    */
-  sanitizeBody(body) {
+  sanitizeBody(body, options = {}) {
+    // Use passed options or fall back to instance options
+    const effectiveOptions = { ...this.options, ...options };
     if (!body) {
       return null;
     }
@@ -106,10 +109,10 @@ class NetworkSanitizer {
     }
 
     // Limit body size
-    if (bodyString.length > this.options.maxBodySize) {
+    if (bodyString.length > effectiveOptions.maxBodySize) {
       return `${bodyString.substring(
         0,
-        this.options.maxBodySize
+        effectiveOptions.maxBodySize
       )}...[TRUNCATED]`;
     }
 

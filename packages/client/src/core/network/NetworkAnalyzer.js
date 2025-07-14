@@ -29,7 +29,13 @@ class NetworkAnalyzer {
     }
 
     // API requests
-    if (url.includes('/api/') || url.includes('/v1/') || url.includes('/v2/')) {
+    if (
+      url.includes('/api/') ||
+      url.includes('/v1/') ||
+      url.includes('/v2/') ||
+      url.includes('api.') ||
+      url.includes('.api.')
+    ) {
       return 'API Request';
     }
 

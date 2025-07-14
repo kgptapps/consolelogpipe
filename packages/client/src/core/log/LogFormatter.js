@@ -48,6 +48,7 @@ class LogFormatter {
         environment: this.options.environment,
         developer: this.options.developer,
         branch: this.options.branch,
+        port: this.options.serverPort,
       },
 
       // AI-friendly categorization
