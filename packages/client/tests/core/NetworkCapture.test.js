@@ -1147,4 +1147,424 @@ describe('NetworkCapture', () => {
       expect(entry.performance).toBeNull();
     });
   });
+
+  describe('Edge Cases and Error Handling', () => {
+    test('should handle missing fetch API gracefully', () => {
+      const originalFetch = global.window.fetch;
+      delete global.window.fetch;
+
+      networkCapture.start();
+
+      // Should not throw error
+      expect(networkCapture.isCapturing).toBe(true);
+
+      global.window.fetch = originalFetch;
+    });
+
+    test('should handle missing XMLHttpRequest gracefully', () => {
+      const originalXHR = global.XMLHttpRequest;
+      delete global.XMLHttpRequest;
+
+      networkCapture.start();
+
+      // Should not throw error
+      expect(networkCapture.isCapturing).toBe(true);
+
+      global.XMLHttpRequest = originalXHR;
+    });
+
+    test('should handle body serialization errors', () => {
+      const circularObj = {};
+      circularObj.self = circularObj;
+
+      const sanitized = networkCapture._sanitizeBody(circularObj);
+
+      expect(sanitized).toContain('[Unserializable body:');
+    });
+
+    test('should handle Blob bodies', () => {
+      const blob = new Blob(['test data'], { type: 'text/plain', size: 9 });
+
+      const sanitized = networkCapture._sanitizeBody(blob);
+
+      expect(sanitized).toBe('[Blob: 9 bytes, type: text/plain]');
+    });
+
+    test('should handle empty header strings', () => {
+      const mockXHR = {
+        getAllRequestHeaders: jest.fn(() => ''),
+        getAllResponseHeaders: jest.fn(() => ''),
+      };
+
+      const requestHeaders = networkCapture._getXHRHeaders(mockXHR);
+      const responseHeaders = networkCapture._getXHRResponseHeaders(mockXHR);
+
+      expect(requestHeaders).toEqual({});
+      expect(responseHeaders).toEqual({});
+    });
+
+    test('should handle malformed header strings', () => {
+      const mockXHR = {
+        getAllResponseHeaders: jest.fn(
+          () => 'malformed-header-without-colon\r\n'
+        ),
+      };
+
+      const headers = networkCapture._getXHRResponseHeaders(mockXHR);
+
+      expect(headers).toEqual({});
+    });
+
+    test('should handle XHR response header errors', () => {
+      const mockXHR = {
+        getAllResponseHeaders: jest.fn(() => {
+          throw new Error('Headers not available');
+        }),
+      };
+
+      const headers = networkCapture._getXHRResponseHeaders(mockXHR);
+
+      expect(headers).toEqual({});
+    });
+
+    test('should handle missing content-type in XHR response body capture', () => {
+      const mockXHR = {
+        getResponseHeader: jest.fn(() => null),
+      };
+
+      const shouldCapture =
+        networkCapture._shouldCaptureXHRResponseBody(mockXHR);
+
+      expect(shouldCapture).toBe(true);
+    });
+
+    test('should handle audio content-type in response body capture', () => {
+      const response = {
+        headers: { get: () => 'audio/mp3' },
+      };
+
+      const shouldCapture = networkCapture._shouldCaptureResponseBody(response);
+
+      expect(shouldCapture).toBe(false);
+    });
+
+    test('should handle video content-type in XHR response body capture', () => {
+      const mockXHR = {
+        getResponseHeader: jest.fn(() => 'video/mp4'),
+      };
+
+      const shouldCapture =
+        networkCapture._shouldCaptureXHRResponseBody(mockXHR);
+
+      expect(shouldCapture).toBe(false);
+    });
+
+    test('should handle missing performance.memory', () => {
+      const originalMemory = global.performance.memory;
+      delete global.performance.memory;
+
+      const metrics = networkCapture._collectPerformanceMetrics();
+
+      expect(metrics.memory).toBeUndefined();
+      expect(metrics.timing).toBeDefined();
+
+      global.performance.memory = originalMemory;
+    });
+
+    test('should handle string include patterns in URL filtering', () => {
+      networkCapture.options.includeUrls = ['api.example.com'];
+
+      expect(
+        networkCapture._shouldCaptureUrl('https://api.example.com/data')
+      ).toBe(true);
+      expect(networkCapture._shouldCaptureUrl('https://other.com/data')).toBe(
+        false
+      );
+    });
+
+    test('should handle string exclude patterns in URL filtering', () => {
+      networkCapture.options.excludeUrls = ['analytics'];
+
+      expect(
+        networkCapture._shouldCaptureUrl('https://analytics.example.com/track')
+      ).toBe(false);
+      expect(
+        networkCapture._shouldCaptureUrl('https://api.example.com/data')
+      ).toBe(true);
+    });
+  });
+
+  describe('Comprehensive Categorization Tests', () => {
+    test('should categorize data fetch requests', () => {
+      const requestData = { url: 'https://example.com/users', method: 'GET' };
+      const category = networkCapture._categorizeRequest(requestData);
+      expect(category).toBe('Data Fetch');
+    });
+
+    test('should categorize HTTP requests as fallback', () => {
+      const requestData = {
+        url: 'https://example.com/unknown',
+        method: 'OPTIONS',
+      };
+      const category = networkCapture._categorizeRequest(requestData);
+      expect(category).toBe('HTTP Request');
+    });
+
+    test('should categorize unknown responses', () => {
+      const response = { status: 100, url: 'https://example.com/data' };
+      const category = networkCapture._categorizeResponse(response, {});
+      expect(category).toBe('Unknown Response');
+    });
+
+    test('should categorize fetch errors', () => {
+      const error = new Error('fetch failed');
+      const category = networkCapture._categorizeNetworkError(error, {});
+      expect(category).toBe('Fetch Error');
+    });
+
+    test('should handle unknown error types', () => {
+      const error = new Error('Unknown error type');
+      const category = networkCapture._categorizeNetworkError(error, {});
+      expect(category).toBe('Network Error');
+    });
+  });
+
+  describe('Analysis Placeholder Methods', () => {
+    test('should call all placeholder analysis methods', () => {
+      // These are placeholder methods that return empty arrays/objects
+      expect(networkCapture._detectRequestPatterns()).toEqual([]);
+      expect(networkCapture._suggestRequestOptimizations()).toEqual([]);
+      expect(networkCapture._analyzeRequestSecurity()).toEqual({});
+      expect(networkCapture._detectResponsePatterns()).toEqual([]);
+      expect(networkCapture._suggestResponseOptimizations()).toEqual([]);
+      expect(networkCapture._analyzeResponsePerformance()).toEqual({});
+      expect(networkCapture._detectXHRResponsePatterns()).toEqual([]);
+      expect(networkCapture._suggestXHRResponseOptimizations()).toEqual([]);
+      expect(networkCapture._analyzeXHRResponsePerformance()).toEqual({});
+      expect(networkCapture._identifyErrorCause()).toBe('Unknown');
+      expect(networkCapture._suggestErrorRecovery()).toEqual([]);
+      expect(networkCapture._suggestErrorPrevention()).toEqual([]);
+    });
+  });
+
+  describe('XHR Interception and Processing', () => {
+    test('should handle XHR readyState changes', () => {
+      networkCapture.start();
+
+      const xhr = new XMLHttpRequest();
+      const originalOnReadyStateChange = jest.fn();
+      xhr.onreadystatechange = originalOnReadyStateChange;
+
+      // Simulate opening a request
+      xhr.open('GET', 'https://api.example.com/data');
+
+      // Simulate ready state change
+      xhr.readyState = 4;
+      xhr.status = 200;
+      xhr.statusText = 'OK';
+      xhr.responseText = '{"success": true}';
+
+      // Trigger the onreadystatechange handler
+      if (xhr.onreadystatechange) {
+        xhr.onreadystatechange();
+      }
+
+      // Original handler should still be called
+      expect(originalOnReadyStateChange).toHaveBeenCalled();
+    });
+
+    test('should handle XHR with no original onreadystatechange', () => {
+      networkCapture.start();
+
+      const xhr = new XMLHttpRequest();
+      // No original onreadystatechange handler
+
+      xhr.open('GET', 'https://api.example.com/data');
+      xhr.readyState = 4;
+      xhr.status = 200;
+
+      // Should not throw error
+      expect(() => {
+        if (xhr.onreadystatechange) {
+          xhr.onreadystatechange();
+        }
+      }).not.toThrow();
+    });
+
+    test('should handle XHR send with body', () => {
+      // Set up mock XMLHttpRequest methods first
+      const originalSend = jest.fn();
+      XMLHttpRequest.prototype.send = originalSend;
+
+      networkCapture.addListener(mockListener);
+      networkCapture.start();
+
+      const xhr = new XMLHttpRequest();
+      xhr.open('POST', 'https://api.example.com/data');
+      xhr.send('{"test": "data"}');
+
+      // Verify the original send was stored and interception is working
+      expect(networkCapture.originalXHRSend).toBe(originalSend);
+      expect(XMLHttpRequest.prototype.send).not.toBe(originalSend);
+    });
+
+    test('should handle XHR send without body', () => {
+      // Set up mock XMLHttpRequest methods first
+      const originalSend = jest.fn();
+      XMLHttpRequest.prototype.send = originalSend;
+
+      networkCapture.addListener(mockListener);
+      networkCapture.start();
+
+      const xhr = new XMLHttpRequest();
+      xhr.open('GET', 'https://api.example.com/data');
+      xhr.send();
+
+      // Verify the original send was stored and interception is working
+      expect(networkCapture.originalXHRSend).toBe(originalSend);
+      expect(XMLHttpRequest.prototype.send).not.toBe(originalSend);
+    });
+  });
+
+  describe('Severity Edge Cases', () => {
+    test('should handle moderate delay responses', () => {
+      const response = { status: 200 };
+      const timing = { duration: 3000 }; // 3 seconds
+      const severity = networkCapture._calculateResponseSeverity(
+        response,
+        timing
+      );
+
+      expect(severity.factors).toContain('moderate-delay');
+      expect(severity.score).toBe(5);
+    });
+
+    test('should handle CORS error severity', () => {
+      const error = new Error('CORS policy violation');
+      const timing = { duration: 1000 };
+      const severity = networkCapture._calculateErrorSeverity(error, timing);
+
+      expect(severity.level).toBe('high');
+      expect(severity.score).toBe(7);
+      expect(severity.factors).toContain('cors-issue');
+    });
+
+    test('should handle timeout error severity', () => {
+      const error = new Error('Request timeout');
+      const timing = { duration: 1000 };
+      const severity = networkCapture._calculateErrorSeverity(error, timing);
+
+      expect(severity.level).toBe('medium');
+      expect(severity.score).toBe(6);
+      expect(severity.factors).toContain('timeout');
+    });
+
+    test('should handle aborted request severity', () => {
+      const error = new Error('Request aborted by user');
+      const timing = { duration: 1000 };
+      const severity = networkCapture._calculateErrorSeverity(error, timing);
+
+      expect(severity.level).toBe('medium');
+      expect(severity.score).toBe(4);
+      expect(severity.factors).toContain('user-cancelled');
+    });
+  });
+
+  describe('Tag Generation Edge Cases', () => {
+    test('should generate XHR-specific tags', () => {
+      const xhr = { status: 200, getResponseHeader: () => 'application/json' };
+      const timing = { duration: 50 }; // Less than 100ms for 'fast' tag
+      const tags = networkCapture._generateXHRResponseTags(xhr, timing);
+
+      expect(tags).toContain('xhr');
+      expect(tags).toContain('fast');
+      expect(tags).toContain('json');
+    });
+
+    test('should generate HTML content tags', () => {
+      const response = {
+        status: 200,
+        url: 'https://example.com',
+        headers: { get: () => 'text/html' },
+      };
+      const timing = { duration: 500 };
+      const tags = networkCapture._generateResponseTags(response, timing);
+
+      expect(tags).toContain('html');
+    });
+
+    test('should generate XML content tags for XHR', () => {
+      const xhr = { status: 200, getResponseHeader: () => 'application/xml' };
+      const timing = { duration: 500 };
+      const tags = networkCapture._generateXHRResponseTags(xhr, timing);
+
+      expect(tags).toContain('xml');
+    });
+
+    test('should handle missing environment and branch in tags', () => {
+      const capture = new NetworkCapture({
+        applicationName: 'test-app',
+        sessionId: 'test-session',
+        // No environment or branch
+      });
+
+      const requestData = { url: 'https://example.com', method: 'GET' };
+      const tags = capture._generateRequestTags(requestData);
+
+      expect(tags).not.toContain('env-undefined');
+      expect(tags).not.toContain('branch-undefined');
+    });
+  });
+
+  describe('Real-world Integration Tests', () => {
+    test('should handle complete fetch workflow', async () => {
+      const mockResponse = {
+        status: 200,
+        statusText: 'OK',
+        url: 'https://api.example.com/data',
+        type: 'cors',
+        redirected: false,
+        headers: {
+          get: jest.fn(key =>
+            key === 'content-type' ? 'application/json' : null
+          ),
+          entries: jest.fn(() => [['content-type', 'application/json']]),
+        },
+        clone: jest.fn(() => ({
+          text: jest.fn(() => Promise.resolve('{"data": "test"}')),
+        })),
+      };
+
+      global.window.fetch = jest.fn(() => Promise.resolve(mockResponse));
+
+      networkCapture.addListener(mockListener);
+      networkCapture.start();
+
+      await fetch('https://api.example.com/data', {
+        method: 'POST',
+        body: JSON.stringify({ test: 'data' }),
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      // Should capture both request and response
+      expect(mockListener).toHaveBeenCalledTimes(2);
+    });
+
+    test('should handle fetch with error', async () => {
+      const error = new Error('Network error');
+      global.window.fetch = jest.fn(() => Promise.reject(error));
+
+      networkCapture.addListener(mockListener);
+      networkCapture.start();
+
+      try {
+        await fetch('https://api.example.com/data');
+      } catch (e) {
+        // Expected to throw
+      }
+
+      // Should capture request and error
+      expect(mockListener).toHaveBeenCalledTimes(2);
+    });
+  });
 });
