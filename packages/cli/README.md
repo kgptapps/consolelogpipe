@@ -1,118 +1,247 @@
-# console-log-pipe
+# @kansnpms/console-log-pipe-cli
 
-Global CLI tool for Console Log Pipe. Start a local server to receive real-time logs from browser
-applications.
+[![npm version](https://img.shields.io/npm/v/@kansnpms/console-log-pipe-cli.svg)](https://www.npmjs.com/package/@kansnpms/console-log-pipe-cli)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-## Installation
+Global CLI tool for Console Log Pipe - Real-time log streaming from browsers to developers.
+
+## 🚀 Quick Start
+
+### 1. Install globally
 
 ```bash
 npm install -g @kansnpms/console-log-pipe-cli
 ```
 
-## Quick Start
+### 2. Start monitoring your app
 
 ```bash
-# Start the local server
-clp start
+# Start server for your application
+clp start my-web-app
 
-# Stream logs in real-time
-clp stream
-
-# Manage sessions
-clp sessions list
-clp sessions create --name "My App"
-clp sessions delete <session-id>
-
-# Configuration
-clp config set port 3000
-clp config get
+# Monitor real-time logs
+clp monitor my-web-app
 ```
 
-## Commands
+### 3. Add to your web application
 
-### `clp start [options]`
+```bash
+npm install @kansnpms/console-log-pipe-client
+```
 
-Start the local log server.
+```javascript
+import ConsoleLogPipe from '@kansnpms/console-log-pipe-client';
 
-Options:
+ConsoleLogPipe.init({
+  applicationName: 'my-web-app', // Must match CLI app name
+});
+```
 
-- `--port, -p <port>` - Server port (default: 3000)
+## 📋 Commands
+
+### `clp start [app-name]`
+
+Start Console Log Pipe server for an application.
+
+```bash
+clp start my-react-app
+clp start my-vue-app --port 3001
+clp start --app-name "My Project"
+```
+
+**Options:**
+
+- `--port, -p <port>` - Server port (auto-assigned if not specified)
 - `--host <host>` - Server host (default: localhost)
-- `--session-name <name>` - Create named session
-- `--open` - Open browser to session URL
+- `--app-name <name>` - Application name (alternative to argument)
+- `--env <environment>` - Environment (development, staging, production)
+- `--log-level <level>` - Minimum log level (debug, info, warn, error)
+- `--max-logs <number>` - Maximum logs to store (default: 1000)
 
-### `clp stream [options]`
+### `clp monitor <app-name>`
 
-Stream logs in real-time to the console.
+Monitor logs from a running application in real-time.
 
-Options:
+```bash
+clp monitor my-react-app
+clp monitor my-vue-app --filter "error"
+clp monitor my-app --since "1h" --tail 100
+```
 
-- `--session <id>` - Stream specific session
+**Options:**
+
+- `--follow, -f` - Follow log output in real-time (default: true)
 - `--filter <pattern>` - Filter logs by pattern
-- `--format <format>` - Output format (json, pretty, compact)
+- `--level <level>` - Filter by log level (debug, info, warn, error)
+- `--since <time>` - Show logs since time (e.g., "1h", "30m", "2023-01-01")
+- `--tail <number>` - Number of recent logs to show (default: 50)
+- `--format <format>` - Output format (json, text, table) (default: text)
 
-### `clp sessions <command>`
+### `clp list`
 
-Manage logging sessions.
+List all running Console Log Pipe servers.
 
-Commands:
+```bash
+clp list
+clp list --format json
+clp list --show-inactive
+```
 
-- `list` - List all sessions
-- `create` - Create new session
-- `delete <id>` - Delete session
-- `info <id>` - Show session details
+**Options:**
 
-### `clp config <command>`
+- `--format <format>` - Output format (json, text, table) (default: table)
+- `--show-inactive` - Show inactive servers
 
-Manage CLI configuration.
+### `clp stop [app-name]`
 
-Commands:
+Stop Console Log Pipe server for an application.
 
-- `get [key]` - Get configuration value
-- `set <key> <value>` - Set configuration value
-- `reset` - Reset to defaults
+```bash
+clp stop my-react-app
+clp stop --all
+clp stop --force
+```
 
-## Configuration
+**Options:**
 
-The CLI stores configuration in `~/.console-log-pipe/config.json`:
+- `--force` - Force stop without confirmation
+- `--all` - Stop all running servers
 
-```json
-{
-  "port": 3000,
-  "host": "localhost",
-  "autoStart": true,
-  "logLevel": "info",
-  "maxSessions": 10,
-  "sessionTimeout": 3600000
+### `clp status [app-name]`
+
+Show status of Console Log Pipe servers.
+
+```bash
+clp status
+clp status my-react-app
+clp status --detailed
+```
+
+**Options:**
+
+- `--detailed` - Show detailed status information
+- `--format <format>` - Output format (json, text, table) (default: text)
+
+## 🎯 Real-World Examples
+
+### Basic Usage
+
+```bash
+# 1. Start monitoring your React app
+clp start my-react-app
+
+# 2. Add client to your React app
+npm install @kansnpms/console-log-pipe-client
+
+# 3. Initialize in your app
+import ConsoleLogPipe from '@kansnpms/console-log-pipe-client';
+ConsoleLogPipe.init({ applicationName: 'my-react-app' });
+
+# 4. Monitor logs in real-time
+clp monitor my-react-app
+```
+
+### Multi-Application Development
+
+```bash
+# Start multiple apps
+clp start frontend --port 3001
+clp start backend --port 3002
+clp start mobile-app --port 3003
+
+# Monitor specific app
+clp monitor frontend --filter "error"
+clp monitor backend --level warn
+
+# List all running servers
+clp list
+
+# Stop specific app
+clp stop frontend
+```
+
+### Advanced Monitoring
+
+```bash
+# Monitor with filtering
+clp monitor my-app --filter "API" --since "30m"
+
+# Monitor errors only from last hour
+clp monitor my-app --level error --since "1h" --tail 200
+
+# Export logs as JSON
+clp monitor my-app --format json > logs.json
+```
+
+## 🔧 Configuration
+
+The CLI automatically manages configuration and stores data in:
+
+- **Config**: `~/.console-log-pipe/config.json`
+- **Logs**: `~/.console-log-pipe/logs/`
+- **Sessions**: `~/.console-log-pipe/sessions/`
+
+## 🌐 Integration
+
+### React
+
+```javascript
+import { useEffect } from 'react';
+import ConsoleLogPipe from '@kansnpms/console-log-pipe-client';
+
+function App() {
+  useEffect(() => {
+    ConsoleLogPipe.init({ applicationName: 'my-react-app' });
+  }, []);
+
+  return <div>My App</div>;
 }
 ```
 
-## Session Management
+### Vue.js
 
-Sessions are automatically created when the server starts. Each session has:
+```javascript
+import { createApp } from 'vue';
+import ConsoleLogPipe from '@kansnpms/console-log-pipe-client';
 
-- Unique ID for client connection
-- Optional human-readable name
-- Creation timestamp
-- Activity tracking
-- Automatic cleanup
-
-## Examples
-
-```bash
-# Start server with custom port
-clp start --port 8080
-
-# Create named session and start server
-clp start --session-name "React App Debug"
-
-# Stream logs with filtering
-clp stream --filter "error" --format pretty
-
-# List active sessions
-clp sessions list
+const app = createApp({});
+ConsoleLogPipe.init({ applicationName: 'my-vue-app' });
 ```
 
-## License
+### Vanilla JavaScript
+
+```html
+<script src="https://unpkg.com/@kansnpms/console-log-pipe-client"></script>
+<script>
+  ConsoleLogPipe.init({ applicationName: 'my-web-app' });
+</script>
+```
+
+## 🤖 AI-Friendly Output
+
+Console Log Pipe formats logs specifically for AI coding assistants:
+
+```
+[ERROR] TypeError: Cannot read property 'map' of undefined
+  at UserList.jsx:15:23
+  Application: ecommerce-frontend
+  Environment: development
+  Session: clp_abc123_xyz789
+  Category: Runtime Error
+  Stack: UserList.jsx -> App.jsx -> index.js
+
+[NETWORK] Failed to fetch /api/users - 404 Not Found
+  Application: ecommerce-frontend
+  Response: {"error": "Users endpoint not found"}
+```
+
+## 📚 More Information
+
+- **Main Repository**: [Console Log Pipe](https://github.com/kgptapps/consolelogpipe)
+- **Client Library**:
+  [@kansnpms/console-log-pipe-client](https://www.npmjs.com/package/@kansnpms/console-log-pipe-client)
+- **Documentation**: [Full Documentation](https://github.com/kgptapps/consolelogpipe#readme)
+
+## 📄 License
 
 MIT

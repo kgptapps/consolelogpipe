@@ -116,18 +116,36 @@ Context: This is a React e-commerce app with a Node.js backend.
 
 > **🎉 Console Log Pipe is now fully functional and ready for production use!**
 
-### Install the CLI tool globally
+### 1. Install the CLI tool globally
 
 ```bash
 npm install -g @kansnpms/console-log-pipe-cli
 ```
 
-### Start the local server
+### 2. Start monitoring your application
 
 ```bash
-# Start server for a specific application
+# Start server for your application
 clp start my-web-app
+```
 
+### 3. Add client library to your web application
+
+```bash
+npm install @kansnpms/console-log-pipe-client
+```
+
+```javascript
+import ConsoleLogPipe from '@kansnpms/console-log-pipe-client';
+
+ConsoleLogPipe.init({
+  applicationName: 'my-web-app', // Must match CLI app name
+});
+```
+
+### 4. Monitor real-time logs
+
+```bash
 # View real-time logs from your application
 clp monitor my-web-app
 
@@ -148,7 +166,7 @@ clp stop my-web-app
 | `clp stop <app>`    | Stop monitoring server   | `clp stop my-react-app`                  |
 | `clp status [app]`  | Show server status       | `clp status`                             |
 
-### Add to your web application
+### Integration Options
 
 #### Option 1: NPM Package (Recommended)
 
