@@ -83,6 +83,9 @@ class NetworkCapture {
     }
 
     // Initialize components
+    this.utils = NetworkUtils;
+    this.sanitizer = new NetworkSanitizer(this.options);
+    this.analyzer = new NetworkAnalyzer(this.options);
     this.formatter = new NetworkFormatter(this.options);
     this.interceptor = new NetworkInterceptor(
       this.options,
@@ -214,14 +217,6 @@ class NetworkCapture {
     return this.formatter.createErrorEntry(requestId, error, timing);
   }
 
-  _sanitizeHeaders(headers) {
-    return this.formatter.sanitizer.sanitizeHeaders(headers);
-  }
-
-  _sanitizeBody(body) {
-    return this.formatter.sanitizer.sanitizeBody(body);
-  }
-
   _headersToObject(headers) {
     return NetworkUtils.headersToObject(headers);
   }
@@ -320,6 +315,18 @@ class NetworkCapture {
 
   _restoreNetworkMethods() {
     this.interceptor.restoreOriginalMethods();
+  }
+
+  _sanitizeHeaders(headers) {
+    return this.sanitizer.sanitizeHeaders(headers, this.options);
+  }
+
+  _sanitizeBody(body) {
+    return this.sanitizer.sanitizeBody(body);
+  }
+
+  _sanitizeUrl(url) {
+    return this.sanitizer.sanitizeUrl(url);
   }
 
   // Placeholder methods for backward compatibility

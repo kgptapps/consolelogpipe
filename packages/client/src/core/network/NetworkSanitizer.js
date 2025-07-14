@@ -26,10 +26,14 @@ class NetworkSanitizer {
   /**
    * Sanitize headers by removing sensitive information
    * @param {Object|Headers} headers - Headers to sanitize
+   * @param {Object} options - Override options
    * @returns {Object} Sanitized headers
    */
-  sanitizeHeaders(headers) {
-    if (!this.options.captureHeaders) {
+  sanitizeHeaders(headers, options = {}) {
+    // Use passed options or fall back to instance options
+    const effectiveOptions = { ...this.options, ...options };
+
+    if (!effectiveOptions.captureHeaders) {
       return {};
     }
 
@@ -44,7 +48,7 @@ class NetworkSanitizer {
       const lowerKey = key.toLowerCase();
 
       if (
-        this.options.sensitiveHeaders.some(sensitive =>
+        effectiveOptions.sensitiveHeaders.some(sensitive =>
           lowerKey.includes(sensitive.toLowerCase())
         )
       ) {
@@ -52,10 +56,10 @@ class NetworkSanitizer {
       } else {
         // Limit header size
         const headerValue = String(value);
-        if (headerValue.length > this.options.maxHeaderSize) {
+        if (headerValue.length > effectiveOptions.maxHeaderSize) {
           sanitized[key] = `${headerValue.substring(
             0,
-            this.options.maxHeaderSize
+            effectiveOptions.maxHeaderSize
           )}...[TRUNCATED]`;
         } else {
           sanitized[key] = headerValue;

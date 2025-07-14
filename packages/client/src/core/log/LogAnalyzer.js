@@ -28,13 +28,13 @@ class LogAnalyzer {
         lowerMessage.includes('syntaxerror') ||
         lowerMessage.includes('unexpected token')
       ) {
-        return 'Syntax Error';
+        return 'syntax_error';
       }
       if (
         lowerMessage.includes('typeerror') ||
         lowerMessage.includes('referenceerror')
       ) {
-        return 'Runtime Error';
+        return 'runtime_error';
       }
       if (
         lowerMessage.includes('fetch') ||
@@ -42,23 +42,23 @@ class LogAnalyzer {
         lowerMessage.includes('xhr') ||
         lowerMessage.includes('ajax')
       ) {
-        return 'Network Error';
+        return 'network_error';
       }
       if (
         lowerMessage.includes('permission') ||
         lowerMessage.includes('security') ||
         lowerMessage.includes('cors')
       ) {
-        return 'Security Error';
+        return 'security_error';
       }
       if (
         lowerMessage.includes('performance') ||
         lowerMessage.includes('memory') ||
         lowerMessage.includes('timeout')
       ) {
-        return 'Performance Error';
+        return 'performance_error';
       }
-      return 'Application Error';
+      return 'application_error';
     }
 
     // Warning categorization
@@ -67,15 +67,15 @@ class LogAnalyzer {
         lowerMessage.includes('deprecated') ||
         lowerMessage.includes('obsolete')
       ) {
-        return 'Deprecation Warning';
+        return 'deprecation_warning';
       }
       if (
         lowerMessage.includes('performance') ||
         lowerMessage.includes('slow')
       ) {
-        return 'Performance Warning';
+        return 'performance_warning';
       }
-      return 'General Warning';
+      return 'general_warning';
     }
 
     // Info and debug categorization
@@ -85,19 +85,19 @@ class LogAnalyzer {
         lowerMessage.includes('request') ||
         lowerMessage.includes('response')
       ) {
-        return 'API Information';
+        return 'api_information';
       }
       if (
         lowerMessage.includes('user') ||
         lowerMessage.includes('click') ||
         lowerMessage.includes('interaction')
       ) {
-        return 'User Interaction';
+        return 'user_interaction';
       }
-      return 'Application Information';
+      return 'application_information';
     }
 
-    return 'General Log';
+    return 'general_log';
   }
 
   /**
@@ -302,18 +302,22 @@ class LogAnalyzer {
       analysis.cause =
         'Attempting to use a value in a way that is not compatible with its type';
       analysis.suggestions = [
-        'Check variable types before operations',
-        'Add type validation',
-        'Use typeof checks',
+        'Check if the variable is defined before using it',
+        'Verify the data type matches the expected type',
+        'Add null/undefined checks',
+        'Use optional chaining (?.) for object properties',
       ];
+      analysis.impact = 'high';
     } else if (lowerMessage.includes('referenceerror')) {
       analysis.type = 'ReferenceError';
       analysis.cause = 'Attempting to access a variable that is not defined';
       analysis.suggestions = [
-        'Check variable declarations',
-        'Verify variable scope',
+        'Check if the variable is declared',
+        'Verify the variable scope',
         'Check for typos in variable names',
+        'Ensure imports/requires are correct',
       ];
+      analysis.impact = 'high';
     } else if (lowerMessage.includes('syntaxerror')) {
       analysis.type = 'SyntaxError';
       analysis.cause = 'Invalid JavaScript syntax';
@@ -323,6 +327,7 @@ class LogAnalyzer {
         'Check for reserved keyword usage',
       ];
       analysis.recoverable = false;
+      analysis.impact = 'critical';
     } else if (
       lowerMessage.includes('network') ||
       lowerMessage.includes('fetch')
