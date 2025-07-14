@@ -63,7 +63,8 @@ class LogCapture {
     this.interceptor = new LogInterceptor(
       this.options,
       this.formatter,
-      this.handleLogData.bind(this)
+      this.handleLogData.bind(this),
+      this._createLogEntry.bind(this)
     );
 
     // State management
@@ -73,6 +74,9 @@ class LogCapture {
 
     // Initialize error categories for backward compatibility
     this.errorCategories = this.formatter.analyzer.initializeErrorCategories();
+
+    // Expose original console methods for testing
+    this.originalConsole = this.interceptor.originalConsole;
 
     // Log session information to console for manual inspection
     this.logSessionInfo();
@@ -146,11 +150,18 @@ class LogCapture {
    * @private
    */
   handleLogData(logEntry) {
-    // Add to queue
-    this.logQueue.push(logEntry);
+    try {
+      // Add to queue
+      this.logQueue.push(logEntry);
 
-    // Notify listeners
-    this.notifyListeners(logEntry);
+      // Notify listeners
+      this.notifyListeners(logEntry);
+    } catch (error) {
+      // Handle errors gracefully and call original console.error
+      if (this.originalConsole && this.originalConsole.error) {
+        this.originalConsole.error('LogCapture error:', error);
+      }
+    }
   }
 
   /**
@@ -183,7 +194,7 @@ class LogCapture {
       };
 
       // eslint-disable-next-line no-console
-      console.info('🔍 Console Log Pipe Session Started:', sessionInfo);
+      console.log('🔍 Console Log Pipe Session Started', '', sessionInfo);
     }
   }
 
@@ -278,7 +289,22 @@ class LogCapture {
   }
 
   _createLogEntry(level, args) {
-    return this.formatter.createLogEntry(level, args);
+    try {
+      return this.formatter.createLogEntry(level, args);
+    } catch (error) {
+      // Handle errors gracefully and call original console.error
+      if (this.originalConsole && this.originalConsole.error) {
+        this.originalConsole.error('LogCapture error:', error);
+      }
+      // Return a fallback log entry instead of re-throwing to prevent breaking the app
+      return {
+        level,
+        message: '[Error creating log entry]',
+        args: args || [],
+        timestamp: new Date().toISOString(),
+        error: error.message,
+      };
+    }
   }
 
   _argsToString(args) {

@@ -10,7 +10,7 @@ class LogUtils {
   static generateSessionId() {
     const timestamp = Date.now().toString(36);
     const random = Math.random().toString(36).substr(2, 9);
-    return `${timestamp}_${random}`;
+    return `clp_${timestamp}_${random}`;
   }
 
   /**
@@ -42,8 +42,10 @@ class LogUtils {
       if (hostname?.includes('staging') || hostname?.includes('dev')) {
         return 'staging';
       }
+      return 'production';
     }
-    return 'production';
+    // Default to development when window is not available (e.g., in tests)
+    return 'development';
   }
 
   /**
@@ -101,7 +103,7 @@ class LogUtils {
           return 'undefined';
         }
         try {
-          return JSON.stringify(arg);
+          return JSON.stringify(arg, LogUtils.circularReplacer());
         } catch (error) {
           return arg.toString();
         }
@@ -128,14 +130,14 @@ class LogUtils {
             name: arg.name,
             message: arg.message,
             stack: arg.stack,
-            type: 'Error',
+            __type: 'Error',
           };
         }
 
         // Handle other objects with circular reference protection
         return JSON.parse(JSON.stringify(arg, LogUtils.circularReplacer()));
       } catch (error) {
-        return `[Unserializable: ${error.message}]`;
+        return '[Unserializable: object]';
       }
     });
   }

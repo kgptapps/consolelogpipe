@@ -3,7 +3,7 @@
  */
 
 class LogInterceptor {
-  constructor(options = {}, formatter, onLogData) {
+  constructor(options = {}, formatter, onLogData, createLogEntry = null) {
     this.options = {
       levels: options.levels || ['log', 'error', 'warn', 'info', 'debug'],
       preserveOriginal: options.preserveOriginal !== false,
@@ -17,6 +17,9 @@ class LogInterceptor {
 
     this.formatter = formatter;
     this.onLogData = onLogData;
+    this.createLogEntry =
+      createLogEntry ||
+      ((level, args) => this.formatter.createLogEntry(level, args));
 
     // Store original console methods
     this.originalConsole = {};
@@ -104,7 +107,7 @@ class LogInterceptor {
       }
 
       // Process arguments and create log entry
-      const logEntry = this.formatter.createLogEntry(level, args);
+      const logEntry = this.createLogEntry(level, args);
 
       // Check log size limit and truncate if necessary
       const finalLogEntry = this.formatter.checkAndTruncateLogEntry(logEntry);
