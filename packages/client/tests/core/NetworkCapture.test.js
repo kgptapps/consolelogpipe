@@ -573,6 +573,45 @@ describe('NetworkCapture', () => {
       expect(severity.score).toBe(8);
       expect(severity.factors).toContain('network-failure');
     });
+
+    test('should handle fetch response redirect severity', () => {
+      const response = { status: 301 };
+      const timing = { duration: 500 };
+      const severity = networkCapture._calculateResponseSeverity(
+        response,
+        timing
+      );
+
+      expect(severity.level).toBe('low');
+      expect(severity.score).toBe(3);
+      expect(severity.factors).toContain('redirect');
+    });
+
+    test('should handle XHR server error severity', () => {
+      const xhr = { status: 500 };
+      const timing = { duration: 1000 };
+      const severity = networkCapture._calculateXHRResponseSeverity(
+        xhr,
+        timing
+      );
+
+      expect(severity.level).toBe('critical');
+      expect(severity.score).toBe(9);
+      expect(severity.factors).toContain('server-error');
+    });
+
+    test('should handle XHR client error severity', () => {
+      const xhr = { status: 404 };
+      const timing = { duration: 1000 };
+      const severity = networkCapture._calculateXHRResponseSeverity(
+        xhr,
+        timing
+      );
+
+      expect(severity.level).toBe('medium');
+      expect(severity.score).toBe(6);
+      expect(severity.factors).toContain('client-error');
+    });
   });
 
   describe('AI-Friendly Tags Generation', () => {
@@ -1271,6 +1310,27 @@ describe('NetworkCapture', () => {
       global.performance.memory = originalMemory;
     });
 
+    test('should include memory metrics when performance.memory is available', () => {
+      // Mock performance.memory
+      const mockMemory = {
+        usedJSHeapSize: 1000000,
+        totalJSHeapSize: 2000000,
+        jsHeapSizeLimit: 4000000,
+      };
+
+      const originalMemory = global.performance.memory;
+      global.performance.memory = mockMemory;
+
+      const metrics = networkCapture._collectPerformanceMetrics();
+
+      expect(metrics.memory).toBeDefined();
+      expect(metrics.memory.used).toBe(1000000);
+      expect(metrics.memory.total).toBe(2000000);
+      expect(metrics.memory.limit).toBe(4000000);
+
+      global.performance.memory = originalMemory;
+    });
+
     test('should handle string include patterns in URL filtering', () => {
       networkCapture.options.includeUrls = ['api.example.com'];
 
@@ -1439,6 +1499,18 @@ describe('NetworkCapture', () => {
       expect(severity.score).toBe(5);
     });
 
+    test('should handle slow responses (>5 seconds)', () => {
+      const response = { status: 200 };
+      const timing = { duration: 6000 }; // 6 seconds
+      const severity = networkCapture._calculateResponseSeverity(
+        response,
+        timing
+      );
+
+      expect(severity.factors).toContain('slow-response');
+      expect(severity.score).toBe(7);
+    });
+
     test('should handle CORS error severity', () => {
       const error = new Error('CORS policy violation');
       const timing = { duration: 1000 };
@@ -1467,6 +1539,43 @@ describe('NetworkCapture', () => {
       expect(severity.level).toBe('medium');
       expect(severity.score).toBe(4);
       expect(severity.factors).toContain('user-cancelled');
+    });
+
+    test('should handle XHR redirect responses', () => {
+      const xhr = { status: 302 };
+      const timing = { duration: 500 };
+      const severity = networkCapture._calculateXHRResponseSeverity(
+        xhr,
+        timing
+      );
+
+      expect(severity.level).toBe('low');
+      expect(severity.score).toBe(3);
+      expect(severity.factors).toContain('redirect');
+    });
+
+    test('should handle XHR slow responses (>5 seconds)', () => {
+      const xhr = { status: 200 };
+      const timing = { duration: 6000 }; // 6 seconds
+      const severity = networkCapture._calculateXHRResponseSeverity(
+        xhr,
+        timing
+      );
+
+      expect(severity.factors).toContain('slow-response');
+      expect(severity.score).toBe(7);
+    });
+
+    test('should handle XHR moderate delay responses (>2 seconds)', () => {
+      const xhr = { status: 200 };
+      const timing = { duration: 3000 }; // 3 seconds
+      const severity = networkCapture._calculateXHRResponseSeverity(
+        xhr,
+        timing
+      );
+
+      expect(severity.factors).toContain('moderate-delay');
+      expect(severity.score).toBe(5);
     });
   });
 
@@ -1565,6 +1674,18 @@ describe('NetworkCapture', () => {
 
       // Should capture request and error
       expect(mockListener).toHaveBeenCalledTimes(2);
+    });
+
+    test('should handle restore methods when window is undefined', () => {
+      const originalWindow = global.window;
+      delete global.window;
+
+      // Should not throw error
+      expect(() => {
+        networkCapture._restoreNetworkMethods();
+      }).not.toThrow();
+
+      global.window = originalWindow;
     });
   });
 });

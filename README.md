@@ -6,7 +6,7 @@
 [![npm version](https://img.shields.io/npm/v/@kansnpms/console-log-pipe-client.svg)](https://www.npmjs.com/package/@kansnpms/console-log-pipe-client)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Node.js Version](https://img.shields.io/node/v/@kansnpms/console-log-pipe-client.svg)](https://nodejs.org/)
-[![Coverage Status](https://img.shields.io/badge/coverage-96.77%25-brightgreen.svg)](https://github.com/kgptapps/consolelogpipe/actions/workflows/ci.yml)
+[![Coverage Status](https://img.shields.io/badge/coverage-89.94%25-brightgreen.svg)](https://github.com/kgptapps/consolelogpipe/actions/workflows/ci.yml)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/kgptapps/consolelogpipe/blob/main/CONTRIBUTING.md)
 [![GitHub issues](https://img.shields.io/github/issues/kgptapps/consolelogpipe.svg)](https://github.com/kgptapps/consolelogpipe/issues)
 [![GitHub stars](https://img.shields.io/github/stars/kgptapps/consolelogpipe.svg)](https://github.com/kgptapps/consolelogpipe/stargazers)
@@ -82,7 +82,7 @@ Context: This is a React e-commerce app with a Node.js backend.
 | 🏗️ **Project Setup**      | ✅ Complete    | 100%     | Monorepo structure, CI/CD, tooling |
 | 📋 **Documentation**      | ✅ Complete    | 100%     | Technical PRDs, architecture docs  |
 | 🔧 **GitHub Actions**     | ✅ Complete    | 100%     | CI/CD validation and automation    |
-| 📦 **Client Library**     | ✅ Complete    | 96.77%   | Multi-app console log capture      |
+| 📦 **Client Library**     | ✅ Complete    | 89.94%   | Console logs + network capture     |
 | 🖥️ **CLI Tool**           | 🔄 In Progress | -        | Command-line interface             |
 | 🌐 **Server**             | 🔄 In Progress | -        | WebSocket server implementation    |
 | 🖱️ **Browser Extensions** | ⏳ Planned     | -        | Chrome, Firefox, Safari, Edge      |
