@@ -68,18 +68,18 @@ class MonitorCommand {
           const message = JSON.parse(data.toString());
 
           if (message.type === 'log') {
-            this.displayLog(message.data, options);
+            MonitorCommand.displayLog(message.data, options);
             logCount++;
           } else if (message.type === 'error') {
-            this.displayError(message.data, options);
+            MonitorCommand.displayError(message.data, options);
             logCount++;
           } else if (message.type === 'network') {
-            this.displayNetwork(message.data, options);
+            MonitorCommand.displayNetwork(message.data, options);
             logCount++;
           } else if (message.type === 'historical_logs') {
             // Display historical logs
             message.logs.forEach(log => {
-              this.displayLog(log, options);
+              MonitorCommand.displayLog(log, options);
             });
           } else if (message.type === 'server_info') {
             // Server information update
@@ -130,11 +130,17 @@ class MonitorCommand {
   }
 
   static displayLog(logData, options) {
-    if (options.level && !this.matchesLevel(logData.level, options.level)) {
+    if (
+      options.level &&
+      !MonitorCommand.matchesLevel(logData.level, options.level)
+    ) {
       return;
     }
 
-    if (options.filter && !this.matchesFilter(logData, options.filter)) {
+    if (
+      options.filter &&
+      !MonitorCommand.matchesFilter(logData, options.filter)
+    ) {
       return;
     }
 
@@ -148,11 +154,14 @@ class MonitorCommand {
   }
 
   static displayError(errorData, options) {
-    if (options.level && !this.matchesLevel('error', options.level)) {
+    if (options.level && !MonitorCommand.matchesLevel('error', options.level)) {
       return;
     }
 
-    if (options.filter && !this.matchesFilter(errorData, options.filter)) {
+    if (
+      options.filter &&
+      !MonitorCommand.matchesFilter(errorData, options.filter)
+    ) {
       return;
     }
 
@@ -166,7 +175,10 @@ class MonitorCommand {
   }
 
   static displayNetwork(networkData, options) {
-    if (options.filter && !this.matchesFilter(networkData, options.filter)) {
+    if (
+      options.filter &&
+      !MonitorCommand.matchesFilter(networkData, options.filter)
+    ) {
       return;
     }
 

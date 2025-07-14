@@ -249,6 +249,14 @@ class ServerManager {
 
         this.servers.set(appName, serverInstance);
 
+        // Save server configuration for persistence
+        ConfigManager.saveServerConfig(appName, {
+          ...config,
+          status: 'running',
+          startTime: serverInstance.startTime,
+          pid: process.pid,
+        }).catch(console.error);
+
         console.log(
           `Console Log Pipe server started for "${appName}" on http://${config.host}:${config.port}`
         );
@@ -325,8 +333,9 @@ class ServerManager {
 
   static async getAllServers(includeInactive = false) {
     const servers = [];
+    const processedApps = new Set();
 
-    // Add running servers
+    // Add running servers from memory
     for (const [appName, serverInstance] of this.servers.entries()) {
       servers.push({
         appName,
@@ -336,22 +345,60 @@ class ServerManager {
         startTime: serverInstance.startTime,
         logCount: serverInstance.logs.length,
       });
+      processedApps.add(appName);
     }
 
-    // Add inactive servers if requested
-    if (includeInactive) {
-      const savedConfigs = await ConfigManager.getAllServerConfigs();
-      for (const config of savedConfigs) {
-        if (!this.servers.has(config.appName)) {
+    // Check saved configurations for running servers
+    const savedConfigs = await ConfigManager.getAllServerConfigs();
+    for (const config of savedConfigs) {
+      if (!processedApps.has(config.appName)) {
+        // Check if server is actually running by testing the port
+        const isRunning = await this.isServerRunning(
+          config.host || 'localhost',
+          config.port
+        );
+
+        if (isRunning) {
+          servers.push({
+            ...config,
+            status: 'running',
+          });
+        } else if (includeInactive) {
           servers.push({
             ...config,
             status: 'stopped',
           });
         }
+        processedApps.add(config.appName);
       }
     }
 
     return servers;
+  }
+
+  static async isServerRunning(host, port) {
+    return new Promise(resolve => {
+      const net = require('net');
+      const socket = new net.Socket();
+
+      socket.setTimeout(1000);
+
+      socket.on('connect', () => {
+        socket.destroy();
+        resolve(true);
+      });
+
+      socket.on('timeout', () => {
+        socket.destroy();
+        resolve(false);
+      });
+
+      socket.on('error', () => {
+        resolve(false);
+      });
+
+      socket.connect(port, host);
+    });
   }
 
   static broadcastToClients(appName, message) {

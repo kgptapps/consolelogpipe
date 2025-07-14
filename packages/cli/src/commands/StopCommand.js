@@ -12,11 +12,11 @@ class StopCommand {
   static async execute(appName, options, command) {
     try {
       if (options.all) {
-        await this.stopAllServers(options, command);
+        await StopCommand.stopAllServers(options, command);
       } else if (appName) {
-        await this.stopSingleServer(appName, options, command);
+        await StopCommand.stopSingleServer(appName, options, command);
       } else {
-        await this.interactiveStop(options, command);
+        await StopCommand.interactiveStop(options, command);
       }
     } catch (error) {
       console.error(chalk.red('Error:'), error.message);
@@ -222,9 +222,13 @@ class StopCommand {
       }
 
       if (selectedApp === '__all__') {
-        await this.stopAllServers({ force: false }, command);
+        await StopCommand.stopAllServers({ force: false }, command);
       } else {
-        await this.stopSingleServer(selectedApp, { force: false }, command);
+        await StopCommand.stopSingleServer(
+          selectedApp,
+          { force: false },
+          command
+        );
       }
     } catch (error) {
       spinner.fail('Failed to list servers');

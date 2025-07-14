@@ -9,7 +9,6 @@
 const { Command } = require('commander');
 const chalk = require('chalk');
 const boxen = require('boxen');
-const updateNotifier = require('update-notifier');
 const pkg = require('../package.json');
 
 // Import commands
@@ -19,23 +18,28 @@ const ListCommand = require('./commands/ListCommand');
 const StopCommand = require('./commands/StopCommand');
 const StatusCommand = require('./commands/StatusCommand');
 
-// Check for updates
-const notifier = updateNotifier({ pkg });
-if (notifier.update) {
-  console.log(
-    boxen(
-      `Update available ${chalk.dim(notifier.update.current)} → ${chalk.green(
-        notifier.update.latest
-      )}\nRun ${chalk.cyan('npm i -g console-log-pipe')} to update`,
-      {
-        padding: 1,
-        margin: 1,
-        borderStyle: 'round',
-        borderColor: 'yellow',
-      }
-    )
-  );
-}
+// Check for updates (temporarily disabled due to compatibility issues)
+// try {
+//   const updateNotifier = require('update-notifier');
+//   const notifier = updateNotifier({ pkg });
+//   if (notifier.update) {
+//     console.log(
+//       boxen(
+//         `Update available ${chalk.dim(notifier.update.current)} → ${chalk.green(
+//           notifier.update.latest
+//         )}\nRun ${chalk.cyan('npm i -g @kansnpms/console-log-pipe-cli')} to update`,
+//         {
+//           padding: 1,
+//           margin: 1,
+//           borderStyle: 'round',
+//           borderColor: 'yellow',
+//         }
+//       )
+//     );
+//   }
+// } catch (error) {
+//   // Silently ignore update notifier errors for compatibility
+// }
 
 // Create CLI program
 const program = new Command();

@@ -13,9 +13,9 @@ class StatusCommand {
 
     try {
       if (appName) {
-        await this.showSingleStatus(appName, options, spinner);
+        await StatusCommand.showSingleStatus(appName, options, spinner);
       } else {
-        await this.showAllStatus(options, spinner);
+        await StatusCommand.showAllStatus(options, spinner);
       }
     } catch (error) {
       spinner.fail('Failed to get server status');
@@ -48,7 +48,7 @@ class StatusCommand {
       }
 
       // Display detailed status
-      this.displayDetailedStatus(serverInfo, options.detailed);
+      StatusCommand.displayDetailedStatus(serverInfo, options.detailed);
     } catch (error) {
       spinner.fail(`Failed to get status for "${appName}"`);
       throw error;
@@ -74,7 +74,7 @@ class StatusCommand {
       }
 
       // Display overview
-      this.displayOverview(servers);
+      StatusCommand.displayOverview(servers);
 
       if (options.detailed) {
         console.log();
@@ -83,7 +83,7 @@ class StatusCommand {
 
         servers.forEach((server, index) => {
           if (index > 0) console.log();
-          this.displayDetailedStatus(server, true);
+          StatusCommand.displayDetailedStatus(server, true);
         });
       }
     } catch (error) {
@@ -166,7 +166,9 @@ class StatusCommand {
 
   static displayDetailedStatus(server, detailed = false) {
     console.log(chalk.cyan.bold(`${server.appName}`));
-    console.log(chalk.gray(`  Status: ${this.formatStatus(server.status)}`));
+    console.log(
+      chalk.gray(`  Status: ${StatusCommand.formatStatus(server.status)}`)
+    );
 
     if (server.status === 'running') {
       console.log(

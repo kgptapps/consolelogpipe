@@ -28,14 +28,14 @@ class ListCommand {
       // Format output based on requested format
       switch (options.format) {
         case 'json':
-          this.displayJson(servers);
+          ListCommand.displayJson(servers);
           break;
         case 'text':
-          this.displayText(servers);
+          ListCommand.displayText(servers);
           break;
         case 'table':
         default:
-          this.displayTable(servers);
+          ListCommand.displayTable(servers);
           break;
       }
 
