@@ -5,6 +5,7 @@
 import { defineConfig } from 'rollup';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 import { babel } from '@rollup/plugin-babel';
+import commonjs from '@rollup/plugin-commonjs';
 import terser from '@rollup/plugin-terser';
 import { createRequire } from 'module';
 
@@ -14,19 +15,20 @@ const pkg = require('./package.json');
 const isProduction = process.env.NODE_ENV === 'production';
 
 export default defineConfig([
-  // UMD build for browsers
+  // UMD build for browsers (readable for CDN usage)
   {
     input: 'src/index.js',
     output: {
       file: 'dist/console-log-pipe.umd.js',
       format: 'umd',
       name: 'ConsoleLogPipe',
-      sourcemap: !isProduction,
+      sourcemap: true,
+      indent: '  ',
       banner: `/**
  * Console Log Pipe Client Library v${pkg.version}
  * ${pkg.description}
  * ${pkg.homepage}
- * 
+ *
  * Copyright (c) ${new Date().getFullYear()} ${pkg.author}
  * Licensed under ${pkg.license}
  */`,
@@ -36,22 +38,10 @@ export default defineConfig([
         browser: true,
         preferBuiltins: false,
       }),
-      babel({
-        babelHelpers: 'bundled',
-        exclude: 'node_modules/**',
-        presets: [
-          [
-            '@babel/preset-env',
-            {
-              targets: {
-                browsers: ['> 1%', 'last 2 versions', 'not dead'],
-              },
-              modules: false,
-            },
-          ],
-        ],
+      commonjs({
+        include: ['src/**'],
       }),
-      ...(isProduction ? [terser()] : []),
+      // No Babel for UMD to keep it readable
     ],
     external: [],
   },
@@ -76,6 +66,9 @@ export default defineConfig([
       nodeResolve({
         browser: true,
         preferBuiltins: false,
+      }),
+      commonjs({
+        include: ['src/**'],
       }),
       babel({
         babelHelpers: 'bundled',
@@ -117,6 +110,9 @@ export default defineConfig([
     plugins: [
       nodeResolve({
         preferBuiltins: true,
+      }),
+      commonjs({
+        include: ['src/**'],
       }),
       babel({
         babelHelpers: 'bundled',
