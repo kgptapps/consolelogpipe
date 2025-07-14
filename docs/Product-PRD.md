@@ -158,9 +158,9 @@ integrate browser debugging into their existing development workflow.
      - Easy integration (1-line setup)
      - TypeScript definitions
 
-2. **CLI Tool (console-log-pipe)**
+2. **CLI Tool (@kansnpms/console-log-pipe-cli)**
 
-   - Global npm package installation (`npm install -g console-log-pipe`)
+   - Global npm package installation (`npm install -g @kansnpms/console-log-pipe-cli`)
    - Real-time log display in terminal
    - Session management with auto-generated IDs
    - Cross-platform support (Windows, macOS, Linux)

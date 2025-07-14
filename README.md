@@ -119,7 +119,7 @@ Context: This is a React e-commerce app with a Node.js backend.
 ### Install the CLI tool globally
 
 ```bash
-npm install -g console-log-pipe
+npm install -g @kansnpms/console-log-pipe-cli
 ```
 
 ### Start the local server
@@ -291,7 +291,7 @@ Context: This is a React e-commerce app with a Node.js backend.
 This monorepo contains the following packages:
 
 - **[@kansnpms/console-log-pipe-client](./packages/client)** - Browser client library
-- **[console-log-pipe](./packages/cli)** - Global CLI tool and local server
+- **[@kansnpms/console-log-pipe-cli](./packages/cli)** - Global CLI tool and local server
 - **[@kansnpms/console-log-pipe-server](./packages/server)** - Hosted server package
 - **[@kansnpms/console-log-pipe-desktop](./packages/desktop)** - Electron desktop application
 - **Browser Extensions** - Chrome, Firefox, Safari, and Edge extensions

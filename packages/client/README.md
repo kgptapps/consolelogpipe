@@ -99,7 +99,7 @@ First, install and start the Console Log Pipe CLI server:
 
 ```bash
 # Install CLI globally
-npm install -g console-log-pipe
+npm install -g @kansnpms/console-log-pipe-cli
 
 # Start server for your application
 clp start --app my-web-app

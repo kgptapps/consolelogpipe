@@ -6,7 +6,7 @@ applications.
 ## Installation
 
 ```bash
-npm install -g console-log-pipe
+npm install -g @kansnpms/console-log-pipe-cli
 ```
 
 ## Quick Start

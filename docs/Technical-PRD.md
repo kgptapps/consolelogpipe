@@ -244,7 +244,7 @@ const networkConfig = {
 #### Technical Requirements
 
 - **Runtime:** Node.js 16+
-- **Distribution:** Global NPM package (`npm install -g console-log-pipe`)
+- **Distribution:** Global NPM package (`npm install -g @kansnpms/console-log-pipe-cli`)
 - **Packaging:** Cross-platform Node.js package with optional binaries
 - **Size:** <10MB package, <50MB optional executable
 - **Platforms:** All platforms supported by Node.js 16+
@@ -253,7 +253,7 @@ const networkConfig = {
 
 ```bash
 # Global installation
-npm install -g console-log-pipe
+npm install -g @kansnpms/console-log-pipe-cli
 
 # Start local server and display session info
 clp start
