@@ -25,15 +25,20 @@ jest.mock('ora', () => {
 });
 
 // Mock console methods
-const mockConsoleLog = jest.spyOn(console, 'log').mockImplementation();
-const mockConsoleError = jest.spyOn(console, 'error').mockImplementation();
-const mockProcessExit = jest.spyOn(process, 'exit').mockImplementation(code => {
-  throw new Error(`Process exit with code ${code}`);
-});
+let mockConsoleLog;
+let mockConsoleError;
+let mockProcessExit;
 
 describe('StartCommand', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+
+    // Set up console mocks
+    mockConsoleLog = jest.spyOn(console, 'log').mockImplementation();
+    mockConsoleError = jest.spyOn(console, 'error').mockImplementation();
+    mockProcessExit = jest.spyOn(process, 'exit').mockImplementation(code => {
+      throw new Error(`Process exit with code ${code}`);
+    });
 
     // Default mocks
     ServerManager.getServerInfo.mockResolvedValue(null);
@@ -49,15 +54,15 @@ describe('StartCommand', () => {
   });
 
   afterEach(() => {
-    mockConsoleLog.mockClear();
-    mockConsoleError.mockClear();
-    if (mockProcessExit.mockRestore) {
+    if (mockConsoleLog) {
+      mockConsoleLog.mockRestore();
+    }
+    if (mockConsoleError) {
+      mockConsoleError.mockRestore();
+    }
+    if (mockProcessExit) {
       mockProcessExit.mockRestore();
     }
-    // Re-establish the mock for next test
-    jest.spyOn(process, 'exit').mockImplementation(code => {
-      throw new Error(`Process exit with code ${code}`);
-    });
   });
 
   describe('execute', () => {
@@ -237,7 +242,7 @@ describe('StartCommand', () => {
 
       expect(mockProcessExit).toHaveBeenCalledWith(1);
       expect(mockConsoleError).toHaveBeenCalledWith(
-        expect.anything(),
+        expect.stringContaining('Error:'),
         'Server start failed'
       );
     });
@@ -255,15 +260,14 @@ describe('StartCommand', () => {
       ).rejects.toThrow('Process exit with code 1');
 
       expect(mockConsoleError).toHaveBeenCalledWith(
-        expect.anything(),
-        'Error stack trace'
+        expect.stringContaining('Error stack trace')
       );
     });
 
     it('should display integration instructions', async () => {
       // Temporarily restore process.exit for successful case
       mockProcessExit.mockRestore();
-      const exitSpy = jest.spyOn(process, 'exit').mockImplementation();
+      mockProcessExit = jest.spyOn(process, 'exit').mockImplementation();
 
       const options = {};
       const command = { opts: () => ({}) };
@@ -271,19 +275,17 @@ describe('StartCommand', () => {
       await StartCommand.execute('test-app', options, command);
 
       expect(mockConsoleLog).toHaveBeenCalledWith(
-        expect.stringContaining('Integration Instructions')
+        expect.stringContaining('📋 Integration Instructions:')
       );
       expect(mockConsoleLog).toHaveBeenCalledWith(
         expect.stringContaining('npm install @kansnpms/console-log-pipe-client')
       );
-
-      exitSpy.mockRestore();
     });
 
     it('should display AI-friendly session info', async () => {
       // Temporarily restore process.exit for successful case
       mockProcessExit.mockRestore();
-      const exitSpy = jest.spyOn(process, 'exit').mockImplementation();
+      mockProcessExit = jest.spyOn(process, 'exit').mockImplementation();
 
       const options = {};
       const command = { opts: () => ({}) };
@@ -291,13 +293,11 @@ describe('StartCommand', () => {
       await StartCommand.execute('test-app', options, command);
 
       expect(mockConsoleLog).toHaveBeenCalledWith(
-        expect.stringContaining('AI-Friendly Session Info')
+        expect.stringContaining('🤖 AI-Friendly Session Info:')
       );
       expect(mockConsoleLog).toHaveBeenCalledWith(
         expect.stringContaining('"applicationName": "test-app"')
       );
-
-      exitSpy.mockRestore();
     });
   });
 });

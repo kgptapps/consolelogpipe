@@ -35,6 +35,7 @@ jest.mock('ws', () => ({
     on: jest.fn(),
     clients: new Set(),
   })),
+  OPEN: 1,
 }));
 
 describe('ServerManager', () => {
@@ -45,6 +46,9 @@ describe('ServerManager', () => {
     // Mock console.log to avoid noise in tests
     jest.spyOn(console, 'log').mockImplementation();
     jest.spyOn(console, 'error').mockImplementation();
+
+    // Ensure ConfigManager.saveServerConfig returns a promise
+    ConfigManager.saveServerConfig.mockResolvedValue();
   });
 
   afterEach(() => {
@@ -293,6 +297,7 @@ describe('ServerManager', () => {
       });
 
       const serverInstance = ServerManager.servers.get('test-app');
+      // Manually add the mock WebSocket client
       serverInstance.wss.clients.add(mockWs);
 
       ServerManager.broadcastToClients('test-app', {

@@ -359,7 +359,8 @@ class ServerManager {
     if (!serverInstance) return;
 
     serverInstance.wss.clients.forEach(ws => {
-      if (ws.readyState === WebSocket.OPEN) {
+      if (ws.readyState === 1) {
+        // WebSocket.OPEN
         ws.send(JSON.stringify(message));
       }
     });
