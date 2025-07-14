@@ -1,3 +1,4 @@
+/* eslint-env node */
 /**
  * Console Log Pipe Client Library
  *
@@ -5,26 +6,44 @@
  * errors, and network requests from web applications.
  */
 
-import LogCapture from './core/LogCapture.js';
+const ConsoleLogPipe = require('./ConsoleLogPipe');
+const { LogCapture } = require('./core/log');
+const { NetworkCapture } = require('./core/network');
+const ErrorCapture = require('./core/ErrorCapture');
+const { HttpTransport } = require('./transport');
 
-// Export the main LogCapture class
-export { LogCapture };
+// Main API object
+const ConsoleLogPipeAPI = {
+  /**
+   * Initialize Console Log Pipe with configuration
+   */
+  async init(options = {}) {
+    const instance = new ConsoleLogPipe(options);
+    await instance.init();
+    instance.start();
+    return instance;
+  },
 
-// Export as default for easier importing
-export default LogCapture;
+  /**
+   * Create a new Console Log Pipe instance without auto-starting
+   */
+  create(options = {}) {
+    return new ConsoleLogPipe(options);
+  },
 
-// Version information
-export const version = '1.0.0';
+  // Export individual components for advanced usage
+  ConsoleLogPipe,
+  LogCapture,
+  NetworkCapture,
+  ErrorCapture,
+  HttpTransport,
 
-// Convenience function to create and start a LogCapture instance
-export function createLogCapture(options = {}) {
-  const logCapture = new LogCapture(options);
-  return logCapture;
-}
+  // Version information
+  version: '1.1.4',
+};
 
-// Auto-start functionality for simple use cases
-export function autoStart(options = {}) {
-  const logCapture = createLogCapture(options);
-  logCapture.start();
-  return logCapture;
-}
+// Export the main API
+module.exports = ConsoleLogPipeAPI;
+
+// Also export as default for ES6 imports
+module.exports.default = ConsoleLogPipeAPI;

@@ -2,104 +2,122 @@
  * index.test.js - Tests for the main entry point
  */
 
-import LogCapture, {
-  version,
-  createLogCapture,
-  autoStart,
-} from '../src/index.js';
+const ConsoleLogPipeAPI = require('../src/index');
+
+// Mock all dependencies to avoid actual initialization
+jest.mock('../src/transport', () => ({
+  HttpTransport: jest.fn().mockImplementation(() => ({
+    initialize: jest.fn().mockResolvedValue(true),
+    send: jest.fn(),
+    flush: jest.fn().mockResolvedValue(),
+    destroy: jest.fn(),
+    getStats: jest.fn().mockReturnValue({ totalSent: 0 }),
+  })),
+}));
+
+jest.mock('../src/core/log', () => ({
+  LogCapture: jest.fn().mockImplementation(() => ({
+    start: jest.fn(),
+    stop: jest.fn(),
+    destroy: jest.fn(),
+  })),
+}));
+
+jest.mock('../src/core/network', () => ({
+  NetworkCapture: jest.fn().mockImplementation(() => ({
+    start: jest.fn(),
+    stop: jest.fn(),
+    destroy: jest.fn(),
+  })),
+}));
+
+jest.mock('../src/core/ErrorCapture', () => {
+  return jest.fn().mockImplementation(() => ({
+    start: jest.fn(),
+    stop: jest.fn(),
+    destroy: jest.fn(),
+  }));
+});
 
 describe('Index Module', () => {
   describe('Exports', () => {
-    it('should export LogCapture as default', () => {
-      expect(LogCapture).toBeDefined();
-      expect(typeof LogCapture).toBe('function');
+    it('should export main API object', () => {
+      expect(ConsoleLogPipeAPI).toBeDefined();
+      expect(typeof ConsoleLogPipeAPI).toBe('object');
+    });
+
+    it('should export init function', () => {
+      expect(ConsoleLogPipeAPI.init).toBeDefined();
+      expect(typeof ConsoleLogPipeAPI.init).toBe('function');
+    });
+
+    it('should export create function', () => {
+      expect(ConsoleLogPipeAPI.create).toBeDefined();
+      expect(typeof ConsoleLogPipeAPI.create).toBe('function');
+    });
+
+    it('should export ConsoleLogPipe class', () => {
+      expect(ConsoleLogPipeAPI.ConsoleLogPipe).toBeDefined();
+      expect(typeof ConsoleLogPipeAPI.ConsoleLogPipe).toBe('function');
     });
 
     it('should export version', () => {
-      expect(version).toBeDefined();
-      expect(typeof version).toBe('string');
-      expect(version).toMatch(/^\d+\.\d+\.\d+$/);
+      expect(ConsoleLogPipeAPI.version).toBeDefined();
+      expect(typeof ConsoleLogPipeAPI.version).toBe('string');
+      expect(ConsoleLogPipeAPI.version).toBe('1.1.4');
     });
 
-    it('should export createLogCapture function', () => {
-      expect(createLogCapture).toBeDefined();
-      expect(typeof createLogCapture).toBe('function');
-    });
-
-    it('should export autoStart function', () => {
-      expect(autoStart).toBeDefined();
-      expect(typeof autoStart).toBe('function');
+    it('should export individual components', () => {
+      expect(ConsoleLogPipeAPI.LogCapture).toBeDefined();
+      expect(ConsoleLogPipeAPI.NetworkCapture).toBeDefined();
+      expect(ConsoleLogPipeAPI.ErrorCapture).toBeDefined();
+      expect(ConsoleLogPipeAPI.HttpTransport).toBeDefined();
     });
   });
 
-  describe('createLogCapture', () => {
-    it('should create a LogCapture instance with default options', () => {
-      const logCapture = createLogCapture({ applicationName: 'test-app' });
+  describe('create', () => {
+    it('should create a ConsoleLogPipe instance', () => {
+      const clp = ConsoleLogPipeAPI.create({ applicationName: 'test-app' });
 
-      expect(logCapture).toBeInstanceOf(LogCapture);
-      expect(logCapture.options.applicationName).toBe('test-app');
+      expect(clp).toBeInstanceOf(ConsoleLogPipeAPI.ConsoleLogPipe);
+      expect(clp.config.applicationName).toBe('test-app');
     });
 
-    it('should create a LogCapture instance with custom options', () => {
-      const options = {
-        applicationName: 'custom-app',
-        levels: ['error', 'warn'],
-        captureMetadata: false,
-      };
-
-      const logCapture = createLogCapture(options);
-
-      expect(logCapture).toBeInstanceOf(LogCapture);
-      expect(logCapture.options.applicationName).toBe('custom-app');
-      expect(logCapture.options.levels).toEqual(['error', 'warn']);
-      expect(logCapture.options.captureMetadata).toBe(false);
-    });
-
-    it('should create a LogCapture instance with empty options', () => {
-      // This should throw because applicationName is required
+    it('should throw error when create called without applicationName', () => {
       expect(() => {
-        createLogCapture();
-      }).toThrow('applicationName is required and must be a non-empty string');
+        ConsoleLogPipeAPI.create();
+      }).toThrow('applicationName is required');
     });
   });
 
-  describe('autoStart', () => {
-    let logCapture;
+  describe('init', () => {
+    let clp;
 
-    afterEach(() => {
-      if (logCapture) {
-        logCapture.stop();
+    beforeEach(() => {
+      // Mock console.log to avoid noise in test output
+      jest.spyOn(console, 'log').mockImplementation();
+    });
+
+    afterEach(async () => {
+      if (clp) {
+        await clp.destroy();
       }
+      jest.restoreAllMocks();
     });
 
-    it('should create and start a LogCapture instance', () => {
-      logCapture = autoStart({ applicationName: 'auto-test-app' });
+    it('should create, initialize and start a ConsoleLogPipe instance', async () => {
+      clp = await ConsoleLogPipeAPI.init({ applicationName: 'init-test-app' });
 
-      expect(logCapture).toBeInstanceOf(LogCapture);
-      expect(logCapture.options.applicationName).toBe('auto-test-app');
-      expect(logCapture.isCapturing).toBe(true);
+      expect(clp).toBeInstanceOf(ConsoleLogPipeAPI.ConsoleLogPipe);
+      expect(clp.config.applicationName).toBe('init-test-app');
+      expect(clp.isInitialized).toBe(true);
+      expect(clp.isCapturing).toBe(true);
     });
 
-    it('should create and start a LogCapture instance with custom options', () => {
-      const options = {
-        applicationName: 'auto-custom-app',
-        levels: ['log', 'error'],
-        captureMetadata: true,
-      };
-
-      logCapture = autoStart(options);
-
-      expect(logCapture).toBeInstanceOf(LogCapture);
-      expect(logCapture.options.applicationName).toBe('auto-custom-app');
-      expect(logCapture.options.levels).toEqual(['log', 'error']);
-      expect(logCapture.options.captureMetadata).toBe(true);
-      expect(logCapture.isCapturing).toBe(true);
-    });
-
-    it('should throw error when autoStart called without applicationName', () => {
-      expect(() => {
-        autoStart();
-      }).toThrow('applicationName is required and must be a non-empty string');
+    it('should throw error when init called without applicationName', async () => {
+      await expect(ConsoleLogPipeAPI.init()).rejects.toThrow(
+        'applicationName is required'
+      );
     });
   });
 });
