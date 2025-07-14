@@ -350,7 +350,7 @@ class ServerManager {
 
     // Check saved configurations for running servers
     const savedConfigs = await ConfigManager.getAllServerConfigs();
-    for (const config of savedConfigs) {
+    for (const config of savedConfigs || []) {
       if (!processedApps.has(config.appName)) {
         // Check if server is actually running by testing the port
         const isRunning = await this.isServerRunning(
@@ -397,7 +397,7 @@ class ServerManager {
         resolve(false);
       });
 
-      socket.connect(port, host);
+      socket.connect(port || 3000, host || 'localhost');
     });
   }
 

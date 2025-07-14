@@ -252,6 +252,9 @@ describe('ServerManager', () => {
         { appName: 'inactive-app', status: 'stopped' },
       ]);
 
+      // Mock isServerRunning to return false for inactive servers
+      jest.spyOn(ServerManager, 'isServerRunning').mockResolvedValue(false);
+
       const servers = await ServerManager.getAllServers(true);
 
       expect(servers).toHaveLength(1);
@@ -270,6 +273,9 @@ describe('ServerManager', () => {
         { appName: 'running-app', status: 'stopped' },
         { appName: 'inactive-app', status: 'stopped' },
       ]);
+
+      // Mock isServerRunning to return false for inactive servers
+      jest.spyOn(ServerManager, 'isServerRunning').mockResolvedValue(false);
 
       const servers = await ServerManager.getAllServers(true);
 
