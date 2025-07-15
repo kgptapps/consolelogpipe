@@ -31,14 +31,13 @@ jest.mock('../src/core/ErrorCapture', () => {
   }));
 });
 
-jest.mock('../src/transport', () => ({
-  HttpTransport: jest.fn().mockImplementation(() => ({
-    initialize: jest.fn().mockResolvedValue(true),
-    send: jest.fn(),
-    flush: jest.fn().mockResolvedValue(),
-    destroy: jest.fn(),
-    getStats: jest.fn().mockReturnValue({ totalSent: 0, totalFailed: 0 }),
-  })),
+// Mock WebSocket to prevent actual connections during tests
+global.WebSocket = jest.fn().mockImplementation(() => ({
+  addEventListener: jest.fn(),
+  removeEventListener: jest.fn(),
+  send: jest.fn(),
+  close: jest.fn(),
+  readyState: 1, // OPEN
 }));
 
 describe('ConsoleLogPipe', () => {

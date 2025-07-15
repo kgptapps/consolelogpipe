@@ -245,9 +245,14 @@ describe('LogInterceptor', () => {
         expect(newOriginal.log).not.toBe(original.log);
       });
 
-      it('should return empty object when not intercepting', () => {
+      it('should return console methods when not intercepting', () => {
         const original = interceptor.getOriginalConsole();
-        expect(original).toEqual({});
+        // After our fix, original console methods are captured immediately in constructor
+        expect(original).toHaveProperty('log');
+        expect(original).toHaveProperty('error');
+        expect(original).toHaveProperty('warn');
+        expect(original).toHaveProperty('info');
+        expect(original).toHaveProperty('debug');
       });
     });
   });

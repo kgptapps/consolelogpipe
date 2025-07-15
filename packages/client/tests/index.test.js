@@ -5,14 +5,13 @@
 const ConsoleLogPipeAPI = require('../src/index');
 
 // Mock all dependencies to avoid actual initialization
-jest.mock('../src/transport', () => ({
-  HttpTransport: jest.fn().mockImplementation(() => ({
-    initialize: jest.fn().mockResolvedValue(true),
-    send: jest.fn(),
-    flush: jest.fn().mockResolvedValue(),
-    destroy: jest.fn(),
-    getStats: jest.fn().mockReturnValue({ totalSent: 0 }),
-  })),
+// Mock WebSocket to prevent actual connections during tests
+global.WebSocket = jest.fn().mockImplementation(() => ({
+  addEventListener: jest.fn(),
+  removeEventListener: jest.fn(),
+  send: jest.fn(),
+  close: jest.fn(),
+  readyState: 1, // OPEN
 }));
 
 jest.mock('../src/core/log', () => ({
@@ -43,7 +42,8 @@ describe('Index Module', () => {
   describe('Exports', () => {
     it('should export main API object', () => {
       expect(ConsoleLogPipeAPI).toBeDefined();
-      expect(typeof ConsoleLogPipeAPI).toBe('object');
+      // ConsoleLogPipeAPI is a function that can be called to create instances
+      expect(typeof ConsoleLogPipeAPI).toBe('function');
     });
 
     it('should export init function', () => {
@@ -64,14 +64,14 @@ describe('Index Module', () => {
     it('should export version', () => {
       expect(ConsoleLogPipeAPI.version).toBeDefined();
       expect(typeof ConsoleLogPipeAPI.version).toBe('string');
-      expect(ConsoleLogPipeAPI.version).toBe('1.1.24');
+      expect(ConsoleLogPipeAPI.version).toBe('1.1.25');
     });
 
     it('should export individual components', () => {
       expect(ConsoleLogPipeAPI.LogCapture).toBeDefined();
       expect(ConsoleLogPipeAPI.NetworkCapture).toBeDefined();
       expect(ConsoleLogPipeAPI.ErrorCapture).toBeDefined();
-      expect(ConsoleLogPipeAPI.HttpTransport).toBeDefined();
+      // HttpTransport was removed - now using WebSocket directly in ConsoleLogPipe
     });
   });
 
