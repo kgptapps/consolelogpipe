@@ -1,6 +1,6 @@
 {
   "name": "@kansnpms/console-log-pipe-cli",
-  "version": "1.1.23",
+  "version": "1.1.24",
   "description": "Global CLI tool for Console Log Pipe - Real-time log streaming server and management",
   "main": "src/cli.js",
   "bin": {
