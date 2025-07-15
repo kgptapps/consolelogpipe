@@ -55,9 +55,15 @@ Start Console Log Pipe server for an application. **Port number is required.** *
 automatically** - logs appear in real-time in your terminal.
 
 ```bash
+# Basic usage
 clp start my-react-app --port 3001
 clp start my-vue-app --port 3016
 clp start "My Project" --port 3002
+
+# With filtering options
+clp start my-app --port 3001 --filter "error" --log-level warn
+clp start my-app --port 3001 --since "1h" --tail 100
+clp start my-app --port 3001 --format json --exclude "debug"
 
 # Stop with Ctrl+C when done
 ```
@@ -70,6 +76,12 @@ clp start "My Project" --port 3002
 - `--env <environment>` - Environment (development, staging, production)
 - `--log-level <level>` - Minimum log level (debug, info, warn, error)
 - `--max-logs <number>` - Maximum logs to store (default: 1000)
+- `--filter <pattern>` - Filter logs by pattern
+- `--since <time>` - Show logs since time (e.g., "1h", "30m", "2023-01-01")
+- `--tail <number>` - Number of recent logs to show (default: 50)
+- `--format <format>` - Output format (json, text, table) (default: text)
+- `--exclude <pattern>` - Exclude logs matching pattern
+- `--include <pattern>` - Only include logs matching pattern
 
 ## 🎯 Real-World Examples
 
