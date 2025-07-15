@@ -67,7 +67,7 @@ describe('StartCommand', () => {
 
   describe('execute', () => {
     it('should start server successfully with valid app name', async () => {
-      const options = { host: 'localhost' };
+      const options = { host: 'localhost', port: '3001' };
       const command = { opts: () => ({}) };
 
       await StartCommand.execute('test-app', options, command);
@@ -97,12 +97,48 @@ describe('StartCommand', () => {
       expect(ServerManager.startServer).not.toHaveBeenCalled();
     });
 
+    it('should fail when no port provided', async () => {
+      const options = {};
+      const command = { opts: () => ({}) };
+
+      await expect(
+        StartCommand.execute('test-app', options, command)
+      ).rejects.toThrow('Process exit with code 1');
+
+      expect(mockProcessExit).toHaveBeenCalledWith(1);
+      expect(ServerManager.startServer).not.toHaveBeenCalled();
+    });
+
     it('should fail with invalid app name format', async () => {
       const options = {};
       const command = { opts: () => ({}) };
 
       await expect(
         StartCommand.execute('invalid app name!', options, command)
+      ).rejects.toThrow('Process exit with code 1');
+
+      expect(mockProcessExit).toHaveBeenCalledWith(1);
+      expect(ServerManager.startServer).not.toHaveBeenCalled();
+    });
+
+    it('should fail with invalid port number', async () => {
+      const options = { port: 'invalid' };
+      const command = { opts: () => ({}) };
+
+      await expect(
+        StartCommand.execute('test-app', options, command)
+      ).rejects.toThrow('Process exit with code 1');
+
+      expect(mockProcessExit).toHaveBeenCalledWith(1);
+      expect(ServerManager.startServer).not.toHaveBeenCalled();
+    });
+
+    it('should fail with port number out of range', async () => {
+      const options = { port: '500' }; // Below 1024
+      const command = { opts: () => ({}) };
+
+      await expect(
+        StartCommand.execute('test-app', options, command)
       ).rejects.toThrow('Process exit with code 1');
 
       expect(mockProcessExit).toHaveBeenCalledWith(1);
@@ -117,25 +153,13 @@ describe('StartCommand', () => {
         sessionId: 'existing-session',
       });
 
-      const options = {};
+      const options = { port: '3001' };
       const command = { opts: () => ({}) };
 
       await StartCommand.execute('test-app', options, command);
 
       expect(ServerManager.startServer).not.toHaveBeenCalled();
       expect(openBrowser).toHaveBeenCalledWith('http://localhost:3001');
-    });
-
-    it('should validate custom port', async () => {
-      const options = { port: 'invalid' };
-      const command = { opts: () => ({}) };
-
-      await expect(
-        StartCommand.execute('test-app', options, command)
-      ).rejects.toThrow('Process exit with code 1');
-
-      expect(mockProcessExit).toHaveBeenCalledWith(1);
-      expect(ServerManager.startServer).not.toHaveBeenCalled();
     });
 
     it('should check port availability for custom port', async () => {
@@ -153,7 +177,7 @@ describe('StartCommand', () => {
     });
 
     it('should use custom session ID when provided', async () => {
-      const options = { sessionId: 'custom-session-123' };
+      const options = { sessionId: 'custom-session-123', port: '3001' };
       const command = { opts: () => ({}) };
 
       await StartCommand.execute('test-app', options, command);
@@ -166,7 +190,7 @@ describe('StartCommand', () => {
     });
 
     it('should generate session ID when not provided', async () => {
-      const options = {};
+      const options = { port: '3001' };
       const command = { opts: () => ({}) };
 
       await StartCommand.execute('test-app', options, command);
@@ -184,7 +208,7 @@ describe('StartCommand', () => {
         branch: 'feature-branch',
       });
 
-      const options = {};
+      const options = { port: '3001' };
       const command = { opts: () => ({}) };
 
       await StartCommand.execute('test-app', options, command);
@@ -206,6 +230,7 @@ describe('StartCommand', () => {
       const options = {
         developer: 'custom-developer',
         branch: 'custom-branch',
+        port: '3001',
       };
       const command = { opts: () => ({}) };
 
@@ -220,7 +245,7 @@ describe('StartCommand', () => {
     });
 
     it('should not open browser when noBrowser option is set', async () => {
-      const options = { noBrowser: true };
+      const options = { noBrowser: true, port: '3001' };
       const command = { opts: () => ({}) };
 
       await StartCommand.execute('test-app', options, command);
@@ -233,7 +258,7 @@ describe('StartCommand', () => {
         new Error('Server start failed')
       );
 
-      const options = {};
+      const options = { port: '3001' };
       const command = { opts: () => ({}) };
 
       await expect(
@@ -252,7 +277,7 @@ describe('StartCommand', () => {
       error.stack = 'Error stack trace';
       ServerManager.startServer.mockRejectedValue(error);
 
-      const options = {};
+      const options = { port: '3001' };
       const command = { opts: () => ({ verbose: true }) };
 
       await expect(
@@ -269,7 +294,7 @@ describe('StartCommand', () => {
       mockProcessExit.mockRestore();
       mockProcessExit = jest.spyOn(process, 'exit').mockImplementation();
 
-      const options = {};
+      const options = { port: '3001' };
       const command = { opts: () => ({}) };
 
       await StartCommand.execute('test-app', options, command);
@@ -287,7 +312,7 @@ describe('StartCommand', () => {
       mockProcessExit.mockRestore();
       mockProcessExit = jest.spyOn(process, 'exit').mockImplementation();
 
-      const options = {};
+      const options = { port: '3001' };
       const command = { opts: () => ({}) };
 
       await StartCommand.execute('test-app', options, command);
