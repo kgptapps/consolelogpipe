@@ -20,15 +20,7 @@ const ConsoleLogPipeAPI = {
    * Initialize Console Log Pipe
    */
   async init(options = {}) {
-    const {
-      applicationName,
-      serverPort = 3001,
-      serverHost = 'localhost',
-    } = options;
-
-    if (!applicationName) {
-      throw new Error('applicationName is required');
-    }
+    const { serverPort = 3001, serverHost = 'localhost' } = options;
 
     console.log('Initializing Console Log Pipe...');
 
