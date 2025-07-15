@@ -85,19 +85,17 @@ jobs:
           echo "✅ Published @kansnpms/console-log-pipe-cli"
           cd ../..
 
-          # Publish server package when ready
-          # cd packages/server && npm publish --access public && cd ../..
-
           echo "🎉 All packages published successfully!"
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-  # Job 3: Create GitHub Release Assets
+  # Job 3: Create GitHub Release Assets (Optional)
   release-assets:
-    name: Create Release Assets
-    runs-on: ubuntu-latest
+    name: Create Release Assets (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
     timeout-minutes: 20
     needs: [validate]
+    continue-on-error: true
 
     strategy:
       matrix:
@@ -122,7 +120,14 @@ jobs:
       - name: Build CLI binaries
         run: |
           cd packages/cli
-          npm run build:binaries || echo "Binary build not yet implemented"
+          if [ -f "build/scripts/build-binaries.js" ]; then
+            npm run build:binaries
+            echo "✅ CLI binaries built successfully"
+          else
+            echo "⚠️ Binary build script not found - skipping binary creation"
+            echo "CLI is available as NPM package: npm install -g @kansnpms/console-log-pipe-cli"
+          fi
+          cd ..
 
       - name: Package release assets
         run: |
@@ -136,12 +141,6 @@ jobs:
 
           # Package CLI tool
           cd packages/cli
-          npm pack
-          mv *.tgz ../../release-assets/
-          cd ../..
-
-          # Package server
-          cd packages/server
           npm pack
           mv *.tgz ../../release-assets/
           cd ../..
@@ -198,7 +197,7 @@ jobs:
     name: Notify Release
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    needs: [publish-npm, release-assets, update-docs]
+    needs: [publish-npm, update-docs]
     if: always() && (github.event_name == 'release' || startsWith(github.ref, 'refs/tags/v'))
 
     steps:
@@ -206,9 +205,14 @@ jobs:
         if: needs.publish-npm.result == 'success'
         run: |
           echo "🎉 Release ${{ github.ref_name }} published successfully!"
-          echo "📦 NPM packages updated"
-          echo "📋 Release assets created"
+          echo "📦 NPM packages updated:"
+          echo "   - @kansnpms/console-log-pipe-cli@${{ github.ref_name }}"
+          echo "   - @kansnpms/console-log-pipe-client@${{ github.ref_name }}"
           echo "📚 Documentation updated"
+          echo ""
+          echo "Install with:"
+          echo "  npm install -g @kansnpms/console-log-pipe-cli"
+          echo "  npm install @kansnpms/console-log-pipe-client"
 
       - name: Notify failure
         if: needs.publish-npm.result == 'failure'
