@@ -235,24 +235,6 @@ clp start my-web-app --port 3002
 </script>
 ```
 
-## 🤖 AI-Friendly Output
-
-Console Log Pipe formats logs specifically for AI coding assistants:
-
-```
-[ERROR] TypeError: Cannot read property 'map' of undefined
-  at UserList.jsx:15:23
-  Application: ecommerce-frontend
-  Environment: development
-  Session: clp_abc123_xyz789
-  Category: Runtime Error
-  Stack: UserList.jsx -> App.jsx -> index.js
-
-[NETWORK] Failed to fetch /api/users - 404 Not Found
-  Application: ecommerce-frontend
-  Response: {"error": "Users endpoint not found"}
-```
-
 ## 📚 More Information
 
 - **Main Repository**: [Console Log Pipe](https://github.com/kgptapps/consolelogpipe)
