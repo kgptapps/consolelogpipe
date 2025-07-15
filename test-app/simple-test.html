@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple Console Log Pipe Test</title>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        button { padding: 10px 20px; margin: 5px; font-size: 16px; cursor: pointer; }
+        .log { background: #f8f9fa; border: 1px solid #dee2e6; padding: 15px; margin: 10px 0; border-radius: 5px; font-family: monospace; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Simple Console Log Pipe Test</h1>
+        <p>This page tests the Console Log Pipe client library.</p>
+        
+        <div class="log" id="status">Status: Ready</div>
+        
+        <button onclick="initConsoleLogPipe()">1. Initialize Console Log Pipe</button>
+        <button onclick="sendTestLogs()">2. Send Test Logs</button>
+        <button onclick="testNetworkRequest()">3. Test Network Request</button>
+        <button onclick="testError()">4. Test Error</button>
+    </div>
+
+    <!-- Load the UMD bundle -->
+    <script src="./node_modules/@kansnpms/console-log-pipe-client/dist/console-log-pipe.umd.js"></script>
+    
+    <script>
+        // Check if ConsoleLogPipe is available
+        if (typeof ConsoleLogPipe === 'undefined') {
+            document.getElementById('status').innerHTML = 'Error: ConsoleLogPipe not found!';
+            console.error('ConsoleLogPipe not found!');
+        } else {
+            document.getElementById('status').innerHTML = 'ConsoleLogPipe loaded successfully. Version: ' + ConsoleLogPipe.version;
+            console.log('ConsoleLogPipe loaded successfully. Version: ' + ConsoleLogPipe.version);
+        }
+        
+        function updateStatus(message) {
+            document.getElementById('status').innerHTML = message;
+        }
+        
+        function initConsoleLogPipe() {
+            try {
+                // Initialize with the correct parameters for browser version
+                ConsoleLogPipe.init({
+                    serverPort: 3007,
+                    serverHost: 'localhost'
+                });
+
+                updateStatus('ConsoleLogPipe initialized successfully!');
+                console.log('ConsoleLogPipe initialized successfully!');
+            } catch (error) {
+                updateStatus('Error initializing ConsoleLogPipe: ' + error.message);
+                console.error('Error initializing ConsoleLogPipe:', error);
+            }
+        }
+        
+        function sendTestLogs() {
+            updateStatus('Sending test logs...');
+            
+            // Test different log levels
+            console.log('Test log message from simple-test.html');
+            console.error('Test error message from simple-test.html');
+            console.warn('Test warning message from simple-test.html');
+            console.info('Test info message from simple-test.html');
+            
+            // Test object logging
+            console.log('Test object:', {
+                name: 'Test Object',
+                timestamp: new Date().toISOString(),
+                data: [1, 2, 3, 4, 5]
+            });
+            
+            updateStatus('Test logs sent! Check CLI terminal for captured logs.');
+        }
+        
+        function testNetworkRequest() {
+            updateStatus('Testing network request...');
+            
+            fetch('https://jsonplaceholder.typicode.com/posts/1')
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Network request successful:', data);
+                    updateStatus('Network request completed! Check CLI terminal for captured request.');
+                })
+                .catch(error => {
+                    console.error('Network request failed:', error);
+                    updateStatus('Network request failed: ' + error.message);
+                });
+        }
+        
+        function testError() {
+            updateStatus('Testing error with stack trace...');
+            
+            try {
+                // Deliberately cause an error
+                throw new Error('Test error with stack trace');
+            } catch (error) {
+                console.error('Caught error:', error);
+                updateStatus('Error test completed! Check CLI terminal for captured error.');
+            }
+        }
+    </script>
+</body>
+</html>
