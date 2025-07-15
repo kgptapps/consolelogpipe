@@ -76,13 +76,20 @@ clp start my-web-app --port 3001
 import ConsoleLogPipe from '@kansnpms/console-log-pipe-client';
 
 ConsoleLogPipe.init({
-  applicationName: 'my-web-app', // Required: Must match CLI app name from "clp start my-web-app --port 3001"
+  applicationName: 'my-web-app', // Required: Must match CLI app name
+  port: 3001, // Required: Must match CLI server port
   // sessionId is auto-generated, or use custom one from CLI output
 });
 ```
 
-> **⚠️ Important**: The CLI server requires a `--port` parameter. Make sure to start the CLI with:
-> `clp start my-web-app --port 3001`
+> **⚠️ Critical Dependency**: Client and CLI are **mutually dependent**:
+>
+> - **Client depends on CLI**: This client library requires the CLI server to be running
+> - **CLI depends on Client**: The CLI server is useless without this client library in your web app
+> - You must install and run: `npm install -g @kansnpms/console-log-pipe-cli`
+> - CLI server must be started first: `clp start my-web-app --port 3001`
+> - Client `applicationName` and `port` must match CLI exactly
+> - **Neither package works without the other**
 
 ### Step 3: Monitor Logs in Your IDE
 
@@ -104,6 +111,7 @@ and development environment!
 ```javascript
 ConsoleLogPipe.init({
   applicationName: 'my-web-app', // Required: Application identifier
+  port: 3001, // Required: CLI server port
   sessionId: 'custom-session-id', // Optional: Auto-generated if not provided
   environment: 'development', // Optional: Auto-detected (development/staging/production)
   developer: 'john-doe', // Optional: Developer identifier for AI context
@@ -129,6 +137,25 @@ ConsoleLogPipe.init({
 ### ConsoleLogPipe.init(options)
 
 Initialize the log pipe with configuration options.
+
+**Required Parameters:**
+
+- `applicationName` (string) - Must match CLI app name
+- `port` (number) - Must match CLI server port
+
+**Optional Parameters:**
+
+- `sessionId` (string) - Custom session ID (auto-generated if not provided)
+- `environment` (string) - Environment context (auto-detected if not provided)
+- `developer` (string) - Developer identifier for AI context
+- `branch` (string) - Git branch for AI context
+- `enableMetadata` (boolean) - Include rich metadata for AI parsing (default: true)
+- `enableNetworkCapture` (boolean) - Capture network requests/responses (default: true)
+- `logLevels` (array) - Filter by log levels (default: ['log', 'error', 'warn', 'info', 'debug'])
+- `excludePatterns` (array) - Exclude URLs matching patterns
+- `includePatterns` (array) - Only include logs matching patterns
+- `maxLogSize` (number) - Max size per log entry (default: 10000)
+- `maxQueueSize` (number) - Max logs in memory (default: 1000)
 
 ### ConsoleLogPipe.destroy()
 

@@ -33,12 +33,19 @@ npm install @kansnpms/console-log-pipe-client
 import ConsoleLogPipe from '@kansnpms/console-log-pipe-client';
 
 ConsoleLogPipe.init({
-  applicationName: 'my-web-app', // Must match CLI app name
+  applicationName: 'my-web-app', // Required: Must match CLI app name
+  port: 3001, // Required: Must match CLI server port
 });
 ```
 
-> **⚠️ Important**: The `--port` parameter is **required** when starting the CLI server. Make sure
-> the `applicationName` in your client code matches the app name used in the CLI command.
+> **⚠️ Critical Dependency**: CLI and Client are **mutually dependent**:
+>
+> - **CLI depends on Client**: This CLI server is useless without the client library in your web app
+> - **Client depends on CLI**: The client library requires this CLI server to be running
+> - CLI server requires `--port` parameter (mandatory)
+> - Client library requires `port` parameter (mandatory)
+> - Both `applicationName` and `port` must match exactly: `clp start my-web-app --port 3001`
+> - **Neither package works without the other**
 
 ## 📋 Commands
 
@@ -138,7 +145,7 @@ npm install @kansnpms/console-log-pipe-client
 
 # 3. Initialize in your app
 import ConsoleLogPipe from '@kansnpms/console-log-pipe-client';
-ConsoleLogPipe.init({ applicationName: 'my-react-app' });
+ConsoleLogPipe.init({ applicationName: 'my-react-app', port: 3001 });
 
 # 4. Monitor logs in real-time
 clp monitor my-react-app
@@ -199,7 +206,7 @@ import ConsoleLogPipe from '@kansnpms/console-log-pipe-client';
 
 function App() {
   useEffect(() => {
-    ConsoleLogPipe.init({ applicationName: 'my-react-app' });
+    ConsoleLogPipe.init({ applicationName: 'my-react-app', port: 3001 });
   }, []);
 
   return <div>My App</div>;
@@ -218,7 +225,7 @@ import { createApp } from 'vue';
 import ConsoleLogPipe from '@kansnpms/console-log-pipe-client';
 
 const app = createApp({});
-ConsoleLogPipe.init({ applicationName: 'my-vue-app' });
+ConsoleLogPipe.init({ applicationName: 'my-vue-app', port: 3016 });
 ```
 
 ### Vanilla JavaScript
@@ -231,7 +238,7 @@ clp start my-web-app --port 3002
 ```html
 <script src="https://unpkg.com/@kansnpms/console-log-pipe-client"></script>
 <script>
-  ConsoleLogPipe.init({ applicationName: 'my-web-app' });
+  ConsoleLogPipe.init({ applicationName: 'my-web-app', port: 3002 });
 </script>
 ```
 
