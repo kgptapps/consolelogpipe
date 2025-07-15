@@ -17,10 +17,10 @@ npm install -g @kansnpms/console-log-pipe-cli
 
 ```bash
 # Start server for your application (port is required)
+# Monitoring happens automatically - logs appear in real-time
 clp start my-web-app --port 3001
 
-# Monitor real-time logs
-clp monitor my-web-app
+# Stop with Ctrl+C when done
 ```
 
 ### 3. Add to your web application
@@ -51,12 +51,15 @@ ConsoleLogPipe.init({
 
 ### `clp start [app-name] --port <port>`
 
-Start Console Log Pipe server for an application. **Port number is required.**
+Start Console Log Pipe server for an application. **Port number is required.** **Monitoring happens
+automatically** - logs appear in real-time in your terminal.
 
 ```bash
 clp start my-react-app --port 3001
 clp start my-vue-app --port 3016
 clp start "My Project" --port 3002
+
+# Stop with Ctrl+C when done
 ```
 
 **Options:**
@@ -67,70 +70,6 @@ clp start "My Project" --port 3002
 - `--env <environment>` - Environment (development, staging, production)
 - `--log-level <level>` - Minimum log level (debug, info, warn, error)
 - `--max-logs <number>` - Maximum logs to store (default: 1000)
-
-### `clp monitor <app-name>`
-
-Monitor logs from a running application in real-time.
-
-```bash
-clp monitor my-react-app
-clp monitor my-vue-app --filter "error"
-clp monitor my-app --since "1h" --tail 100
-```
-
-**Options:**
-
-- `--follow, -f` - Follow log output in real-time (default: true)
-- `--filter <pattern>` - Filter logs by pattern
-- `--level <level>` - Filter by log level (debug, info, warn, error)
-- `--since <time>` - Show logs since time (e.g., "1h", "30m", "2023-01-01")
-- `--tail <number>` - Number of recent logs to show (default: 50)
-- `--format <format>` - Output format (json, text, table) (default: text)
-
-### `clp list`
-
-List all running Console Log Pipe servers.
-
-```bash
-clp list
-clp list --format json
-clp list --show-inactive
-```
-
-**Options:**
-
-- `--format <format>` - Output format (json, text, table) (default: table)
-- `--show-inactive` - Show inactive servers
-
-### `clp stop [app-name]`
-
-Stop Console Log Pipe server for an application.
-
-```bash
-clp stop my-react-app
-clp stop --all
-clp stop --force
-```
-
-**Options:**
-
-- `--force` - Force stop without confirmation
-- `--all` - Stop all running servers
-
-### `clp status [app-name]`
-
-Show status of Console Log Pipe servers.
-
-```bash
-clp status
-clp status my-react-app
-clp status --detailed
-```
-
-**Options:**
-
-- `--detailed` - Show detailed status information
-- `--format <format>` - Output format (json, text, table) (default: text)
 
 ## 🎯 Real-World Examples
 
@@ -147,40 +86,20 @@ npm install @kansnpms/console-log-pipe-client
 import ConsoleLogPipe from '@kansnpms/console-log-pipe-client';
 ConsoleLogPipe.init({ applicationName: 'my-react-app', port: 3001 });
 
-# 4. Monitor logs in real-time
-clp monitor my-react-app
+# 4. Logs appear automatically in real-time
+# Stop with Ctrl+C when done
 ```
 
 ### Multi-Application Development
 
 ```bash
-# Start multiple apps
+# Start multiple apps (each in separate terminal)
 clp start frontend --port 3001
 clp start backend --port 3002
 clp start mobile-app --port 3003
 
-# Monitor specific app
-clp monitor frontend --filter "error"
-clp monitor backend --level warn
-
-# List all running servers
-clp list
-
-# Stop specific app
-clp stop frontend
-```
-
-### Advanced Monitoring
-
-```bash
-# Monitor with filtering
-clp monitor my-app --filter "API" --since "30m"
-
-# Monitor errors only from last hour
-clp monitor my-app --level error --since "1h" --tail 200
-
-# Export logs as JSON
-clp monitor my-app --format json > logs.json
+# Each terminal shows logs automatically
+# Stop each with Ctrl+C when done
 ```
 
 ## 🔧 Configuration
