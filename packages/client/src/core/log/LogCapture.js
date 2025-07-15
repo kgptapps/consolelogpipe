@@ -194,8 +194,22 @@ class LogCapture {
    * @private
    */
   logSessionInfo() {
-    // Completely disable session logging to prevent recursion
-    // Session info will be available through other methods
+    if (this.options.preserveOriginal && this.interceptor.originalConsole.log) {
+      const sessionInfo = {
+        applicationName: this.options.applicationName,
+        sessionId: this.options.sessionId,
+        environment: this.options.environment,
+        serverPort: this.options.serverPort,
+        timestamp: new Date().toISOString(),
+      };
+
+      // Use original console to avoid recursion
+      this.interceptor.originalConsole.log(
+        '🔍 Console Log Pipe Session Started',
+        '',
+        sessionInfo
+      );
+    }
   }
 
   /**

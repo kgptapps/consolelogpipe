@@ -21,11 +21,21 @@ class LogInterceptor {
       createLogEntry ||
       ((level, args) => this.formatter.createLogEntry(level, args));
 
-    // Store original console methods
+    // Store original console methods immediately
     this.originalConsole = {};
+    if (typeof console !== 'undefined') {
+      this.options.levels.forEach(level => {
+        if (console[level]) {
+          this.originalConsole[level] = console[level];
+        }
+      });
+    }
 
     // Track interception state
     this.isIntercepting = false;
+
+    // Prevent recursion during log processing
+    this._isProcessing = false;
   }
 
   /**
@@ -63,24 +73,29 @@ class LogInterceptor {
 
     this.options.levels.forEach(level => {
       if (typeof console[level] === 'function') {
-        // Store original method
-        this.originalConsole[level] = console[level];
-
-        // Replace with intercepted version
+        // Replace with intercepted version (original methods already stored in constructor)
         console[level] = (...args) => {
           // Call original console method if preserveOriginal is true
           if (this.options.preserveOriginal && this.originalConsole[level]) {
             this.originalConsole[level].apply(console, args);
           }
 
-          // Use setTimeout to prevent recursion during initialization
-          setTimeout(() => {
-            try {
-              this.handleLog(level, args);
-            } catch (error) {
-              // Silently fail to prevent breaking the application
+          // Prevent recursion with a simple flag
+          if (this._isProcessing) {
+            return;
+          }
+
+          this._isProcessing = true;
+          try {
+            this.handleLog(level, args);
+          } catch (error) {
+            // Use original console.error to report issues without recursion
+            if (this.originalConsole.error) {
+              this.originalConsole.error('LogInterceptor error:', error);
             }
-          }, 0);
+          } finally {
+            this._isProcessing = false;
+          }
         };
       }
     });

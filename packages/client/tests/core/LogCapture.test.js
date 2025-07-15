@@ -37,6 +37,9 @@ describe('LogCapture', () => {
 
     // Create fresh LogCapture instance with required applicationName
     logCapture = new LogCapture({ applicationName: 'test-app' });
+
+    // Start capturing to enable console interception
+    logCapture.start();
   });
 
   afterEach(() => {
@@ -136,11 +139,13 @@ describe('LogCapture', () => {
 
     it('should restore original console when stopped', () => {
       const originalLog = console.log;
-      logCapture.start();
+      // Create a fresh instance for this test
+      const freshCapture = new LogCapture({ applicationName: 'test-app' });
 
+      freshCapture.start();
       expect(console.log).not.toBe(originalLog);
 
-      logCapture.stop();
+      freshCapture.stop();
       expect(console.log).toBe(originalLog);
     });
   });
@@ -470,13 +475,19 @@ describe('LogCapture', () => {
 
   describe('State Management', () => {
     it('should track capturing state correctly', () => {
-      expect(logCapture.isCapturing).toBe(false);
+      // Create a fresh instance for this test (not started in beforeEach)
+      const freshCapture = new LogCapture({ applicationName: 'test-app' });
 
-      logCapture.start();
-      expect(logCapture.isCapturing).toBe(true);
+      expect(freshCapture.isCapturing).toBe(false);
 
-      logCapture.stop();
-      expect(logCapture.isCapturing).toBe(false);
+      freshCapture.start();
+      expect(freshCapture.isCapturing).toBe(true);
+
+      freshCapture.stop();
+      expect(freshCapture.isCapturing).toBe(false);
+
+      // Clean up
+      freshCapture.stop();
     });
 
     it('should not start multiple times', () => {
@@ -494,7 +505,10 @@ describe('LogCapture', () => {
     it('should not stop when not capturing', () => {
       const originalLog = console.log;
 
-      logCapture.stop(); // Should not throw
+      // Create a fresh instance that hasn't been started
+      const freshCapture = new LogCapture({ applicationName: 'test-app' });
+
+      freshCapture.stop(); // Should not throw
       expect(console.log).toBe(originalLog);
     });
   });
@@ -767,12 +781,13 @@ describe('LogCapture', () => {
     });
 
     it('should handle errors in interceptor and call original console.error', () => {
-      const capture = new LogCapture({ applicationName: 'test-app' });
-      const mockConsoleError = jest.fn();
-
-      // Store original console.error and replace with mock
+      // Store original console.error and replace with mock BEFORE creating LogCapture
       const originalError = console.error;
+      const mockConsoleError = jest.fn();
       console.error = mockConsoleError;
+
+      // Create capture instance AFTER mocking console.error
+      const capture = new LogCapture({ applicationName: 'test-app' });
 
       // Mock the interceptor's createLogEntry to throw an error
       const originalCreateLogEntry = capture.interceptor.createLogEntry;
