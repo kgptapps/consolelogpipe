@@ -37,6 +37,9 @@ ConsoleLogPipe.init({
 });
 ```
 
+> **⚠️ Important**: The `--port` parameter is **required** when starting the CLI server. Make sure
+> the `applicationName` in your client code matches the app name used in the CLI command.
+
 ## 📋 Commands
 
 ### `clp start [app-name] --port <port>`
@@ -127,7 +130,7 @@ clp status --detailed
 ### Basic Usage
 
 ```bash
-# 1. Start monitoring your React app
+# 1. Start monitoring your React app (port is required)
 clp start my-react-app --port 3001
 
 # 2. Add client to your React app
@@ -185,6 +188,11 @@ The CLI automatically manages configuration and stores data in:
 
 ### React
 
+```bash
+# Start CLI server first
+clp start my-react-app --port 3001
+```
+
 ```javascript
 import { useEffect } from 'react';
 import ConsoleLogPipe from '@kansnpms/console-log-pipe-client';
@@ -200,6 +208,11 @@ function App() {
 
 ### Vue.js
 
+```bash
+# Start CLI server first
+clp start my-vue-app --port 3016
+```
+
 ```javascript
 import { createApp } from 'vue';
 import ConsoleLogPipe from '@kansnpms/console-log-pipe-client';
@@ -209,6 +222,11 @@ ConsoleLogPipe.init({ applicationName: 'my-vue-app' });
 ```
 
 ### Vanilla JavaScript
+
+```bash
+# Start CLI server first
+clp start my-web-app --port 3002
+```
 
 ```html
 <script src="https://unpkg.com/@kansnpms/console-log-pipe-client"></script>
