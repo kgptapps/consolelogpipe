@@ -105,7 +105,7 @@ export default defineConfig([
       file: 'dist/console-log-pipe.cjs.js',
       format: 'cjs',
       sourcemap: !isProduction,
-      exports: 'auto',
+      exports: 'default',
       banner: `/**
  * Console Log Pipe Client Library v${pkg.version}
  * ${pkg.description}

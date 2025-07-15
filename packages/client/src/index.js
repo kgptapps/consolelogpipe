@@ -13,45 +13,37 @@ const ErrorCapture = require('./core/ErrorCapture');
 
 const { version } = require('../package.json');
 
-// Main API object
-const ConsoleLogPipeAPI = {
-  /**
-   * Initialize Console Log Pipe with configuration
-   */
-  async init(options = {}) {
-    const instance = new ConsoleLogPipe(options);
-    await instance.init();
-    instance.start();
-    return instance;
-  },
+/**
+ * Initialize Console Log Pipe with configuration
+ */
+async function init(options = {}) {
+  const instance = new ConsoleLogPipe(options);
+  await instance.init();
+  instance.start();
+  return instance;
+}
 
-  /**
-   * Create a new Console Log Pipe instance without auto-starting
-   */
-  create(options = {}) {
-    return new ConsoleLogPipe(options);
-  },
+/**
+ * Create a new Console Log Pipe instance without auto-starting
+ */
+function create(options = {}) {
+  return new ConsoleLogPipe(options);
+}
 
-  // Export individual components for advanced usage
-  ConsoleLogPipe,
-  LogCapture,
-  NetworkCapture,
-  ErrorCapture,
+// Main API - single default export following npm standards
+const ConsoleLogPipeAPI = init;
 
+// Attach additional methods and classes to the main function
+ConsoleLogPipeAPI.init = init;
+ConsoleLogPipeAPI.create = create;
+ConsoleLogPipeAPI.version = version;
 
-  // Version information
-  version,
-};
+// Attach classes for advanced usage
+ConsoleLogPipeAPI.ConsoleLogPipe = ConsoleLogPipe;
+ConsoleLogPipeAPI.LogCapture = LogCapture;
+ConsoleLogPipeAPI.NetworkCapture = NetworkCapture;
+ConsoleLogPipeAPI.ErrorCapture = ErrorCapture;
 
-// Export the main API for CommonJS
+// Single export following npm publishing standards
 module.exports = ConsoleLogPipeAPI;
-
-// Export as default for ES6 imports
-module.exports.default = ConsoleLogPipeAPI;
-
-// Export individual components for named imports
-module.exports.ConsoleLogPipe = ConsoleLogPipe;
-module.exports.LogCapture = LogCapture;
-module.exports.NetworkCapture = NetworkCapture;
-module.exports.ErrorCapture = ErrorCapture;
 
