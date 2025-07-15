@@ -101,8 +101,8 @@ First, install and start the Console Log Pipe CLI server:
 # Install CLI globally
 npm install -g @kansnpms/console-log-pipe-cli
 
-# Start server for your application
-clp start --app my-web-app
+# Start server for your application (port is required)
+clp start my-web-app --port 3001
 
 # The CLI will display:
 # 🔍 Console Log Pipe Server Started

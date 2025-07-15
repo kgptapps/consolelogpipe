@@ -43,6 +43,21 @@ class ConfigManager {
       if (error.code === 'ENOENT') {
         return null;
       }
+
+      // Handle JSON parsing errors by removing corrupted file
+      if (error instanceof SyntaxError && error.message.includes('JSON')) {
+        console.warn(
+          `Warning: Corrupted config file for ${appName}, removing and creating fresh config`
+        );
+        try {
+          const configFile = path.join(this.serversDir, `${appName}.json`);
+          await fs.unlink(configFile);
+        } catch (unlinkError) {
+          // Ignore unlink errors
+        }
+        return null;
+      }
+
       throw error;
     }
   }
@@ -115,6 +130,26 @@ class ConfigManager {
           theme: 'auto',
         };
       }
+
+      // Handle JSON parsing errors by removing corrupted file and returning defaults
+      if (error instanceof SyntaxError && error.message.includes('JSON')) {
+        console.warn(
+          'Warning: Corrupted global config file, removing and using defaults'
+        );
+        try {
+          await fs.unlink(this.globalConfigFile);
+        } catch (unlinkError) {
+          // Ignore unlink errors
+        }
+        return {
+          defaultHost: 'localhost',
+          defaultEnvironment: 'development',
+          maxLogRetention: 7, // days
+          enableAnalytics: false,
+          theme: 'auto',
+        };
+      }
+
       throw error;
     }
   }
@@ -179,6 +214,54 @@ class ConfigManager {
           await this.saveServerConfig(serverConfig.appName, serverConfig);
         }
       }
+    }
+  }
+
+  /**
+   * Clean up corrupted configuration files
+   */
+  static async cleanupCorruptedConfigs() {
+    try {
+      await this.ensureConfigDir();
+      const files = await fs.readdir(this.serversDir);
+      let cleanedCount = 0;
+
+      for (const file of files) {
+        if (file.endsWith('.json')) {
+          try {
+            const configFile = path.join(this.serversDir, file);
+            const data = await fs.readFile(configFile, 'utf8');
+            JSON.parse(data); // Test if JSON is valid
+          } catch (error) {
+            if (
+              error instanceof SyntaxError &&
+              error.message.includes('JSON')
+            ) {
+              console.warn(`Removing corrupted config file: ${file}`);
+              const configFile = path.join(this.serversDir, file);
+              await fs.unlink(configFile);
+              cleanedCount++;
+            }
+          }
+        }
+      }
+
+      // Check global config
+      try {
+        const data = await fs.readFile(this.globalConfigFile, 'utf8');
+        JSON.parse(data);
+      } catch (error) {
+        if (error instanceof SyntaxError && error.message.includes('JSON')) {
+          console.warn('Removing corrupted global config file');
+          await fs.unlink(this.globalConfigFile);
+          cleanedCount++;
+        }
+      }
+
+      return cleanedCount;
+    } catch (error) {
+      console.error('Error during config cleanup:', error.message);
+      return 0;
     }
   }
 }

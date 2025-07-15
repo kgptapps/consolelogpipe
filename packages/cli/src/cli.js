@@ -72,7 +72,7 @@ program
   .alias('s')
   .description('Start Console Log Pipe server for an application')
   .argument('[app-name]', 'Application name to monitor')
-  .option('-p, --port <port>', 'Server port (auto-assigned if not specified)')
+  .option('-p, --port <port>', 'Server port (required, 1024-65535)')
   .option('-h, --host <host>', 'Server host', 'localhost')
   .option('--no-browser', 'Do not open browser automatically')
   .option('--session-id <id>', 'Custom session ID')
@@ -148,10 +148,12 @@ program.addHelpText(
   'after',
   `
 Examples:
-  ${chalk.cyan('clp start my-app')}                    Start server for "my-app"
   ${chalk.cyan(
     'clp start my-app --port 3001'
-  )}        Start server on specific port
+  )}        Start server for "my-app" on port 3001
+  ${chalk.cyan(
+    'clp start my-vue-app --port 3016'
+  )}     Start server for Vue app on port 3016
   ${chalk.cyan(
     'clp monitor my-app'
   )}                  Monitor logs from "my-app"

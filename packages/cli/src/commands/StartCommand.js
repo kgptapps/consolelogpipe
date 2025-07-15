@@ -15,6 +15,20 @@ class StartCommand {
     const spinner = ora('Starting Console Log Pipe server...').start();
 
     try {
+      // Clean up any corrupted configuration files first
+      try {
+        const cleanedCount = await ConfigManager.cleanupCorruptedConfigs();
+        if (cleanedCount > 0) {
+          spinner.text = 'Cleaned up corrupted config files, continuing...';
+        }
+      } catch (cleanupError) {
+        // Don't fail the command if cleanup fails, just warn
+        console.warn(
+          'Warning: Could not clean up config files:',
+          cleanupError.message
+        );
+      }
+
       // Validate application name
       if (!appName) {
         spinner.fail('Application name is required');
@@ -52,25 +66,30 @@ class StartCommand {
         return;
       }
 
-      // Get or assign port
-      let port = options.port;
-      if (!port) {
-        port = await PortManager.getApplicationPort(appName);
-      } else {
-        port = parseInt(port, 10);
-        if (isNaN(port) || port < 1024 || port > 65535) {
-          spinner.fail('Invalid port number. Must be between 1024 and 65535.');
-          process.exit(1);
-          return;
-        }
+      // Require port number - no auto-assignment
+      if (!options.port) {
+        spinner.fail('Port number is required');
+        console.log(chalk.yellow('Usage: clp start <app-name> --port <port>'));
+        console.log(chalk.gray('Example: clp start my-vue-app --port 3016'));
+        console.log(chalk.gray('Port must be between 1024 and 65535'));
+        process.exit(1);
+        return;
+      }
 
-        // Check if port is available
-        const isAvailable = await PortManager.isPortAvailable(port);
-        if (!isAvailable) {
-          spinner.fail(`Port ${port} is already in use`);
-          process.exit(1);
-          return;
-        }
+      const port = parseInt(options.port, 10);
+      if (isNaN(port) || port < 1024 || port > 65535) {
+        spinner.fail('Invalid port number. Must be between 1024 and 65535.');
+        console.log(chalk.yellow('Example: clp start my-vue-app --port 3016'));
+        process.exit(1);
+        return;
+      }
+
+      // Check if port is available
+      const isAvailable = await PortManager.isPortAvailable(port);
+      if (!isAvailable) {
+        spinner.fail(`Port ${port} is already in use`);
+        process.exit(1);
+        return;
       }
 
       // Generate session ID

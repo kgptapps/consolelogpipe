@@ -16,8 +16,8 @@ npm install -g @kansnpms/console-log-pipe-cli
 ### 2. Start monitoring your app
 
 ```bash
-# Start server for your application
-clp start my-web-app
+# Start server for your application (port is required)
+clp start my-web-app --port 3001
 
 # Monitor real-time logs
 clp monitor my-web-app
@@ -39,19 +39,19 @@ ConsoleLogPipe.init({
 
 ## 📋 Commands
 
-### `clp start [app-name]`
+### `clp start [app-name] --port <port>`
 
-Start Console Log Pipe server for an application.
+Start Console Log Pipe server for an application. **Port number is required.**
 
 ```bash
-clp start my-react-app
-clp start my-vue-app --port 3001
-clp start --app-name "My Project"
+clp start my-react-app --port 3001
+clp start my-vue-app --port 3016
+clp start "My Project" --port 3002
 ```
 
 **Options:**
 
-- `--port, -p <port>` - Server port (auto-assigned if not specified)
+- `--port, -p <port>` - Server port (required, must be between 1024-65535)
 - `--host <host>` - Server host (default: localhost)
 - `--app-name <name>` - Application name (alternative to argument)
 - `--env <environment>` - Environment (development, staging, production)
@@ -128,7 +128,7 @@ clp status --detailed
 
 ```bash
 # 1. Start monitoring your React app
-clp start my-react-app
+clp start my-react-app --port 3001
 
 # 2. Add client to your React app
 npm install @kansnpms/console-log-pipe-client

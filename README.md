@@ -125,8 +125,8 @@ npm install -g @kansnpms/console-log-pipe-cli
 ### 2. Start monitoring your application
 
 ```bash
-# Start server for your application
-clp start my-web-app
+# Start server for your application (port is required)
+clp start my-web-app --port 3001
 ```
 
 ### 3. Add client library to your web application
@@ -158,13 +158,13 @@ clp stop my-web-app
 
 ### Available CLI Commands
 
-| Command             | Description              | Example                                  |
-| ------------------- | ------------------------ | ---------------------------------------- |
-| `clp start <app>`   | Start monitoring server  | `clp start my-react-app`                 |
-| `clp monitor <app>` | View real-time logs      | `clp monitor my-react-app --level error` |
-| `clp list`          | List all running servers | `clp list`                               |
-| `clp stop <app>`    | Stop monitoring server   | `clp stop my-react-app`                  |
-| `clp status [app]`  | Show server status       | `clp status`                             |
+| Command                         | Description              | Example                                  |
+| ------------------------------- | ------------------------ | ---------------------------------------- |
+| `clp start <app> --port <port>` | Start monitoring server  | `clp start my-react-app --port 3001`     |
+| `clp monitor <app>`             | View real-time logs      | `clp monitor my-react-app --level error` |
+| `clp list`                      | List all running servers | `clp list`                               |
+| `clp stop <app>`                | Stop monitoring server   | `clp stop my-react-app`                  |
+| `clp status [app]`              | Show server status       | `clp status`                             |
 
 ### Integration Options
 
