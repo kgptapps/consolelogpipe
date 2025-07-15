@@ -11,6 +11,7 @@ const { LogCapture } = require('./core/log');
 const { NetworkCapture } = require('./core/network');
 const ErrorCapture = require('./core/ErrorCapture');
 const { HttpTransport } = require('./transport');
+const { version } = require('../package.json');
 
 // Main API object
 const ConsoleLogPipeAPI = {
@@ -39,11 +40,18 @@ const ConsoleLogPipeAPI = {
   HttpTransport,
 
   // Version information
-  version: '1.1.4',
+  version,
 };
 
-// Export the main API
+// Export the main API for CommonJS
 module.exports = ConsoleLogPipeAPI;
 
-// Also export as default for ES6 imports
+// Export as default for ES6 imports
 module.exports.default = ConsoleLogPipeAPI;
+
+// Export individual components for named imports
+module.exports.ConsoleLogPipe = ConsoleLogPipe;
+module.exports.LogCapture = LogCapture;
+module.exports.NetworkCapture = NetworkCapture;
+module.exports.ErrorCapture = ErrorCapture;
+module.exports.HttpTransport = HttpTransport;

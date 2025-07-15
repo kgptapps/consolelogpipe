@@ -102,7 +102,7 @@ class ConsoleLogPipe {
     }
 
     try {
-      // Initialize transport layer
+      // Initialize HTTP transport layer
       if (this.config.enableRemoteLogging) {
         this.components.transport = new HttpTransport({
           serverHost: this.config.serverHost,
@@ -112,10 +112,6 @@ class ConsoleLogPipe {
           sessionId: this.config.sessionId,
           batchSize: this.config.batchSize,
           batchTimeout: this.config.batchTimeout,
-          maxRetries: this.config.maxRetries,
-          retryDelay: this.config.retryDelay,
-          enableCompression: this.config.enableCompression,
-          enableAutoDiscovery: this.config.enableAutoDiscovery,
         });
 
         await this.components.transport.initialize();
@@ -314,6 +310,67 @@ class ConsoleLogPipe {
       await this.components.transport.flush();
     }
     return this;
+  }
+
+  /**
+   * Create WebSocket transport
+   */
+  _createWebSocketTransport() {
+    const wsUrl = `ws://${this.config.serverHost}:${this.config.serverPort}`;
+
+    return {
+      ws: null,
+      isConnected: false,
+
+      async initialize() {
+        return new Promise((resolve, reject) => {
+          try {
+            this.ws = new WebSocket(wsUrl);
+
+            this.ws.onopen = () => {
+              this.isConnected = true;
+              console.log('✅ Connected to Console Log Pipe CLI');
+              resolve();
+            };
+
+            this.ws.onerror = error => {
+              this.isConnected = false;
+              console.error('❌ WebSocket connection failed:', error);
+              reject(error);
+            };
+
+            this.ws.onclose = () => {
+              this.isConnected = false;
+              console.log('WebSocket connection closed');
+            };
+          } catch (error) {
+            reject(error);
+          }
+        });
+      },
+
+      send(logData) {
+        if (
+          this.ws &&
+          this.isConnected &&
+          this.ws.readyState === WebSocket.OPEN
+        ) {
+          const message = {
+            type: 'log',
+            data: logData,
+          };
+          this.ws.send(JSON.stringify(message));
+        }
+      },
+
+      disconnect() {
+        if (this.ws) {
+          this.ws.close();
+          this.ws = null;
+          this.isConnected = false;
+        }
+      },
+    };
   }
 
   /**

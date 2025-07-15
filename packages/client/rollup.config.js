@@ -7,6 +7,7 @@ import { nodeResolve } from '@rollup/plugin-node-resolve';
 import { babel } from '@rollup/plugin-babel';
 import commonjs from '@rollup/plugin-commonjs';
 import terser from '@rollup/plugin-terser';
+import json from '@rollup/plugin-json';
 import { createRequire } from 'module';
 
 const require = createRequire(import.meta.url);
@@ -17,7 +18,7 @@ const isProduction = process.env.NODE_ENV === 'production';
 export default defineConfig([
   // UMD build for browsers (readable for CDN usage)
   {
-    input: 'src/index.js',
+    input: 'src/browser.js',
     output: {
       file: 'dist/console-log-pipe.umd.js',
       format: 'umd',
@@ -34,12 +35,18 @@ export default defineConfig([
  */`,
     },
     plugins: [
+      json({
+        preferConst: true,
+        compact: true,
+        namedExports: false,
+      }),
       nodeResolve({
         browser: true,
         preferBuiltins: false,
       }),
       commonjs({
         include: ['src/**'],
+        transformMixedEsModules: true,
       }),
       // No Babel for UMD to keep it readable
     ],
@@ -48,7 +55,7 @@ export default defineConfig([
 
   // ES Module build
   {
-    input: 'src/index.js',
+    input: 'src/browser.js',
     output: {
       file: 'dist/console-log-pipe.esm.js',
       format: 'es',
@@ -63,6 +70,7 @@ export default defineConfig([
  */`,
     },
     plugins: [
+      json(),
       nodeResolve({
         browser: true,
         preferBuiltins: false,
@@ -108,6 +116,7 @@ export default defineConfig([
  */`,
     },
     plugins: [
+      json(),
       nodeResolve({
         preferBuiltins: true,
       }),
