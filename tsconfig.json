@@ -39,11 +39,5 @@
     "**/*.spec.js",
     "packages/client/src/**/*.js"
   ],
-  "references": [
-    { "path": "./packages/client" },
-    { "path": "./packages/cli" },
-    { "path": "./packages/server" },
-    { "path": "./packages/desktop" },
-    { "path": "./packages/shared" }
-  ]
+  "references": [{ "path": "./packages/client" }, { "path": "./packages/cli" }]
 }

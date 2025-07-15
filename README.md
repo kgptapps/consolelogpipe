@@ -138,33 +138,27 @@ npm install @kansnpms/console-log-pipe-client
 ```javascript
 import ConsoleLogPipe from '@kansnpms/console-log-pipe-client';
 
-ConsoleLogPipe.init({
-  applicationName: 'my-web-app', // Must match CLI app name
-});
+// Simple initialization (uses defaults)
+ConsoleLogPipe.init();
+
+// Or with custom port
+ConsoleLogPipe.init({ serverPort: 3001 });
 ```
 
 ### 4. Monitor real-time logs
 
 ```bash
-# View real-time logs from your application
-clp monitor my-web-app
+# Logs appear automatically in real-time when you start the server
+clp start my-web-app --port 3001
 
-# List all running servers
-clp list
-
-# Stop a specific server
-clp stop my-web-app
+# Stop with Ctrl+C when done
 ```
 
 ### Available CLI Commands
 
-| Command                         | Description              | Example                                  |
-| ------------------------------- | ------------------------ | ---------------------------------------- |
-| `clp start <app> --port <port>` | Start monitoring server  | `clp start my-react-app --port 3001`     |
-| `clp monitor <app>`             | View real-time logs      | `clp monitor my-react-app --level error` |
-| `clp list`                      | List all running servers | `clp list`                               |
-| `clp stop <app>`                | Stop monitoring server   | `clp stop my-react-app`                  |
-| `clp status [app]`              | Show server status       | `clp status`                             |
+| Command                         | Description                                        | Example                              |
+| ------------------------------- | -------------------------------------------------- | ------------------------------------ |
+| `clp start <app> --port <port>` | Start monitoring server with automatic log display | `clp start my-react-app --port 3001` |
 
 ### Integration Options
 
@@ -207,10 +201,8 @@ Console Log Pipe is **production-ready** with these fully implemented features:
 ```javascript
 import ConsoleLogPipe from '@kansnpms/console-log-pipe-client';
 
-ConsoleLogPipe.init({
-  applicationName: 'my-web-app', // Required: Must match CLI --app parameter
-  // sessionId is auto-generated, or use custom one from CLI output
-});
+// Simple initialization
+ConsoleLogPipe.init();
 ```
 
 **Framework Examples:**
@@ -222,7 +214,7 @@ import ConsoleLogPipe from '@kansnpms/console-log-pipe-client';
 
 function App() {
   useEffect(() => {
-    ConsoleLogPipe.init({ applicationName: 'my-react-app' });
+    ConsoleLogPipe.init();
   }, []);
 
   return <div>My App</div>;
@@ -233,11 +225,11 @@ import { createApp } from 'vue';
 import ConsoleLogPipe from '@kansnpms/console-log-pipe-client';
 
 const app = createApp({});
-ConsoleLogPipe.init({ applicationName: 'my-vue-app' });
+ConsoleLogPipe.init();
 
 // Node.js/Express (for server-side logging)
 const ConsoleLogPipe = require('@kansnpms/console-log-pipe-client');
-ConsoleLogPipe.init({ applicationName: 'my-api-server' });
+ConsoleLogPipe.init();
 ```
 
 #### Option 2: CDN
@@ -245,10 +237,8 @@ ConsoleLogPipe.init({ applicationName: 'my-api-server' });
 ```html
 <script src="https://unpkg.com/@kansnpms/console-log-pipe-client"></script>
 <script>
-  ConsoleLogPipe.init({
-    applicationName: 'my-web-app', // Required: Must match CLI --app parameter
-    // sessionId is auto-generated, or use custom one from CLI output
-  });
+  // Simple initialization
+  ConsoleLogPipe.init();
 </script>
 ```
 
@@ -310,8 +300,6 @@ This monorepo contains the following packages:
 
 - **[@kansnpms/console-log-pipe-client](./packages/client)** - Browser client library
 - **[@kansnpms/console-log-pipe-cli](./packages/cli)** - Global CLI tool and local server
-- **[@kansnpms/console-log-pipe-server](./packages/server)** - Hosted server package
-- **[@kansnpms/console-log-pipe-desktop](./packages/desktop)** - Electron desktop application
 - **Browser Extensions** - Chrome, Firefox, Safari, and Edge extensions
 
 ## 🏗️ Development

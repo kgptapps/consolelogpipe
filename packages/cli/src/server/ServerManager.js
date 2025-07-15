@@ -205,7 +205,7 @@ class ServerManager {
       // Handle client messages
       ws.on('message', message => {
         try {
-          const data = JSON.parse(message.toString());
+          const data = JSON.parse(message.toString('utf8'));
 
           if (data.type === 'request_logs') {
             // Send historical logs based on filter
@@ -216,6 +216,41 @@ class ServerManager {
                 logs: filteredLogs,
               })
             );
+          } else if (
+            data.type === 'log' ||
+            data.type === 'error' ||
+            data.type === 'network'
+          ) {
+            // Handle incoming logs from browser clients
+            const processedLog = {
+              ...data.data,
+              receivedAt: new Date().toISOString(),
+              appName: config.appName,
+              sessionId: config.sessionId,
+            };
+
+            // Add to logs array (with size limit)
+            logs.push(processedLog);
+            if (logs.length > maxLogs) {
+              logs.shift(); // Remove oldest log
+            }
+
+            // Update statistics
+            if (data.type === 'log') {
+              stats.totalLogs++;
+            } else if (data.type === 'error') {
+              stats.totalErrors++;
+            } else if (data.type === 'network') {
+              stats.totalNetworkRequests++;
+            }
+
+            stats.lastActivity = Date.now();
+
+            // Broadcast to other WebSocket clients (like CLI monitoring)
+            this.broadcastToClients(appName, {
+              type: data.type,
+              data: processedLog,
+            });
           }
         } catch (error) {
           console.error('Error handling WebSocket message:', error);

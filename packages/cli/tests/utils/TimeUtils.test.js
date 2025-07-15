@@ -166,4 +166,51 @@ describe('TimeUtils', () => {
       expect(typeof result2).toBe('string');
     });
   });
+
+  describe('Utility Methods', () => {
+    it('should create sleep promise', async () => {
+      const start = Date.now();
+      await TimeUtils.sleep(10); // 10ms
+      const elapsed = Date.now() - start;
+
+      expect(elapsed).toBeGreaterThanOrEqual(8); // Allow some variance
+    });
+
+    it('should create timeout promise that rejects', async () => {
+      await expect(TimeUtils.timeout(10, 'Test timeout')).rejects.toThrow(
+        'Test timeout'
+      );
+    });
+
+    it('should race promise with timeout - promise wins', async () => {
+      const fastPromise = Promise.resolve('success');
+      const result = await TimeUtils.withTimeout(fastPromise, 100);
+
+      expect(result).toBe('success');
+    });
+
+    it('should race promise with timeout - timeout wins', async () => {
+      const slowPromise = new Promise(resolve =>
+        setTimeout(() => resolve('slow'), 100)
+      );
+
+      await expect(
+        TimeUtils.withTimeout(slowPromise, 10, 'Too slow')
+      ).rejects.toThrow('Too slow');
+    });
+
+    it('should format uptime from seconds', () => {
+      const result = TimeUtils.formatUptime(3661); // 1 hour, 1 minute, 1 second
+
+      expect(result).toContain('1h');
+      expect(result).toContain('1m');
+    });
+
+    it('should format time ago', () => {
+      const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
+      const result = TimeUtils.timeAgo(oneHourAgo);
+
+      expect(result).toContain('hour');
+    });
+  });
 });

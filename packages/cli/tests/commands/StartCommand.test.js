@@ -40,6 +40,11 @@ describe('StartCommand', () => {
       throw new Error(`Process exit with code ${code}`);
     });
 
+    // Mock the _startLogMonitoring method to prevent WebSocket connection
+    jest.spyOn(StartCommand, '_startLogMonitoring').mockImplementation(() => {
+      // Do nothing in tests
+    });
+
     // Default mocks
     ServerManager.getServerInfo.mockResolvedValue(null);
     ServerManager.startServer.mockResolvedValue({ server: 'mock' });
@@ -289,7 +294,7 @@ describe('StartCommand', () => {
       );
     });
 
-    it('should display integration instructions', async () => {
+    it('should display server started message', async () => {
       // Temporarily restore process.exit for successful case
       mockProcessExit.mockRestore();
       mockProcessExit = jest.spyOn(process, 'exit').mockImplementation();
@@ -300,14 +305,12 @@ describe('StartCommand', () => {
       await StartCommand.execute('test-app', options, command);
 
       expect(mockConsoleLog).toHaveBeenCalledWith(
-        expect.stringContaining('📋 Integration Instructions:')
+        expect.stringContaining('🚀 Console Log Pipe Server Started')
       );
-      expect(mockConsoleLog).toHaveBeenCalledWith(
-        expect.stringContaining('npm install @kansnpms/console-log-pipe-client')
-      );
+      expect(ServerManager.startServer).toHaveBeenCalled();
     });
 
-    it('should display AI-friendly session info', async () => {
+    it('should save server configuration', async () => {
       // Temporarily restore process.exit for successful case
       mockProcessExit.mockRestore();
       mockProcessExit = jest.spyOn(process, 'exit').mockImplementation();
@@ -317,11 +320,12 @@ describe('StartCommand', () => {
 
       await StartCommand.execute('test-app', options, command);
 
-      expect(mockConsoleLog).toHaveBeenCalledWith(
-        expect.stringContaining('🤖 AI-Friendly Session Info:')
-      );
-      expect(mockConsoleLog).toHaveBeenCalledWith(
-        expect.stringContaining('"applicationName": "test-app"')
+      expect(ConfigManager.saveServerConfig).toHaveBeenCalledWith(
+        'test-app',
+        expect.objectContaining({
+          appName: 'test-app',
+          port: 3001,
+        })
       );
     });
   });

@@ -36,9 +36,6 @@ All packages are configured under the `@kansnpms` organization:
 
 - `@kansnpms/console-log-pipe-client` - Browser client library
 - `console-log-pipe` - Global CLI tool (unscoped)
-- `@kansnpms/console-log-pipe-server` - Server package
-- `@kansnpms/console-log-pipe-desktop` - Desktop application
-- `@kansnpms/console-log-pipe-shared` - Shared utilities
 - Browser extensions (private packages)
 
 ## 🚀 Publishing Process
@@ -140,29 +137,6 @@ npm publish --access public
 
 ```bash
 cd packages/cli
-npm run build
-npm publish --access public
-```
-
-### Server Package (`@kansnpms/console-log-pipe-server`)
-
-```bash
-cd packages/server
-npm publish --access public
-```
-
-### Desktop App (`@kansnpms/console-log-pipe-desktop`)
-
-```bash
-cd packages/desktop
-npm run build
-npm publish --access public
-```
-
-### Shared Package (`@kansnpms/console-log-pipe-shared`)
-
-```bash
-cd packages/shared
 npm run build
 npm publish --access public
 ```

@@ -1,6 +1,6 @@
 {
   "name": "@kansnpms/console-log-pipe-edge-extension",
-  "version": "1.0.0",
+  "version": "1.1.23",
   "description": "Edge extension for Console Log Pipe - Browser DevTools integration",
   "private": true,
   "repository": {

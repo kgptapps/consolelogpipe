@@ -5,10 +5,16 @@
 const chalk = require('chalk');
 const ora = require('ora');
 const { v4: uuidv4 } = require('uuid');
+const WebSocket = require('ws');
 const ServerManager = require('../server/ServerManager');
 const ConfigManager = require('../utils/ConfigManager');
 const PortManager = require('../utils/PortManager');
 const { openBrowser, detectGitInfo } = require('../utils/SystemUtils');
+
+// Ensure UTF-8 encoding for proper emoji display
+if (!process.env.LANG || !process.env.LANG.includes('UTF-8')) {
+  process.env.LANG = 'en_US.UTF-8';
+}
 
 class StartCommand {
   static async execute(appName, options, command) {
@@ -128,7 +134,7 @@ class StartCommand {
 
       spinner.succeed(`Server started successfully for "${appName}"`);
 
-      // Display server information
+      // Display essential server information only
       console.log();
       console.log(chalk.green.bold('🚀 Console Log Pipe Server Started'));
       console.log();
@@ -138,83 +144,15 @@ class StartCommand {
         chalk.white(`http://${serverConfig.host}:${serverConfig.port}`)
       );
       console.log(chalk.cyan('Session ID:'), chalk.white(sessionId));
+      console.log();
       console.log(
-        chalk.cyan('Environment:'),
-        chalk.white(serverConfig.environment)
+        chalk.gray('Monitoring logs in real-time... Press Ctrl+C to stop')
       );
-      console.log(chalk.cyan('Developer:'), chalk.white(developer));
-      console.log(chalk.cyan('Branch:'), chalk.white(branch));
+      console.log(chalk.gray('─'.repeat(60)));
       console.log();
 
-      // Display integration instructions
-      console.log(chalk.yellow.bold('📋 Integration Instructions:'));
-      console.log();
-      console.log(chalk.gray('1. Install the client library:'));
-      console.log(
-        chalk.white('   npm install @kansnpms/console-log-pipe-client')
-      );
-      console.log();
-      console.log(chalk.gray('2. Add to your application:'));
-      console.log(
-        chalk.white(
-          '   import ConsoleLogPipe from "@kansnpms/console-log-pipe-client";'
-        )
-      );
-      console.log(
-        chalk.white(
-          `   await ConsoleLogPipe.init({ applicationName: "${appName}" });`
-        )
-      );
-      console.log();
-      console.log(chalk.gray('3. Or use CDN:'));
-      console.log(
-        chalk.white(
-          '   <script src="https://unpkg.com/@kansnpms/console-log-pipe-client"></script>'
-        )
-      );
-      console.log(
-        chalk.white(
-          `   <script>ConsoleLogPipe.init({ applicationName: "${appName}" });</script>`
-        )
-      );
-      console.log();
-
-      // Display monitoring commands
-      console.log(chalk.yellow.bold('🔍 Monitoring Commands:'));
-      console.log(
-        chalk.white(`   clp monitor ${appName}     # Monitor logs in real-time`)
-      );
-      console.log(
-        chalk.white(`   clp status ${appName}      # Check server status`)
-      );
-      console.log(
-        chalk.white(`   clp stop ${appName}        # Stop the server`)
-      );
-      console.log();
-
-      // Open browser if requested
-      if (!options.noBrowser) {
-        console.log(chalk.gray('Opening browser...'));
-        await openBrowser(`http://${serverConfig.host}:${serverConfig.port}`);
-      }
-
-      // Display session information for AI tools
-      console.log(chalk.green.bold('🤖 AI-Friendly Session Info:'));
-      console.log(
-        JSON.stringify(
-          {
-            applicationName: appName,
-            sessionId,
-            serverUrl: `http://${serverConfig.host}:${serverConfig.port}`,
-            environment: serverConfig.environment,
-            developer,
-            branch,
-            startTime: serverConfig.startTime,
-          },
-          null,
-          2
-        )
-      );
+      // Start monitoring logs via WebSocket
+      StartCommand._startLogMonitoring(appName, serverConfig);
     } catch (error) {
       spinner.fail('Failed to start server');
       console.error(chalk.red('Error:'), error.message);
@@ -225,6 +163,103 @@ class StartCommand {
 
       process.exit(1);
     }
+  }
+
+  /**
+   * Start monitoring logs via WebSocket
+   */
+  static _startLogMonitoring(appName, serverConfig) {
+    // Connect to WebSocket for real-time logs
+    const wsUrl = `ws://${serverConfig.host}:${serverConfig.port}`;
+    const ws = new WebSocket(wsUrl);
+
+    let logCount = 0;
+
+    ws.on('open', () => {
+      // Connection established, ready to receive logs
+    });
+
+    ws.on('message', data => {
+      try {
+        const message = JSON.parse(data.toString('utf8'));
+
+        if (
+          message.type === 'log' ||
+          message.type === 'error' ||
+          message.type === 'network'
+        ) {
+          StartCommand._displayLog(message.data, message.type);
+          logCount++;
+        } else if (message.type === 'server_info') {
+          // Ignore server info messages in start command
+        }
+      } catch (error) {
+        console.error(chalk.red('Error parsing log message:'), error.message);
+      }
+    });
+
+    ws.on('error', error => {
+      console.error(chalk.red('WebSocket error:'), error.message);
+    });
+
+    ws.on('close', () => {
+      console.log();
+      console.log(chalk.yellow('Log monitoring stopped'));
+      if (logCount > 0) {
+        console.log(chalk.gray(`Total logs received: ${logCount}`));
+      }
+    });
+
+    // Handle graceful shutdown
+    process.on('SIGINT', () => {
+      console.log();
+      console.log(chalk.yellow('Stopping server...'));
+      ws.close();
+      process.exit(0);
+    });
+
+    process.on('SIGTERM', () => {
+      ws.close();
+      process.exit(0);
+    });
+  }
+
+  /**
+   * Display a log entry
+   */
+  static _displayLog(logData, type) {
+    const timestamp = new Date().toLocaleTimeString();
+    const level = logData.level || type || 'log';
+
+    let color = chalk.white;
+    let icon = '📝';
+
+    switch (level.toLowerCase()) {
+      case 'error':
+        color = chalk.red;
+        icon = '❌';
+        break;
+      case 'warn':
+      case 'warning':
+        color = chalk.yellow;
+        icon = '⚠️';
+        break;
+      case 'info':
+        color = chalk.blue;
+        icon = 'ℹ️';
+        break;
+      case 'debug':
+        color = chalk.gray;
+        icon = '🔍';
+        break;
+      case 'network':
+        color = chalk.cyan;
+        icon = '🌐';
+        break;
+    }
+
+    const message = logData.message || logData.url || JSON.stringify(logData);
+    console.log(`${chalk.gray(timestamp)} ${icon} ${color(message)}`);
   }
 }
 

@@ -57,7 +57,7 @@ environments:
 const DEPLOYMENT_TARGETS = {
   npmPackages: {
     registry: 'https://registry.npmjs.org',
-    packages: ['@console-log-pipe/client', 'console-log-pipe', '@console-log-pipe/server'],
+    packages: ['@console-log-pipe/client', 'console-log-pipe'],
     automation: 'GitHub Actions with semantic versioning',
     rollback: 'NPM deprecation and version pinning',
   },

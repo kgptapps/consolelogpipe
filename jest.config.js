@@ -3,9 +3,6 @@ module.exports = {
   projects: [
     '<rootDir>/packages/client',
     '<rootDir>/packages/cli',
-    '<rootDir>/packages/server',
-    '<rootDir>/packages/desktop',
-    '<rootDir>/packages/shared',
     '<rootDir>/tests/integration',
   ],
 
@@ -50,7 +47,6 @@ module.exports = {
   // Module paths
   moduleNameMapper: {
     '^@console-log-pipe/(.*)$': '<rootDir>/packages/$1/src',
-    '^@shared/(.*)$': '<rootDir>/packages/shared/$1',
     '^@tests/(.*)$': '<rootDir>/tests/$1',
   },
 

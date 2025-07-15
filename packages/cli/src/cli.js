@@ -13,10 +13,6 @@ const pkg = require('../package.json');
 
 // Import commands
 const StartCommand = require('./commands/StartCommand');
-const MonitorCommand = require('./commands/MonitorCommand');
-const ListCommand = require('./commands/ListCommand');
-const StopCommand = require('./commands/StopCommand');
-const StatusCommand = require('./commands/StatusCommand');
 
 // Check for updates (temporarily disabled due to compatibility issues)
 // try {
@@ -89,60 +85,6 @@ program
   .option('--enable-cors', 'Enable CORS', true)
   .action(StartCommand.execute);
 
-program
-  .command('monitor')
-  .alias('m')
-  .description('Monitor logs from a running application')
-  .argument('<app-name>', 'Application name to monitor')
-  .option('-f, --follow', 'Follow log output in real-time', true)
-  .option('--filter <pattern>', 'Filter logs by pattern')
-  .option('--level <level>', 'Filter by log level')
-  .option(
-    '--since <time>',
-    'Show logs since time (e.g., "1h", "30m", "2023-01-01")'
-  )
-  .option('--tail <number>', 'Number of recent logs to show', '50')
-  .option('--format <format>', 'Output format (json, text, table)', 'text')
-  .option('--no-color', 'Disable colored output')
-  .action(MonitorCommand.execute);
-
-program
-  .command('list')
-  .alias('ls')
-  .description('List all running Console Log Pipe servers')
-  .option('--format <format>', 'Output format (json, text, table)', 'table')
-  .option('--show-inactive', 'Show inactive servers')
-  .action(ListCommand.execute);
-
-program
-  .command('stop')
-  .description('Stop Console Log Pipe server for an application')
-  .argument(
-    '[app-name]',
-    'Application name to stop (stops all if not specified)'
-  )
-  .option('--force', 'Force stop without confirmation')
-  .option('--all', 'Stop all running servers')
-  .action(StopCommand.execute);
-
-program
-  .command('status')
-  .description('Show status of Console Log Pipe servers')
-  .argument('[app-name]', 'Application name to check status')
-  .option('--detailed', 'Show detailed status information')
-  .option('--format <format>', 'Output format (json, text, table)', 'text')
-  .action(StatusCommand.execute);
-
-program
-  .command('logs')
-  .description('View logs from Console Log Pipe servers')
-  .argument('[app-name]', 'Application name to view logs')
-  .option('--since <time>', 'Show logs since time')
-  .option('--tail <number>', 'Number of recent logs to show', '100')
-  .option('--follow', 'Follow log output')
-  .option('--level <level>', 'Filter by log level')
-  .action(MonitorCommand.execute);
-
 // Add help examples
 program.addHelpText(
   'after',
@@ -154,14 +96,6 @@ Examples:
   ${chalk.cyan(
     'clp start my-vue-app --port 3016'
   )}     Start server for Vue app on port 3016
-  ${chalk.cyan(
-    'clp monitor my-app'
-  )}                  Monitor logs from "my-app"
-  ${chalk.cyan('clp monitor my-app --level error')}    Monitor only error logs
-  ${chalk.cyan('clp list')}                           List all running servers
-  ${chalk.cyan('clp stop my-app')}                    Stop server for "my-app"
-  ${chalk.cyan('clp stop --all')}                     Stop all servers
-  ${chalk.cyan('clp status')}                         Show status of all servers
 
 For more information, visit: https://github.com/kgptapps/consolelogpipe
 `
@@ -183,9 +117,9 @@ if (!process.argv.slice(2).length) {
           'AI-friendly web console integration for faster development'
         )}\n\n` +
         `${chalk.yellow('Quick Start:')}\n` +
-        `  ${chalk.cyan('clp start my-app')}     Start monitoring your app\n` +
-        `  ${chalk.cyan('clp monitor my-app')}   View real-time logs\n` +
-        `  ${chalk.cyan('clp list')}            List running servers\n\n` +
+        `  ${chalk.cyan(
+          'clp start my-app --port 3001'
+        )}   Start monitoring your app\n\n` +
         `${chalk.gray('Run')} ${chalk.cyan('clp --help')} ${chalk.gray(
           'for more commands'
         )}`,

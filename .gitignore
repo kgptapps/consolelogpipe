@@ -145,9 +145,7 @@ packages/*/build/
 packages/*/lib/
 packages/*/types/
 
-# Electron build outputs
-packages/desktop/dist/
-packages/desktop/build/dist/
+
 
 # Browser extension build outputs
 packages/browser-extensions/*/dist/

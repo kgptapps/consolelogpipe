@@ -116,9 +116,7 @@ integrate browser debugging into their existing development workflow.
 
 1. **@console-log-pipe/client** - Browser client library (NPM)
 2. **console-log-pipe** - Global CLI tool (NPM)
-3. **@console-log-pipe/server** - Local/hosted server (NPM)
-4. **console-log-pipe-desktop** - Electron desktop app
-5. **Browser Extensions** - Chrome, Firefox, Safari, Edge extensions
+3. **Browser Extensions** - Chrome, Firefox, Safari, Edge extensions
 
 ### Platform Support
 
