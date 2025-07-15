@@ -118,33 +118,18 @@ clp start my-web-app --port 3001
 import ConsoleLogPipe from '@kansnpms/console-log-pipe-client';
 
 ConsoleLogPipe.init({
-  applicationName: 'my-web-app', // Required: Must match CLI --app parameter
+  applicationName: 'my-web-app', // Required: Must match CLI app name from "clp start my-web-app --port 3001"
   // sessionId is auto-generated, or use custom one from CLI output
 });
 ```
+
+> **⚠️ Important**: The CLI server requires a `--port` parameter. Make sure to start the CLI with:
+> `clp start my-web-app --port 3001`
 
 ### Step 3: Monitor Logs in Your IDE
 
 All browser console logs, errors, and network requests will now stream directly to your CLI terminal
 and development environment!
-
-## 🤖 AI-Friendly Development Workflow
-
-Console Log Pipe transforms your development experience by bringing browser console logs directly to
-your IDE with AI-optimized features:
-
-### **🎯 Faster Debugging with AI Tools**
-
-- **Structured Error Categories** - Logs are automatically categorized (Network, Validation,
-  Runtime, etc.) for AI parsing
-- **Rich Metadata** - Environment context, stack traces, and performance data included
-- **Session Isolation** - Each application gets its own log stream for focused debugging
-
-### **⚡ Reduced Context Switching**
-
-- **IDE Integration** - No more switching between browser DevTools and your editor
-- **Multi-App Monitoring** - Track logs from multiple applications simultaneously
-- **Real-time Streaming** - See logs instantly as they happen in the browser
 
 ## Features
 
