@@ -10,7 +10,7 @@ const ConsoleLogPipe = require('./ConsoleLogPipe');
 const { LogCapture } = require('./core/log');
 const { NetworkCapture } = require('./core/network');
 const ErrorCapture = require('./core/ErrorCapture');
-const { HttpTransport } = require('./transport');
+
 const { version } = require('../package.json');
 
 // Main API object
@@ -37,7 +37,7 @@ const ConsoleLogPipeAPI = {
   LogCapture,
   NetworkCapture,
   ErrorCapture,
-  HttpTransport,
+
 
   // Version information
   version,
@@ -54,4 +54,4 @@ module.exports.ConsoleLogPipe = ConsoleLogPipe;
 module.exports.LogCapture = LogCapture;
 module.exports.NetworkCapture = NetworkCapture;
 module.exports.ErrorCapture = ErrorCapture;
-module.exports.HttpTransport = HttpTransport;
+

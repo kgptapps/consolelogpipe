@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple Inline Console Log Pipe Test</title>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .status { padding: 10px; margin: 10px 0; border-radius: 5px; }
+        .success { background-color: #d4edda; color: #155724; }
+        .error { background-color: #f8d7da; color: #721c24; }
+        .info { background-color: #d1ecf1; color: #0c5460; }
+        button { padding: 10px 20px; margin: 5px; font-size: 16px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Simple Console Log Pipe Test</h1>
+        
+        <div id="status" class="status info">
+            Status: Ready to test
+        </div>
+        
+        <div>
+            <button onclick="testWebSocket()">Test WebSocket</button>
+        </div>
+        
+        <div style="margin-top: 20px;">
+            <h3>Instructions:</h3>
+            <ol>
+                <li>Make sure CLI server is running: <code>npx clp start react-test-app --port 3009</code></li>
+                <li>Click "Test WebSocket" to test WebSocket connection</li>
+                <li>Check CLI terminal for any received messages</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        function updateStatus(message, type = 'info') {
+            const statusDiv = document.getElementById('status');
+            statusDiv.className = 'status ' + type;
+            statusDiv.innerHTML = message;
+        }
+        
+        // Test basic WebSocket connection directly
+        function testWebSocket() {
+            updateStatus('Testing direct WebSocket connection...', 'info');
+            
+            try {
+                const ws = new WebSocket('ws://localhost:3009');
+                
+                ws.onopen = function() {
+                    updateStatus('✅ WebSocket connected! Sending test message...', 'success');
+                    
+                    // Send a test message in the format the CLI expects
+                    const testMessage = {
+                        type: 'log',
+                        data: {
+                            level: 'log',
+                            message: '🧪 Direct WebSocket test message',
+                            timestamp: new Date().toISOString(),
+                            application: {
+                                name: 'react-test-app',
+                                sessionId: 'test-session-' + Date.now()
+                            }
+                        }
+                    };
+                    
+                    ws.send(JSON.stringify(testMessage));
+                    
+                    // Send a few more test messages
+                    setTimeout(() => {
+                        const errorMessage = {
+                            type: 'log',
+                            data: {
+                                level: 'error',
+                                message: '🧪 Direct WebSocket error test',
+                                timestamp: new Date().toISOString(),
+                                application: {
+                                    name: 'react-test-app',
+                                    sessionId: 'test-session-' + Date.now()
+                                }
+                            }
+                        };
+                        ws.send(JSON.stringify(errorMessage));
+                    }, 500);
+                    
+                    setTimeout(() => {
+                        const objectMessage = {
+                            type: 'log',
+                            data: {
+                                level: 'log',
+                                message: '🧪 Direct WebSocket object test',
+                                args: [{
+                                    testData: 'Direct WebSocket test',
+                                    timestamp: new Date().toISOString(),
+                                    numbers: [1, 2, 3, 4, 5]
+                                }],
+                                timestamp: new Date().toISOString(),
+                                application: {
+                                    name: 'react-test-app',
+                                    sessionId: 'test-session-' + Date.now()
+                                }
+                            }
+                        };
+                        ws.send(JSON.stringify(objectMessage));
+                        
+                        updateStatus('✅ Test messages sent! Check CLI terminal.', 'success');
+                    }, 1000);
+                };
+                
+                ws.onerror = function(error) {
+                    updateStatus('❌ WebSocket error: ' + error, 'error');
+                };
+                
+                ws.onclose = function() {
+                    updateStatus('WebSocket connection closed', 'info');
+                };
+                
+                ws.onmessage = function(event) {
+                    console.log('Received from server:', event.data);
+                };
+                
+            } catch (error) {
+                updateStatus('❌ WebSocket test failed: ' + error.message, 'error');
+            }
+        }
+        
+
+    </script>
+</body>
+</html>

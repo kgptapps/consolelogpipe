@@ -73,8 +73,14 @@ class LogInterceptor {
             this.originalConsole[level].apply(console, args);
           }
 
-          // Capture the log
-          this.handleLog(level, args);
+          // Use setTimeout to prevent recursion during initialization
+          setTimeout(() => {
+            try {
+              this.handleLog(level, args);
+            } catch (error) {
+              // Silently fail to prevent breaking the application
+            }
+          }, 0);
         };
       }
     });
@@ -117,7 +123,6 @@ class LogInterceptor {
     } catch (error) {
       // Fail silently to avoid breaking the application
       if (this.options.preserveOriginal && this.originalConsole.error) {
-        // eslint-disable-next-line no-console
         this.originalConsole.error('LogInterceptor error:', error);
       }
     }

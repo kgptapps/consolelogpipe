@@ -9,10 +9,20 @@
 const { LogCapture } = require('./core/log');
 const { NetworkCapture } = require('./core/network');
 const ErrorCapture = require('./core/ErrorCapture');
-const { HttpTransport } = require('./transport');
+
 
 class ConsoleLogPipe {
   constructor(options = {}) {
+    // Store original console methods BEFORE any interception
+    this._originalConsole = {};
+    if (typeof console !== 'undefined') {
+      this._originalConsole.log = console.log.bind(console);
+      this._originalConsole.error = console.error.bind(console);
+      this._originalConsole.warn = console.warn.bind(console);
+      this._originalConsole.info = console.info.bind(console);
+      this._originalConsole.debug = console.debug.bind(console);
+    }
+
     // Validate required options
     if (!options.applicationName) {
       throw new Error(
@@ -102,18 +112,9 @@ class ConsoleLogPipe {
     }
 
     try {
-      // Initialize HTTP transport layer
+      // Initialize WebSocket transport layer
       if (this.config.enableRemoteLogging) {
-        this.components.transport = new HttpTransport({
-          serverHost: this.config.serverHost,
-          serverPort: this.config.serverPort,
-          serverPath: this.config.serverPath,
-          applicationName: this.config.applicationName,
-          sessionId: this.config.sessionId,
-          batchSize: this.config.batchSize,
-          batchTimeout: this.config.batchTimeout,
-        });
-
+        this.components.transport = this._createWebSocketTransport();
         await this.components.transport.initialize();
       }
 
@@ -329,19 +330,19 @@ class ConsoleLogPipe {
 
             this.ws.onopen = () => {
               this.isConnected = true;
-              console.log('✅ Connected to Console Log Pipe CLI');
+              // Silent connection - no logging to prevent recursion
               resolve();
             };
 
             this.ws.onerror = error => {
               this.isConnected = false;
-              console.error('❌ WebSocket connection failed:', error);
+              // Silent error handling - no logging to prevent recursion
               reject(error);
             };
 
             this.ws.onclose = () => {
               this.isConnected = false;
-              console.log('WebSocket connection closed');
+              // Silent close - no logging to prevent recursion
             };
           } catch (error) {
             reject(error);
@@ -390,8 +391,10 @@ class ConsoleLogPipe {
       try {
         listener({ type: 'log', data: logData });
       } catch (error) {
-        // eslint-disable-next-line no-console
-        console.error('Error in log listener:', error);
+        // Use original console to avoid recursion
+        if (this._originalConsole.error) {
+          this._originalConsole.error('Error in log listener:', error);
+        }
       }
     });
   }
@@ -505,20 +508,8 @@ class ConsoleLogPipe {
    * Log session information to console
    */
   _logSessionInfo() {
-    if (typeof console !== 'undefined' && console.log) {
-      // eslint-disable-next-line no-console
-      console.log(
-        `🚀 Console Log Pipe initialized for "${this.config.applicationName}"`
-      );
-      // eslint-disable-next-line no-console
-      console.log(`📋 Session ID: ${this.config.sessionId}`);
-      // eslint-disable-next-line no-console
-      console.log(`🌍 Environment: ${this.config.environment}`);
-      // eslint-disable-next-line no-console
-      console.log(
-        `🔗 Server: ${this.config.serverHost}:${this.config.serverPort}`
-      );
-    }
+    // Completely disable session logging to prevent recursion
+    // Session info will be available through getSession() method instead
   }
 }
 

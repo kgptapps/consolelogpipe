@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Console Log Pipe Connection</title>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        button { padding: 10px 20px; margin: 5px; font-size: 16px; cursor: pointer; }
+        .status { padding: 10px; margin: 10px 0; border-radius: 5px; }
+        .success { background-color: #d4edda; color: #155724; }
+        .error { background-color: #f8d7da; color: #721c24; }
+        .info { background-color: #d1ecf1; color: #0c5460; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Console Log Pipe Connection Test</h1>
+        
+        <div id="status" class="status info">
+            Status: Ready to test
+        </div>
+        
+        <div>
+            <button onclick="testConnection()">1. Test Connection</button>
+            <button onclick="sendTestLogs()">2. Send Test Logs</button>
+            <button onclick="testError()">3. Test Error</button>
+            <button onclick="testObject()">4. Test Object</button>
+        </div>
+        
+        <div style="margin-top: 20px;">
+            <h3>Instructions:</h3>
+            <ol>
+                <li>Make sure CLI server is running: <code>npx clp start react-test-app --port 3008</code></li>
+                <li>Click "Test Connection" to initialize Console Log Pipe</li>
+                <li>Click other buttons to send different types of logs</li>
+                <li>Check CLI terminal to see if logs appear</li>
+            </ol>
+        </div>
+    </div>
+
+    <script src="../node_modules/@kansnpms/console-log-pipe-client/dist/console-log-pipe.umd.js"></script>
+    
+    <script>
+        let isInitialized = false;
+        
+        function updateStatus(message, type = 'info') {
+            const statusDiv = document.getElementById('status');
+            statusDiv.className = 'status ' + type;
+            statusDiv.innerHTML = message;
+        }
+        
+        function testConnection() {
+            try {
+                updateStatus('Initializing Console Log Pipe...', 'info');
+                
+                // Initialize with the correct parameters
+                ConsoleLogPipe.init({
+                    applicationName: 'react-test-app',
+                    port: 3008
+                });
+                
+                isInitialized = true;
+                updateStatus('✅ Console Log Pipe initialized successfully!', 'success');
+                
+                // Send a test message immediately
+                setTimeout(() => {
+                    console.log('🎉 Console Log Pipe connection test successful!');
+                    console.log('📊 Test data:', {
+                        timestamp: new Date().toISOString(),
+                        testId: Math.random().toString(36).substr(2, 9),
+                        message: 'Connection test from HTML page'
+                    });
+                }, 100);
+                
+            } catch (error) {
+                updateStatus('❌ Failed to initialize: ' + error.message, 'error');
+                console.error('Initialization error:', error);
+            }
+        }
+        
+        function sendTestLogs() {
+            if (!isInitialized) {
+                updateStatus('⚠️ Please initialize connection first', 'error');
+                return;
+            }
+            
+            updateStatus('Sending test logs...', 'info');
+            
+            console.log('📝 Test log message #1');
+            console.warn('⚠️ Test warning message #2');
+            console.error('🚨 Test error message #3');
+            console.info('ℹ️ Test info message #4');
+            
+            updateStatus('✅ Test logs sent! Check CLI terminal.', 'success');
+        }
+        
+        function testError() {
+            if (!isInitialized) {
+                updateStatus('⚠️ Please initialize connection first', 'error');
+                return;
+            }
+            
+            try {
+                // Deliberately cause an error
+                throw new Error('Test error with stack trace');
+            } catch (error) {
+                console.error('🔥 Caught test error:', error);
+                updateStatus('✅ Error test sent! Check CLI terminal.', 'success');
+            }
+        }
+        
+        function testObject() {
+            if (!isInitialized) {
+                updateStatus('⚠️ Please initialize connection first', 'error');
+                return;
+            }
+            
+            const testObject = {
+                name: 'Complex Test Object',
+                timestamp: new Date().toISOString(),
+                data: {
+                    numbers: [1, 2, 3, 4, 5],
+                    strings: ['hello', 'world', 'test'],
+                    nested: {
+                        level1: {
+                            level2: {
+                                value: 'deep nested value'
+                            }
+                        }
+                    }
+                },
+                functions: {
+                    test: function() { return 'test'; }
+                }
+            };
+            
+            console.log('📦 Complex object test:', testObject);
+            updateStatus('✅ Object test sent! Check CLI terminal.', 'success');
+        }
+        
+        // Check if ConsoleLogPipe is available
+        if (typeof ConsoleLogPipe !== 'undefined') {
+            updateStatus('✅ Console Log Pipe library loaded. Ready to test!', 'success');
+        } else {
+            updateStatus('❌ Console Log Pipe library not found!', 'error');
+        }
+    </script>
+</body>
+</html>

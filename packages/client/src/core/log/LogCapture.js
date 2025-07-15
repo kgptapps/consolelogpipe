@@ -10,6 +10,16 @@ const LogInterceptor = require('./LogInterceptor');
 
 class LogCapture {
   constructor(options = {}) {
+    // Store original console methods BEFORE any interception
+    this._originalConsole = {};
+    if (typeof console !== 'undefined') {
+      this._originalConsole.log = console.log.bind(console);
+      this._originalConsole.error = console.error.bind(console);
+      this._originalConsole.warn = console.warn.bind(console);
+      this._originalConsole.info = console.info.bind(console);
+      this._originalConsole.debug = console.debug.bind(console);
+    }
+
     // Validate required applicationName
     if (
       !options.applicationName ||
@@ -184,18 +194,8 @@ class LogCapture {
    * @private
    */
   logSessionInfo() {
-    if (this.options.preserveOriginal && typeof console !== 'undefined') {
-      const sessionInfo = {
-        applicationName: this.options.applicationName,
-        sessionId: this.options.sessionId,
-        environment: this.options.environment,
-        serverPort: this.options.serverPort,
-        timestamp: new Date().toISOString(),
-      };
-
-      // eslint-disable-next-line no-console
-      console.log('🔍 Console Log Pipe Session Started', '', sessionInfo);
-    }
+    // Completely disable session logging to prevent recursion
+    // Session info will be available through other methods
   }
 
   /**

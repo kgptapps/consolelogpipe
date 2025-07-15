@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Minimal Test</title>
+</head>
+<body>
+    <h1>Minimal Console Log Pipe Test</h1>
+    <div id="status">Loading...</div>
+    <button onclick="testInit()">Initialize</button>
+    <button onclick="testLog()">Test Log</button>
+
+    <script src="../node_modules/@kansnpms/console-log-pipe-client/dist/console-log-pipe.umd.js"></script>
+    
+    <script>
+        document.getElementById('status').innerHTML = 'ConsoleLogPipe available: ' + (typeof ConsoleLogPipe !== 'undefined');
+        
+        function testInit() {
+            try {
+                document.getElementById('status').innerHTML = 'Initializing...';
+                
+                // Initialize with minimal options to avoid recursion
+                ConsoleLogPipe.init({
+                    applicationName: 'minimal-test',
+                    port: 3008
+                });
+                
+                document.getElementById('status').innerHTML = 'Initialized successfully!';
+                
+            } catch (error) {
+                document.getElementById('status').innerHTML = 'Error: ' + error.message;
+                console.error('Initialization error:', error);
+            }
+        }
+        
+        function testLog() {
+            try {
+                console.log('Test log message from minimal test');
+                document.getElementById('status').innerHTML = 'Log sent!';
+            } catch (error) {
+                document.getElementById('status').innerHTML = 'Log error: ' + error.message;
+            }
+        }
+    </script>
+</body>
+</html>
