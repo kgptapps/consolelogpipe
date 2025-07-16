@@ -2,20 +2,18 @@
  * Rollup configuration for Console Log Pipe Client Library
  */
 
-import { defineConfig } from 'rollup';
-import { nodeResolve } from '@rollup/plugin-node-resolve';
-import { babel } from '@rollup/plugin-babel';
-import commonjs from '@rollup/plugin-commonjs';
-import terser from '@rollup/plugin-terser';
-import json from '@rollup/plugin-json';
-import { createRequire } from 'module';
+const { defineConfig } = require('rollup');
+const { nodeResolve } = require('@rollup/plugin-node-resolve');
+const { babel } = require('@rollup/plugin-babel');
+const commonjs = require('@rollup/plugin-commonjs');
+const terser = require('@rollup/plugin-terser');
+const json = require('@rollup/plugin-json');
 
-const require = createRequire(import.meta.url);
 const pkg = require('./package.json');
 
 const isProduction = process.env.NODE_ENV === 'production';
 
-export default defineConfig([
+module.exports = defineConfig([
   // UMD build for browsers (readable for CDN usage)
   {
     input: 'src/browser.js',
