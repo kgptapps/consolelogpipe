@@ -6,13 +6,39 @@ const ConsoleLogPipeAPI = require('../src/index');
 
 // Mock all dependencies to avoid actual initialization
 // Mock WebSocket to prevent actual connections during tests
-global.WebSocket = jest.fn().mockImplementation(() => ({
-  addEventListener: jest.fn(),
-  removeEventListener: jest.fn(),
-  send: jest.fn(),
-  close: jest.fn(),
-  readyState: 1, // OPEN
-}));
+let mockWebSocketInstance;
+global.WebSocket = jest.fn().mockImplementation(() => {
+  mockWebSocketInstance = {
+    addEventListener: jest.fn(),
+    removeEventListener: jest.fn(),
+    send: jest.fn(),
+    close: jest.fn(),
+    readyState: 1, // OPEN
+    onopen: null,
+    onclose: null,
+    onerror: null,
+    onmessage: null,
+  };
+
+  // Simulate immediate connection
+  setTimeout(() => {
+    if (mockWebSocketInstance.onopen) {
+      mockWebSocketInstance.onopen({ type: 'open' });
+    }
+    // Trigger any 'open' event listeners
+    const openListeners = mockWebSocketInstance.addEventListener.mock.calls
+      .filter(call => call[0] === 'open')
+      .map(call => call[1]);
+    openListeners.forEach(listener => listener({ type: 'open' }));
+  }, 0);
+
+  return mockWebSocketInstance;
+});
+
+global.WebSocket.CONNECTING = 0;
+global.WebSocket.OPEN = 1;
+global.WebSocket.CLOSING = 2;
+global.WebSocket.CLOSED = 3;
 
 jest.mock('../src/core/log', () => ({
   LogCapture: jest.fn().mockImplementation(() => ({
@@ -83,10 +109,9 @@ describe('Index Module', () => {
       expect(clp.config.applicationName).toBe('test-app');
     });
 
-    it('should throw error when create called without applicationName', () => {
-      expect(() => {
-        ConsoleLogPipeAPI.create();
-      }).toThrow('applicationName is required');
+    it('should use default applicationName when create called without it', () => {
+      const instance = ConsoleLogPipeAPI.create();
+      expect(instance.config.applicationName).toBe('console-log-pipe');
     });
   });
 
@@ -106,18 +131,42 @@ describe('Index Module', () => {
     });
 
     it('should create, initialize and start a ConsoleLogPipe instance', async () => {
+      // Mock WebSocket to prevent timeout and simulate immediate connection
+      global.WebSocket = jest.fn().mockImplementation(() => {
+        const mockWs = {
+          addEventListener: jest.fn(),
+          removeEventListener: jest.fn(),
+          send: jest.fn(),
+          close: jest.fn(),
+          readyState: 1, // OPEN
+          onopen: null,
+          onclose: null,
+          onerror: null,
+          onmessage: null,
+        };
+
+        // Simulate immediate connection
+        setTimeout(() => {
+          if (mockWs.onopen) {
+            mockWs.onopen({ type: 'open' });
+          }
+        }, 0);
+
+        return mockWs;
+      });
+
       clp = await ConsoleLogPipeAPI.init({ applicationName: 'init-test-app' });
 
       expect(clp).toBeInstanceOf(ConsoleLogPipeAPI.ConsoleLogPipe);
       expect(clp.config.applicationName).toBe('init-test-app');
       expect(clp.isInitialized).toBe(true);
       expect(clp.isCapturing).toBe(true);
-    });
+    }, 5000); // 5 second timeout should be enough
 
-    it('should throw error when init called without applicationName', async () => {
-      await expect(ConsoleLogPipeAPI.init()).rejects.toThrow(
-        'applicationName is required'
-      );
+    it('should use default applicationName when init called without it', async () => {
+      const instance = await ConsoleLogPipeAPI.init();
+      expect(instance.config.applicationName).toBe('console-log-pipe');
+      await instance.destroy();
     });
   });
 });

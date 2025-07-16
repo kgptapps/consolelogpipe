@@ -32,13 +32,39 @@ jest.mock('../src/core/ErrorCapture', () => {
 });
 
 // Mock WebSocket to prevent actual connections during tests
-global.WebSocket = jest.fn().mockImplementation(() => ({
-  addEventListener: jest.fn(),
-  removeEventListener: jest.fn(),
-  send: jest.fn(),
-  close: jest.fn(),
-  readyState: 1, // OPEN
-}));
+let mockWebSocketInstance;
+global.WebSocket = jest.fn().mockImplementation(() => {
+  mockWebSocketInstance = {
+    addEventListener: jest.fn(),
+    removeEventListener: jest.fn(),
+    send: jest.fn(),
+    close: jest.fn(),
+    readyState: 1, // OPEN
+    onopen: null,
+    onclose: null,
+    onerror: null,
+    onmessage: null,
+  };
+
+  // Simulate immediate connection
+  setTimeout(() => {
+    if (mockWebSocketInstance.onopen) {
+      mockWebSocketInstance.onopen({ type: 'open' });
+    }
+    // Trigger any 'open' event listeners
+    const openListeners = mockWebSocketInstance.addEventListener.mock.calls
+      .filter(call => call[0] === 'open')
+      .map(call => call[1]);
+    openListeners.forEach(listener => listener({ type: 'open' }));
+  }, 0);
+
+  return mockWebSocketInstance;
+});
+
+global.WebSocket.CONNECTING = 0;
+global.WebSocket.OPEN = 1;
+global.WebSocket.CLOSING = 2;
+global.WebSocket.CLOSED = 3;
 
 describe('ConsoleLogPipe', () => {
   let consoleLogPipe;
@@ -64,8 +90,9 @@ describe('ConsoleLogPipe', () => {
   });
 
   describe('constructor', () => {
-    it('should require applicationName', () => {
-      expect(() => new ConsoleLogPipe()).toThrow('applicationName is required');
+    it('should use default applicationName when not provided', () => {
+      const clp = new ConsoleLogPipe();
+      expect(clp.config.applicationName).toBe('console-log-pipe');
     });
 
     it('should initialize with default configuration', () => {
@@ -128,11 +155,9 @@ describe('ConsoleLogPipe', () => {
       const { LogCapture } = require('../src/core/log');
       const { NetworkCapture } = require('../src/core/network');
       const ErrorCapture = require('../src/core/ErrorCapture');
-      const { HttpTransport } = require('../src/transport');
 
       await consoleLogPipe.init();
 
-      expect(HttpTransport).toHaveBeenCalled();
       expect(LogCapture).toHaveBeenCalled();
       expect(ErrorCapture).toHaveBeenCalled();
       expect(NetworkCapture).toHaveBeenCalled();
@@ -153,18 +178,15 @@ describe('ConsoleLogPipe', () => {
       expect(clp.components.logCapture).toBeUndefined();
       expect(clp.components.errorCapture).toBeUndefined();
       expect(clp.components.networkCapture).toBeUndefined();
-      expect(clp.components.transport).toBeUndefined();
     });
 
-    it('should log session information', async () => {
+    it('should initialize without logging to prevent recursion', async () => {
       await consoleLogPipe.init();
 
-      expect(mockConsoleLog).toHaveBeenCalledWith(
-        expect.stringContaining('Console Log Pipe initialized')
-      );
-      expect(mockConsoleLog).toHaveBeenCalledWith(
-        expect.stringContaining('Session ID: test-session-123')
-      );
+      // Session logging is disabled to prevent recursion issues
+      // The initialization should complete successfully without logging
+      expect(consoleLogPipe.isInitialized).toBe(true);
+      expect(consoleLogPipe.config.sessionId).toBe('test-session-123');
     });
 
     it('should not initialize twice', async () => {
@@ -177,9 +199,9 @@ describe('ConsoleLogPipe', () => {
     });
 
     it('should handle initialization errors', async () => {
-      const { HttpTransport } = require('../src/transport');
-      HttpTransport.mockImplementationOnce(() => {
-        throw new Error('Transport initialization failed');
+      const { LogCapture } = require('../src/core/log');
+      LogCapture.mockImplementationOnce(() => {
+        throw new Error('LogCapture initialization failed');
       });
 
       // Mock console.error to avoid noise in test output
@@ -188,7 +210,7 @@ describe('ConsoleLogPipe', () => {
         .mockImplementation();
 
       await expect(consoleLogPipe.init()).rejects.toThrow(
-        'Transport initialization failed'
+        'LogCapture initialization failed'
       );
 
       mockConsoleError.mockRestore();
@@ -400,6 +422,9 @@ describe('ConsoleLogPipe', () => {
     });
 
     it('should flush transport', async () => {
+      // Mock the flush method as a Jest function
+      consoleLogPipe.components.transport.flush = jest.fn().mockResolvedValue();
+
       await consoleLogPipe.flush();
 
       expect(consoleLogPipe.components.transport.flush).toHaveBeenCalled();
@@ -455,6 +480,9 @@ describe('ConsoleLogPipe', () => {
     });
 
     it('should send data to transport', () => {
+      // Mock the send method as a Jest function
+      consoleLogPipe.components.transport.send = jest.fn();
+
       const logData = { level: 'info', message: 'test' };
       consoleLogPipe._handleLogData(logData);
 

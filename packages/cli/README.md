@@ -13,12 +13,12 @@ Global CLI tool for Console Log Pipe - Real-time log streaming from browsers to 
 npm install -g @kansnpms/console-log-pipe-cli
 ```
 
-### 2. Start monitoring your app
+### 2. Start monitoring
 
 ```bash
-# Start server for your application (port is required)
+# Start server (port is required)
 # Monitoring happens automatically - logs appear in real-time
-clp start my-web-app --port 3001
+clp start --port 3001
 
 # Stop with Ctrl+C when done
 ```
@@ -33,7 +33,6 @@ npm install @kansnpms/console-log-pipe-client
 import ConsoleLogPipe from '@kansnpms/console-log-pipe-client';
 
 ConsoleLogPipe.init({
-  applicationName: 'my-web-app', // Required: Must match CLI app name
   port: 3001, // Required: Must match CLI server port
 });
 ```
@@ -44,26 +43,26 @@ ConsoleLogPipe.init({
 > - **Client depends on CLI**: The client library requires this CLI server to be running
 > - CLI server requires `--port` parameter (mandatory)
 > - Client library requires `port` parameter (mandatory)
-> - Both `applicationName` and `port` must match exactly: `clp start my-web-app --port 3001`
+> - Port must match exactly: `clp start --port 3001`
 > - **Neither package works without the other**
 
 ## 📋 Commands
 
-### `clp start [app-name] --port <port>`
+### `clp start --port <port>`
 
-Start Console Log Pipe server for an application. **Port number is required.** **Monitoring happens
-automatically** - logs appear in real-time in your terminal.
+Start Console Log Pipe server. **Port number is required.** **Monitoring happens automatically** -
+logs appear in real-time in your terminal.
 
 ```bash
 # Basic usage
-clp start my-react-app --port 3001
-clp start my-vue-app --port 3016
-clp start "My Project" --port 3002
+clp start --port 3001
+clp start --port 3016
+clp start --port 3002
 
 # With filtering options
-clp start my-app --port 3001 --filter "error" --log-level warn
-clp start my-app --port 3001 --since "1h" --tail 100
-clp start my-app --port 3001 --format json --exclude "debug"
+clp start --port 3001 --filter "error" --log-level warn
+clp start --port 3001 --since "1h" --tail 100
+clp start --port 3001 --format json --exclude "debug"
 
 # Stop with Ctrl+C when done
 ```
@@ -88,15 +87,15 @@ clp start my-app --port 3001 --format json --exclude "debug"
 ### Basic Usage
 
 ```bash
-# 1. Start monitoring your React app (port is required)
-clp start my-react-app --port 3001
+# 1. Start monitoring (port is required)
+clp start --port 3001
 
 # 2. Add client to your React app
 npm install @kansnpms/console-log-pipe-client
 
 # 3. Initialize in your app
 import ConsoleLogPipe from '@kansnpms/console-log-pipe-client';
-ConsoleLogPipe.init({ applicationName: 'my-react-app', port: 3001 });
+ConsoleLogPipe.init({ port: 3001 });
 
 # 4. Logs appear automatically in real-time
 # Stop with Ctrl+C when done
@@ -105,10 +104,10 @@ ConsoleLogPipe.init({ applicationName: 'my-react-app', port: 3001 });
 ### Multi-Application Development
 
 ```bash
-# Start multiple apps (each in separate terminal)
-clp start frontend --port 3001
-clp start backend --port 3002
-clp start mobile-app --port 3003
+# Start multiple servers (each in separate terminal)
+clp start --port 3001
+clp start --port 3002
+clp start --port 3003
 
 # Each terminal shows logs automatically
 # Stop each with Ctrl+C when done
@@ -128,7 +127,7 @@ The CLI automatically manages configuration and stores data in:
 
 ```bash
 # Start CLI server first
-clp start my-react-app --port 3001
+clp start --port 3001
 ```
 
 ```javascript
@@ -137,7 +136,7 @@ import ConsoleLogPipe from '@kansnpms/console-log-pipe-client';
 
 function App() {
   useEffect(() => {
-    ConsoleLogPipe.init({ applicationName: 'my-react-app', port: 3001 });
+    ConsoleLogPipe.init({ port: 3001 });
   }, []);
 
   return <div>My App</div>;
@@ -148,7 +147,7 @@ function App() {
 
 ```bash
 # Start CLI server first
-clp start my-vue-app --port 3016
+clp start --port 3016
 ```
 
 ```javascript
@@ -156,20 +155,20 @@ import { createApp } from 'vue';
 import ConsoleLogPipe from '@kansnpms/console-log-pipe-client';
 
 const app = createApp({});
-ConsoleLogPipe.init({ applicationName: 'my-vue-app', port: 3016 });
+ConsoleLogPipe.init({ port: 3016 });
 ```
 
 ### Vanilla JavaScript
 
 ```bash
 # Start CLI server first
-clp start my-web-app --port 3002
+clp start --port 3002
 ```
 
 ```html
 <script src="https://unpkg.com/@kansnpms/console-log-pipe-client"></script>
 <script>
-  ConsoleLogPipe.init({ applicationName: 'my-web-app', port: 3002 });
+  ConsoleLogPipe.init({ port: 3002 });
 </script>
 ```
 

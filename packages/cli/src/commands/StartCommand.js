@@ -17,7 +17,7 @@ if (!process.env.LANG || !process.env.LANG.includes('UTF-8')) {
 }
 
 class StartCommand {
-  static async execute(appName, options, command) {
+  static async execute(options, command) {
     const spinner = ora('Starting Console Log Pipe server...').start();
 
     try {
@@ -35,23 +35,8 @@ class StartCommand {
         );
       }
 
-      // Validate application name
-      if (!appName) {
-        spinner.fail('Application name is required');
-        console.log(chalk.yellow('Usage: clp start <app-name>'));
-        console.log(chalk.gray('Example: clp start my-react-app'));
-        process.exit(1);
-        return;
-      }
-
-      // Validate application name format
-      if (!/^[a-zA-Z0-9-_]+$/.test(appName)) {
-        spinner.fail(
-          'Invalid application name. Use only letters, numbers, hyphens, and underscores.'
-        );
-        process.exit(1);
-        return;
-      }
+      // Use a fixed app name since we removed the parameter
+      const appName = 'console-log-pipe';
 
       // Check if server is already running for this app
       const existingServer = await ServerManager.getServerInfo(appName);
@@ -75,8 +60,8 @@ class StartCommand {
       // Require port number - no auto-assignment
       if (!options.port) {
         spinner.fail('Port number is required');
-        console.log(chalk.yellow('Usage: clp start <app-name> --port <port>'));
-        console.log(chalk.gray('Example: clp start my-vue-app --port 3016'));
+        console.log(chalk.yellow('Usage: clp start --port <port>'));
+        console.log(chalk.gray('Example: clp start --port 3016'));
         console.log(chalk.gray('Port must be between 1024 and 65535'));
         process.exit(1);
         return;
@@ -85,7 +70,7 @@ class StartCommand {
       const port = parseInt(options.port, 10);
       if (isNaN(port) || port < 1024 || port > 65535) {
         spinner.fail('Invalid port number. Must be between 1024 and 65535.');
-        console.log(chalk.yellow('Example: clp start my-vue-app --port 3016'));
+        console.log(chalk.yellow('Example: clp start --port 3016'));
         process.exit(1);
         return;
       }

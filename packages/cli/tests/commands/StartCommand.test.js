@@ -71,15 +71,15 @@ describe('StartCommand', () => {
   });
 
   describe('execute', () => {
-    it('should start server successfully with valid app name', async () => {
+    it('should start server successfully', async () => {
       const options = { host: 'localhost', port: '3001' };
       const command = { opts: () => ({}) };
 
-      await StartCommand.execute('test-app', options, command);
+      await StartCommand.execute(options, command);
 
       expect(ServerManager.startServer).toHaveBeenCalledWith(
         expect.objectContaining({
-          appName: 'test-app',
+          appName: 'console-log-pipe',
           host: 'localhost',
           port: 3001,
           environment: 'development',
@@ -90,37 +90,13 @@ describe('StartCommand', () => {
       expect(ConfigManager.saveServerConfig).toHaveBeenCalled();
     });
 
-    it('should fail when no app name provided', async () => {
-      const options = {};
-      const command = { opts: () => ({}) };
-
-      await expect(
-        StartCommand.execute(undefined, options, command)
-      ).rejects.toThrow('Process exit with code 1');
-
-      expect(mockProcessExit).toHaveBeenCalledWith(1);
-      expect(ServerManager.startServer).not.toHaveBeenCalled();
-    });
-
     it('should fail when no port provided', async () => {
       const options = {};
       const command = { opts: () => ({}) };
 
-      await expect(
-        StartCommand.execute('test-app', options, command)
-      ).rejects.toThrow('Process exit with code 1');
-
-      expect(mockProcessExit).toHaveBeenCalledWith(1);
-      expect(ServerManager.startServer).not.toHaveBeenCalled();
-    });
-
-    it('should fail with invalid app name format', async () => {
-      const options = {};
-      const command = { opts: () => ({}) };
-
-      await expect(
-        StartCommand.execute('invalid app name!', options, command)
-      ).rejects.toThrow('Process exit with code 1');
+      await expect(StartCommand.execute(options, command)).rejects.toThrow(
+        'Process exit with code 1'
+      );
 
       expect(mockProcessExit).toHaveBeenCalledWith(1);
       expect(ServerManager.startServer).not.toHaveBeenCalled();
@@ -130,9 +106,9 @@ describe('StartCommand', () => {
       const options = { port: 'invalid' };
       const command = { opts: () => ({}) };
 
-      await expect(
-        StartCommand.execute('test-app', options, command)
-      ).rejects.toThrow('Process exit with code 1');
+      await expect(StartCommand.execute(options, command)).rejects.toThrow(
+        'Process exit with code 1'
+      );
 
       expect(mockProcessExit).toHaveBeenCalledWith(1);
       expect(ServerManager.startServer).not.toHaveBeenCalled();
@@ -142,9 +118,9 @@ describe('StartCommand', () => {
       const options = { port: '500' }; // Below 1024
       const command = { opts: () => ({}) };
 
-      await expect(
-        StartCommand.execute('test-app', options, command)
-      ).rejects.toThrow('Process exit with code 1');
+      await expect(StartCommand.execute(options, command)).rejects.toThrow(
+        'Process exit with code 1'
+      );
 
       expect(mockProcessExit).toHaveBeenCalledWith(1);
       expect(ServerManager.startServer).not.toHaveBeenCalled();
@@ -161,7 +137,7 @@ describe('StartCommand', () => {
       const options = { port: '3001' };
       const command = { opts: () => ({}) };
 
-      await StartCommand.execute('test-app', options, command);
+      await StartCommand.execute(options, command);
 
       expect(ServerManager.startServer).not.toHaveBeenCalled();
       expect(openBrowser).toHaveBeenCalledWith('http://localhost:3001');
@@ -173,9 +149,9 @@ describe('StartCommand', () => {
       const options = { port: '4000' };
       const command = { opts: () => ({}) };
 
-      await expect(
-        StartCommand.execute('test-app', options, command)
-      ).rejects.toThrow('Process exit with code 1');
+      await expect(StartCommand.execute(options, command)).rejects.toThrow(
+        'Process exit with code 1'
+      );
 
       expect(mockProcessExit).toHaveBeenCalledWith(1);
       expect(PortManager.isPortAvailable).toHaveBeenCalledWith(4000);
@@ -185,7 +161,7 @@ describe('StartCommand', () => {
       const options = { sessionId: 'custom-session-123', port: '3001' };
       const command = { opts: () => ({}) };
 
-      await StartCommand.execute('test-app', options, command);
+      await StartCommand.execute(options, command);
 
       expect(ServerManager.startServer).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -198,7 +174,7 @@ describe('StartCommand', () => {
       const options = { port: '3001' };
       const command = { opts: () => ({}) };
 
-      await StartCommand.execute('test-app', options, command);
+      await StartCommand.execute(options, command);
 
       expect(ServerManager.startServer).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -216,7 +192,7 @@ describe('StartCommand', () => {
       const options = { port: '3001' };
       const command = { opts: () => ({}) };
 
-      await StartCommand.execute('test-app', options, command);
+      await StartCommand.execute(options, command);
 
       expect(ServerManager.startServer).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -239,7 +215,7 @@ describe('StartCommand', () => {
       };
       const command = { opts: () => ({}) };
 
-      await StartCommand.execute('test-app', options, command);
+      await StartCommand.execute(options, command);
 
       expect(ServerManager.startServer).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -253,7 +229,7 @@ describe('StartCommand', () => {
       const options = { noBrowser: true, port: '3001' };
       const command = { opts: () => ({}) };
 
-      await StartCommand.execute('test-app', options, command);
+      await StartCommand.execute(options, command);
 
       expect(openBrowser).not.toHaveBeenCalled();
     });
@@ -266,9 +242,9 @@ describe('StartCommand', () => {
       const options = { port: '3001' };
       const command = { opts: () => ({}) };
 
-      await expect(
-        StartCommand.execute('test-app', options, command)
-      ).rejects.toThrow('Process exit with code 1');
+      await expect(StartCommand.execute(options, command)).rejects.toThrow(
+        'Process exit with code 1'
+      );
 
       expect(mockProcessExit).toHaveBeenCalledWith(1);
       expect(mockConsoleError).toHaveBeenCalledWith(
@@ -285,9 +261,9 @@ describe('StartCommand', () => {
       const options = { port: '3001' };
       const command = { opts: () => ({ verbose: true }) };
 
-      await expect(
-        StartCommand.execute('test-app', options, command)
-      ).rejects.toThrow('Process exit with code 1');
+      await expect(StartCommand.execute(options, command)).rejects.toThrow(
+        'Process exit with code 1'
+      );
 
       expect(mockConsoleError).toHaveBeenCalledWith(
         expect.stringContaining('Error stack trace')
@@ -302,7 +278,7 @@ describe('StartCommand', () => {
       const options = { port: '3001' };
       const command = { opts: () => ({}) };
 
-      await StartCommand.execute('test-app', options, command);
+      await StartCommand.execute(options, command);
 
       expect(mockConsoleLog).toHaveBeenCalledWith(
         expect.stringContaining('🚀 Console Log Pipe Server Started')
@@ -318,12 +294,12 @@ describe('StartCommand', () => {
       const options = { port: '3001' };
       const command = { opts: () => ({}) };
 
-      await StartCommand.execute('test-app', options, command);
+      await StartCommand.execute(options, command);
 
       expect(ConfigManager.saveServerConfig).toHaveBeenCalledWith(
-        'test-app',
+        'console-log-pipe',
         expect.objectContaining({
-          appName: 'test-app',
+          appName: 'console-log-pipe',
           port: 3001,
         })
       );

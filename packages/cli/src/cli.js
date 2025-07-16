@@ -55,7 +55,8 @@ program.exitOverride(err => {
     console.log(chalk.cyan(`Console Log Pipe v${pkg.version}`));
     process.exit(0);
   }
-  if (err.code === 'commander.help') {
+  if (err.code === 'commander.help' || err.code === 'commander.helpDisplayed') {
+    // Help was displayed successfully, exit cleanly without error message
     process.exit(0);
   }
   console.error(chalk.red('Error:'), err.message);
@@ -66,8 +67,7 @@ program.exitOverride(err => {
 program
   .command('start')
   .alias('s')
-  .description('Start Console Log Pipe server for an application')
-  .argument('[app-name]', 'Application name to monitor')
+  .description('Start Console Log Pipe server')
   .option('-p, --port <port>', 'Server port (required, 1024-65535)')
   .option('-h, --host <host>', 'Server host', 'localhost')
   .option('--no-browser', 'Do not open browser automatically')
@@ -90,12 +90,8 @@ program.addHelpText(
   'after',
   `
 Examples:
-  ${chalk.cyan(
-    'clp start my-app --port 3001'
-  )}        Start server for "my-app" on port 3001
-  ${chalk.cyan(
-    'clp start my-vue-app --port 3016'
-  )}     Start server for Vue app on port 3016
+  ${chalk.cyan('clp start --port 3001')}        Start server on port 3001
+  ${chalk.cyan('clp start --port 3016')}        Start server on port 3016
 
 For more information, visit: https://github.com/kgptapps/consolelogpipe
 `
@@ -117,9 +113,7 @@ if (!process.argv.slice(2).length) {
           'AI-friendly web console integration for faster development'
         )}\n\n` +
         `${chalk.yellow('Quick Start:')}\n` +
-        `  ${chalk.cyan(
-          'clp start my-app --port 3001'
-        )}   Start monitoring your app\n\n` +
+        `  ${chalk.cyan('clp start --port 3001')}   Start monitoring\n\n` +
         `${chalk.gray('Run')} ${chalk.cyan('clp --help')} ${chalk.gray(
           'for more commands'
         )}`,

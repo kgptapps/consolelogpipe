@@ -22,7 +22,7 @@
         <div class="info status">
             <strong>Instructions:</strong>
             <ol>
-                <li>Start the CLI server: <code>npx clp start test-app --port 3007</code></li>
+                <li>Start the CLI server: <code>npx clp start --port 3007</code></li>
                 <li>Click the "Run Tests" button below</li>
                 <li>Check both browser console and CLI terminal for logs</li>
                 <li>Verify logs appear in both places</li>
@@ -86,7 +86,6 @@
                 
                 // Test 3: Initialize
                 ConsoleLogPipe.init({
-                    applicationName: 'test-app',
                     port: 3007
                 });
                 addLog('✅ ConsoleLogPipe initialized successfully');

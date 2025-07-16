@@ -10,7 +10,6 @@ const { LogCapture } = require('./core/log');
 const { NetworkCapture } = require('./core/network');
 const ErrorCapture = require('./core/ErrorCapture');
 
-
 class ConsoleLogPipe {
   constructor(options = {}) {
     // Store original console methods BEFORE any interception
@@ -23,11 +22,9 @@ class ConsoleLogPipe {
       this._originalConsole.debug = console.debug.bind(console);
     }
 
-    // Validate required options
+    // Use default application name if not provided
     if (!options.applicationName) {
-      throw new Error(
-        'applicationName is required for Console Log Pipe initialization'
-      );
+      options.applicationName = 'console-log-pipe';
     }
 
     // Default configuration
@@ -370,6 +367,24 @@ class ConsoleLogPipe {
           this.ws = null;
           this.isConnected = false;
         }
+      },
+
+      async flush() {
+        // For WebSocket, there's no buffering to flush
+        // This is a no-op but required for the interface
+        return Promise.resolve();
+      },
+
+      destroy() {
+        this.disconnect();
+      },
+
+      getStats() {
+        return {
+          connected: this.isConnected,
+          messagesSent: 0, // Could track this if needed
+          lastActivity: Date.now(),
+        };
       },
     };
   }
