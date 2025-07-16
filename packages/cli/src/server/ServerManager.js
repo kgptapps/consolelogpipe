@@ -246,12 +246,6 @@ class ServerManager {
 
             stats.lastActivity = Date.now();
 
-            // Debug: Log the received message
-            console.log(
-              `📨 Received ${data.type} from ${appName}:`,
-              processedLog.message || processedLog.url || 'No message'
-            );
-
             // Broadcast to CLI monitoring clients (always use 'console-log-pipe' for CLI)
             this.broadcastToClients('console-log-pipe', {
               type: data.type,

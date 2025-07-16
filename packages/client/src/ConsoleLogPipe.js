@@ -366,18 +366,7 @@ class ConsoleLogPipe {
             },
           };
 
-          // Debug: Log what we're sending
-          console.log(
-            '🚀 Sending to CLI:',
-            JSON.stringify(simpleLogData, null, 2)
-          );
           this.ws.send(JSON.stringify(simpleLogData));
-        } else {
-          console.log('❌ Cannot send - WebSocket not ready:', {
-            hasWs: !!this.ws,
-            isConnected: this.isConnected,
-            readyState: this.ws ? this.ws.readyState : 'no ws',
-          });
         }
       },
 
@@ -413,16 +402,12 @@ class ConsoleLogPipe {
    * Handle log data from LogCapture
    */
   _handleLogData(logData) {
-    console.log('🔍 _handleLogData called with:', logData);
     this.stats.totalLogs++;
     this.stats.lastActivity = Date.now();
 
     // Send to transport
     if (this.components.transport) {
-      console.log('🚀 Sending via transport...');
       this.components.transport.send(logData);
-    } else {
-      console.log('❌ No transport available!');
     }
 
     // Notify listeners
