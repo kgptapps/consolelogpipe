@@ -37,9 +37,11 @@ class ConsoleLogPipe {
       branch: options.branch || this._detectBranch(),
 
       // Server configuration
-      serverHost: options.serverHost || 'localhost',
+      serverHost: options.serverHost || options.host || 'localhost',
       serverPort:
-        options.serverPort || this._getApplicationPort(options.applicationName),
+        options.serverPort ||
+        options.port ||
+        this._getApplicationPort(options.applicationName),
       serverPath: options.serverPath || '/api/logs',
       enableRemoteLogging: options.enableRemoteLogging !== false,
 
@@ -353,11 +355,29 @@ class ConsoleLogPipe {
           this.isConnected &&
           this.ws.readyState === WebSocket.OPEN
         ) {
-          const message = {
+          // Transform complex log data to simple format expected by CLI server
+          const simpleLogData = {
             type: 'log',
-            data: logData,
+            data: {
+              level: logData.level,
+              message: logData.message,
+              timestamp: logData.timestamp,
+              source: 'browser',
+            },
           };
-          this.ws.send(JSON.stringify(message));
+
+          // Debug: Log what we're sending
+          console.log(
+            '🚀 Sending to CLI:',
+            JSON.stringify(simpleLogData, null, 2)
+          );
+          this.ws.send(JSON.stringify(simpleLogData));
+        } else {
+          console.log('❌ Cannot send - WebSocket not ready:', {
+            hasWs: !!this.ws,
+            isConnected: this.isConnected,
+            readyState: this.ws ? this.ws.readyState : 'no ws',
+          });
         }
       },
 
@@ -393,12 +413,16 @@ class ConsoleLogPipe {
    * Handle log data from LogCapture
    */
   _handleLogData(logData) {
+    console.log('🔍 _handleLogData called with:', logData);
     this.stats.totalLogs++;
     this.stats.lastActivity = Date.now();
 
     // Send to transport
     if (this.components.transport) {
+      console.log('🚀 Sending via transport...');
       this.components.transport.send(logData);
+    } else {
+      console.log('❌ No transport available!');
     }
 
     // Notify listeners

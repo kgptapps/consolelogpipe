@@ -36,8 +36,8 @@ class NetworkCapture {
       branch: options.branch,
 
       // Server configuration
-      serverPort: options.serverPort || 3001,
-      serverHost: options.serverHost || 'localhost',
+      serverPort: options.serverPort || options.port || 3001,
+      serverHost: options.serverHost || options.host || 'localhost',
 
       // Filtering and sanitization
       sensitiveHeaders: [

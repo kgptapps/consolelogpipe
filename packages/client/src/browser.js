@@ -83,6 +83,12 @@ const ConsoleLogPipeAPI = {
    * Intercept network requests
    */
   interceptNetwork() {
+    // Skip network interception in Node.js environment
+    if (typeof window === 'undefined') {
+      console.log('✅ Network interception skipped (Node.js environment)');
+      return;
+    }
+
     // Intercept fetch
     if (typeof window.fetch === 'function') {
       this.originalFetch = window.fetch;

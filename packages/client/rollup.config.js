@@ -96,9 +96,9 @@ module.exports = defineConfig([
     external: [],
   },
 
-  // CommonJS build for Node.js
+  // CommonJS build for Node.js (use simple implementation)
   {
-    input: 'src/index.js',
+    input: 'src/browser.js',
     output: {
       file: 'dist/console-log-pipe.cjs.js',
       format: 'cjs',

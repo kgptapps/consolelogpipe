@@ -48,8 +48,9 @@ class LogCapture {
       // Server connection configuration
       serverPort:
         options.serverPort ||
+        options.port ||
         LogUtils.getApplicationPort(options.applicationName),
-      serverHost: options.serverHost || 'localhost',
+      serverHost: options.serverHost || options.host || 'localhost',
       enableRemoteLogging: options.enableRemoteLogging || false,
       batchSize: options.batchSize || 10, // For remote logging
       batchTimeout: options.batchTimeout || 1000, // 1 second

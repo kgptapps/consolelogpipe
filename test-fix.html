@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Console Log Pipe v2.0.0 Fix Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            background: #007cba;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #005a87;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        pre {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🐛 Console Log Pipe v2.0.0 Fix Test</h1>
+        <p>This page tests the fix for the log streaming bug in Console Log Pipe v2.0.0.</p>
+        
+        <div class="test-section">
+            <h2>📋 Test Instructions</h2>
+            <ol>
+                <li>Start the CLI server: <code>clp start --port 3002</code></li>
+                <li>Open this page in your browser</li>
+                <li>Click "Initialize Console Log Pipe" below</li>
+                <li>Click the test buttons to generate logs</li>
+                <li>Check your CLI terminal - logs should now appear!</li>
+            </ol>
+        </div>
+
+        <div class="test-section">
+            <h2>🔧 Console Log Pipe Status</h2>
+            <div id="status" class="status info">Not initialized</div>
+            <button onclick="initializeConsoleLogPipe()">Initialize Console Log Pipe</button>
+            <button onclick="disconnectConsoleLogPipe()">Disconnect</button>
+        </div>
+
+        <div class="test-section">
+            <h2>🧪 Log Tests</h2>
+            <p>Click these buttons to test different log levels:</p>
+            <button onclick="testLog()">📝 Test Log</button>
+            <button onclick="testWarn()">⚠️ Test Warning</button>
+            <button onclick="testError()">🚨 Test Error</button>
+            <button onclick="testInfo()">ℹ️ Test Info</button>
+            <button onclick="testDebug()">🔍 Test Debug</button>
+            <button onclick="testMultiple()">🔄 Test Multiple Logs</button>
+        </div>
+
+        <div class="test-section">
+            <h2>🌐 Network Tests</h2>
+            <p>Test network request capture:</p>
+            <button onclick="testFetch()">🌐 Test Fetch Request</button>
+            <button onclick="testXHR()">📡 Test XHR Request</button>
+        </div>
+
+        <div class="test-section">
+            <h2>📊 Configuration Used</h2>
+            <pre id="config">Configuration will appear here after initialization</pre>
+        </div>
+    </div>
+
+    <!-- Load the fixed Console Log Pipe client -->
+    <script src="./dist/console-log-pipe.umd.js"></script>
+    
+    <script>
+        let consoleLogPipeInstance = null;
+        
+        async function initializeConsoleLogPipe() {
+            const statusEl = document.getElementById('status');
+            const configEl = document.getElementById('config');
+            
+            try {
+                statusEl.className = 'status info';
+                statusEl.textContent = 'Initializing...';
+                
+                // Test the fix: using 'port' parameter instead of 'serverPort'
+                const config = {
+                    port: 3002,  // This should now work with the fix!
+                    applicationName: 'test-fix-app',
+                    enableMetadata: true,
+                    enableNetworkCapture: true,
+                    environment: 'development'
+                };
+                
+                // Display the configuration
+                configEl.textContent = JSON.stringify(config, null, 2);
+                
+                // Initialize Console Log Pipe
+                consoleLogPipeInstance = await ConsoleLogPipe.init(config);
+                
+                statusEl.className = 'status success';
+                statusEl.textContent = '✅ Connected to Console Log Pipe CLI (Fix Applied!)';
+                
+                // Test log to confirm connection
+                console.log('🎉 Console Log Pipe v2.0.0 fix test initialized successfully!');
+                console.log('📊 Configuration:', config);
+                
+            } catch (error) {
+                statusEl.className = 'status error';
+                statusEl.textContent = `❌ Failed to connect: ${error.message}`;
+                console.error('Console Log Pipe initialization failed:', error);
+            }
+        }
+        
+        function disconnectConsoleLogPipe() {
+            const statusEl = document.getElementById('status');
+            
+            if (consoleLogPipeInstance) {
+                consoleLogPipeInstance.stop();
+                consoleLogPipeInstance = null;
+                statusEl.className = 'status info';
+                statusEl.textContent = 'Disconnected';
+                console.log('🔌 Console Log Pipe disconnected');
+            }
+        }
+        
+        function testLog() {
+            console.log('📝 This is a test log message from the fix test page');
+        }
+        
+        function testWarn() {
+            console.warn('⚠️ This is a test warning message');
+        }
+        
+        function testError() {
+            console.error('🚨 This is a test error message');
+        }
+        
+        function testInfo() {
+            console.info('ℹ️ This is a test info message');
+        }
+        
+        function testDebug() {
+            console.debug('🔍 This is a test debug message');
+        }
+        
+        function testMultiple() {
+            console.log('🔄 Testing multiple log messages...');
+            console.log('Message 1: Basic log');
+            console.warn('Message 2: Warning with object', { test: true, number: 42 });
+            console.error('Message 3: Error with array', [1, 2, 3, 'test']);
+            console.info('Message 4: Info with nested object', { 
+                user: { name: 'Test User', id: 123 },
+                timestamp: new Date().toISOString()
+            });
+            console.log('🏁 Multiple log test completed');
+        }
+        
+        async function testFetch() {
+            try {
+                console.log('🌐 Testing fetch request...');
+                const response = await fetch('https://jsonplaceholder.typicode.com/posts/1');
+                const data = await response.json();
+                console.log('✅ Fetch successful:', data.title);
+            } catch (error) {
+                console.error('❌ Fetch failed:', error);
+            }
+        }
+        
+        function testXHR() {
+            console.log('📡 Testing XHR request...');
+            const xhr = new XMLHttpRequest();
+            xhr.open('GET', 'https://jsonplaceholder.typicode.com/users/1');
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    const data = JSON.parse(xhr.responseText);
+                    console.log('✅ XHR successful:', data.name);
+                } else {
+                    console.error('❌ XHR failed with status:', xhr.status);
+                }
+            };
+            xhr.onerror = function() {
+                console.error('❌ XHR network error');
+            };
+            xhr.send();
+        }
+        
+        // Auto-initialize on page load for convenience
+        window.addEventListener('load', () => {
+            console.log('🚀 Test page loaded. Ready to test Console Log Pipe v2.0.0 fix!');
+        });
+    </script>
+</body>
+</html>
