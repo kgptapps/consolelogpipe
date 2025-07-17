@@ -57,7 +57,6 @@ describe('ServerManager', () => {
 
   describe('startServer', () => {
     const mockConfig = {
-      appName: 'test-app',
       host: 'localhost',
       port: 3001,
       sessionId: 'test-session',
@@ -75,7 +74,7 @@ describe('ServerManager', () => {
       expect(server).toBeDefined();
       expect(server.config).toEqual(mockConfig);
       expect(server.status).toBe('running');
-      expect(ServerManager.servers.has('test-app')).toBe(true);
+      expect(ServerManager.servers.has(3001)).toBe(true);
     });
 
     it('should throw error if server already running', async () => {
@@ -84,7 +83,7 @@ describe('ServerManager', () => {
 
       // Try to start second server with same app name
       await expect(ServerManager.startServer(mockConfig)).rejects.toThrow(
-        'Server already running for "test-app"'
+        'Server already running on port 3001'
       );
     });
 
@@ -137,7 +136,6 @@ describe('ServerManager', () => {
 
   describe('stopServer', () => {
     const mockConfig = {
-      appName: 'test-app',
       host: 'localhost',
       port: 3001,
       sessionId: 'test-session',
@@ -146,14 +144,14 @@ describe('ServerManager', () => {
     it('should stop server successfully', async () => {
       // Start server first
       await ServerManager.startServer(mockConfig);
-      expect(ServerManager.servers.has('test-app')).toBe(true);
+      expect(ServerManager.servers.has(3001)).toBe(true);
 
       // Stop server
-      await ServerManager.stopServer('test-app');
+      await ServerManager.stopServer(3001);
 
-      expect(ServerManager.servers.has('test-app')).toBe(false);
+      expect(ServerManager.servers.has(3001)).toBe(false);
       expect(ConfigManager.saveServerConfig).toHaveBeenCalledWith(
-        'test-app',
+        3001,
         expect.objectContaining({
           status: 'stopped',
           stopTime: expect.any(String),
@@ -162,8 +160,8 @@ describe('ServerManager', () => {
     });
 
     it('should throw error if server not found', async () => {
-      await expect(ServerManager.stopServer('non-existent')).rejects.toThrow(
-        'No server found for "non-existent"'
+      await expect(ServerManager.stopServer(9999)).rejects.toThrow(
+        'No server found on port 9999'
       );
     });
 
@@ -177,7 +175,7 @@ describe('ServerManager', () => {
 
       await ServerManager.startServer(mockConfig);
 
-      await expect(ServerManager.stopServer('test-app')).rejects.toThrow(
+      await expect(ServerManager.stopServer(3001)).rejects.toThrow(
         'Close failed'
       );
     });
@@ -194,10 +192,9 @@ describe('ServerManager', () => {
     it('should return info for running server', async () => {
       await ServerManager.startServer(mockConfig);
 
-      const info = await ServerManager.getServerInfo('test-app');
+      const info = await ServerManager.getServerInfo(3001);
 
       expect(info).toMatchObject({
-        appName: 'test-app',
         host: 'localhost',
         port: 3001,
         status: 'running',
@@ -206,14 +203,14 @@ describe('ServerManager', () => {
 
     it('should return saved config for stopped server', async () => {
       ConfigManager.getServerConfig.mockResolvedValue({
-        appName: 'test-app',
+        port: 3001,
         status: 'stopped',
       });
 
-      const info = await ServerManager.getServerInfo('test-app');
+      const info = await ServerManager.getServerInfo(3001);
 
       expect(info).toMatchObject({
-        appName: 'test-app',
+        port: 3001,
         status: 'stopped',
       });
     });
@@ -221,7 +218,7 @@ describe('ServerManager', () => {
     it('should return null for non-existent server', async () => {
       ConfigManager.getServerConfig.mockResolvedValue(null);
 
-      const info = await ServerManager.getServerInfo('non-existent');
+      const info = await ServerManager.getServerInfo(9999);
 
       expect(info).toBeNull();
     });
@@ -243,13 +240,13 @@ describe('ServerManager', () => {
       const servers = await ServerManager.getAllServers();
 
       expect(servers).toHaveLength(2);
-      expect(servers[0].appName).toBe('app1');
-      expect(servers[1].appName).toBe('app2');
+      expect(servers[0].port).toBe(3001);
+      expect(servers[1].port).toBe(3002);
     });
 
     it('should include inactive servers when requested', async () => {
       ConfigManager.getAllServerConfigs.mockResolvedValue([
-        { appName: 'inactive-app', status: 'stopped' },
+        { port: 3003, status: 'stopped' },
       ]);
 
       // Mock isServerRunning to return false for inactive servers
@@ -258,7 +255,7 @@ describe('ServerManager', () => {
       const servers = await ServerManager.getAllServers(true);
 
       expect(servers).toHaveLength(1);
-      expect(servers[0].appName).toBe('inactive-app');
+      expect(servers[0].port).toBe(3003);
       expect(servers[0].status).toBe('stopped');
     });
 
@@ -270,8 +267,8 @@ describe('ServerManager', () => {
       });
 
       ConfigManager.getAllServerConfigs.mockResolvedValue([
-        { appName: 'running-app', status: 'stopped' },
-        { appName: 'inactive-app', status: 'stopped' },
+        { port: 3001, status: 'stopped' },
+        { port: 3002, status: 'stopped' },
       ]);
 
       // Mock isServerRunning to return false for inactive servers
@@ -280,12 +277,13 @@ describe('ServerManager', () => {
       const servers = await ServerManager.getAllServers(true);
 
       expect(servers).toHaveLength(2);
-      expect(servers.find(s => s.appName === 'running-app').status).toBe(
-        'running'
-      );
-      expect(servers.find(s => s.appName === 'inactive-app').status).toBe(
-        'stopped'
-      );
+      const runningServer = servers.find(s => s.port === 3001);
+      const stoppedServer = servers.find(s => s.port === 3002);
+
+      expect(runningServer).toBeDefined();
+      expect(runningServer.status).toBe('running');
+      expect(stoppedServer).toBeDefined();
+      expect(stoppedServer.status).toBe('stopped');
     });
   });
 
@@ -297,16 +295,15 @@ describe('ServerManager', () => {
       };
 
       await ServerManager.startServer({
-        appName: 'test-app',
         host: 'localhost',
         port: 3001,
       });
 
-      const serverInstance = ServerManager.servers.get('test-app');
+      const serverInstance = ServerManager.servers.get(3001);
       // Manually add the mock WebSocket client
       serverInstance.wss.clients.add(mockWs);
 
-      ServerManager.broadcastToClients('test-app', {
+      ServerManager.broadcastToClients(3001, {
         type: 'test',
         data: 'message',
       });
@@ -323,15 +320,14 @@ describe('ServerManager', () => {
       };
 
       await ServerManager.startServer({
-        appName: 'test-app',
         host: 'localhost',
         port: 3001,
       });
 
-      const serverInstance = ServerManager.servers.get('test-app');
+      const serverInstance = ServerManager.servers.get(3001);
       serverInstance.wss.clients.add(mockWs);
 
-      ServerManager.broadcastToClients('test-app', {
+      ServerManager.broadcastToClients(3001, {
         type: 'test',
         data: 'message',
       });

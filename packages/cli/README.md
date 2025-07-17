@@ -71,7 +71,6 @@ clp start --port 3001 --format json --exclude "debug"
 
 - `--port, -p <port>` - Server port (required, must be between 1024-65535)
 - `--host <host>` - Server host (default: localhost)
-- `--app-name <name>` - Application name (alternative to argument)
 - `--env <environment>` - Environment (development, staging, production)
 - `--log-level <level>` - Minimum log level (debug, info, warn, error)
 - `--max-logs <number>` - Maximum logs to store (default: 1000)

@@ -36,11 +36,13 @@ describe('LogUtils', () => {
       expect(port1).toBeLessThanOrEqual(3100);
     });
 
-    it('should return different ports for different application names', () => {
+    it('should return default port for all application names', () => {
       const port1 = LogUtils.getApplicationPort('app1');
       const port2 = LogUtils.getApplicationPort('app2');
 
-      expect(port1).not.toBe(port2);
+      // Since app names are no longer used, all should return default port
+      expect(port1).toBe(3001);
+      expect(port2).toBe(3001);
     });
 
     it('should handle empty string', () => {

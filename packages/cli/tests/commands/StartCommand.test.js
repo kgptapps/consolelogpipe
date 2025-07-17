@@ -79,7 +79,6 @@ describe('StartCommand', () => {
 
       expect(ServerManager.startServer).toHaveBeenCalledWith(
         expect.objectContaining({
-          appName: 'console-log-pipe',
           host: 'localhost',
           port: 3001,
           environment: 'development',
@@ -297,9 +296,8 @@ describe('StartCommand', () => {
       await StartCommand.execute(options, command);
 
       expect(ConfigManager.saveServerConfig).toHaveBeenCalledWith(
-        'console-log-pipe',
+        3001,
         expect.objectContaining({
-          appName: 'console-log-pipe',
           port: 3001,
         })
       );

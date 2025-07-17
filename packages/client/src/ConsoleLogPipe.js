@@ -22,15 +22,9 @@ class ConsoleLogPipe {
       this._originalConsole.debug = console.debug.bind(console);
     }
 
-    // Use default application name if not provided
-    if (!options.applicationName) {
-      options.applicationName = 'console-log-pipe';
-    }
-
     // Default configuration
     this.config = {
-      // Application context (required)
-      applicationName: options.applicationName,
+      // Application context (optional, for backwards compatibility only)
       sessionId: options.sessionId || this._generateSessionId(),
       environment: options.environment || this._detectEnvironment(),
       developer: options.developer || this._detectDeveloper(),
@@ -38,10 +32,7 @@ class ConsoleLogPipe {
 
       // Server configuration
       serverHost: options.serverHost || options.host || 'localhost',
-      serverPort:
-        options.serverPort ||
-        options.port ||
-        this._getApplicationPort(options.applicationName),
+      serverPort: options.serverPort || options.port || 3001,
       serverPath: options.serverPath || '/api/logs',
       enableRemoteLogging: options.enableRemoteLogging !== false,
 
@@ -293,7 +284,6 @@ class ConsoleLogPipe {
   getSession() {
     return {
       sessionId: this.config.sessionId,
-      applicationName: this.config.applicationName,
       environment: this.config.environment,
       developer: this.config.developer,
       branch: this.config.branch,
@@ -321,6 +311,7 @@ class ConsoleLogPipe {
     return {
       ws: null,
       isConnected: false,
+      messagesSent: 0,
 
       async initialize() {
         return new Promise((resolve, reject) => {
@@ -343,6 +334,16 @@ class ConsoleLogPipe {
               this.isConnected = false;
               // Silent close - no logging to prevent recursion
             };
+
+            this.ws.onmessage = event => {
+              // Handle server messages if needed
+              try {
+                JSON.parse(event.data);
+                // Process server messages silently
+              } catch (error) {
+                // Ignore parsing errors
+              }
+            };
           } catch (error) {
             reject(error);
           }
@@ -355,19 +356,42 @@ class ConsoleLogPipe {
           this.isConnected &&
           this.ws.readyState === WebSocket.OPEN
         ) {
-          // Transform complex log data to simple format expected by CLI server
-          const simpleLogData = {
-            type: 'log',
-            data: {
-              level: logData.level,
-              message: logData.message,
-              timestamp: logData.timestamp,
-              source: 'browser',
-            },
-          };
+          try {
+            // Transform log data to format expected by CLI server
+            const messageData = {
+              type: logData.level === 'error' ? 'error' : 'log',
+              data: {
+                level: logData.level,
+                message: logData.message || this._formatArgs(logData.args),
+                timestamp: logData.timestamp,
+                source: 'browser',
+                sessionId: logData.sessionId,
+                args: logData.args,
+              },
+            };
 
-          this.ws.send(JSON.stringify(simpleLogData));
+            this.ws.send(JSON.stringify(messageData));
+            this.messagesSent++;
+          } catch (error) {
+            // Silent error handling to prevent recursion
+          }
         }
+      },
+
+      _formatArgs(args) {
+        if (!args || !Array.isArray(args)) return '';
+        return args
+          .map(arg => {
+            if (typeof arg === 'string') return arg;
+            if (arg === null) return 'null';
+            if (arg === undefined) return 'undefined';
+            try {
+              return JSON.stringify(arg);
+            } catch (error) {
+              return String(arg);
+            }
+          })
+          .join(' ');
       },
 
       disconnect() {
@@ -391,7 +415,7 @@ class ConsoleLogPipe {
       getStats() {
         return {
           connected: this.isConnected,
-          messagesSent: 0, // Could track this if needed
+          messagesSent: this.messagesSent,
           lastActivity: Date.now(),
         };
       },
@@ -405,15 +429,22 @@ class ConsoleLogPipe {
     this.stats.totalLogs++;
     this.stats.lastActivity = Date.now();
 
+    // Enhance log data with session information
+    const enhancedLogData = {
+      ...logData,
+      sessionId: this.config.sessionId,
+      environment: this.config.environment,
+    };
+
     // Send to transport
     if (this.components.transport) {
-      this.components.transport.send(logData);
+      this.components.transport.send(enhancedLogData);
     }
 
     // Notify listeners
     this.listeners.forEach(listener => {
       try {
-        listener({ type: 'log', data: logData });
+        listener({ type: 'log', data: enhancedLogData });
       } catch (error) {
         // Use original console to avoid recursion
         if (this._originalConsole.error) {
@@ -512,20 +543,6 @@ class ConsoleLogPipe {
    */
   _detectBranch() {
     return 'unknown-branch';
-  }
-
-  /**
-   * Get application-specific port
-   */
-  _getApplicationPort(applicationName) {
-    if (!applicationName) return 3001;
-
-    // Simple hash to port mapping (3001-3100)
-    let hash = 0;
-    for (let i = 0; i < applicationName.length; i++) {
-      hash = ((hash << 5) - hash + applicationName.charCodeAt(i)) & 0xffffffff;
-    }
-    return 3001 + (Math.abs(hash) % 100);
   }
 
   /**

@@ -18,15 +18,9 @@ class LogUtils {
    * @param {string} applicationName - Application name
    * @returns {number} Port number
    */
-  static getApplicationPort(applicationName) {
-    // Simple hash function to assign consistent ports
-    let hash = 0;
-    for (let i = 0; i < applicationName.length; i++) {
-      const char = applicationName.charCodeAt(i);
-      hash = (hash << 5) - hash + char;
-    }
-    // Map to port range 3001-3100
-    return 3001 + (Math.abs(hash) % 100);
+  static getApplicationPort(_applicationName) {
+    // Always return default port since app names are no longer used
+    return 3001;
   }
 
   /**

@@ -90,9 +90,9 @@ describe('ConsoleLogPipe', () => {
   });
 
   describe('constructor', () => {
-    it('should use default applicationName when not provided', () => {
+    it('should use default port when not provided', () => {
       const clp = new ConsoleLogPipe();
-      expect(clp.config.applicationName).toBe('console-log-pipe');
+      expect(clp.config.serverPort).toBe(3001);
     });
 
     it('should initialize with default configuration', () => {
@@ -138,14 +138,12 @@ describe('ConsoleLogPipe', () => {
       expect(clp.config.environment).toBe('development');
     });
 
-    it('should calculate application-specific port', () => {
-      const clp1 = new ConsoleLogPipe({ applicationName: 'app1' });
-      const clp2 = new ConsoleLogPipe({ applicationName: 'app2' });
+    it('should use specified port', () => {
+      const clp1 = new ConsoleLogPipe({ port: 3005 });
+      const clp2 = new ConsoleLogPipe({ port: 3010 });
 
-      expect(clp1.config.serverPort).toBeGreaterThanOrEqual(3001);
-      expect(clp1.config.serverPort).toBeLessThanOrEqual(3100);
-      expect(clp2.config.serverPort).toBeGreaterThanOrEqual(3001);
-      expect(clp2.config.serverPort).toBeLessThanOrEqual(3100);
+      expect(clp1.config.serverPort).toBe(3005);
+      expect(clp2.config.serverPort).toBe(3010);
       expect(clp1.config.serverPort).not.toBe(clp2.config.serverPort);
     });
   });
@@ -321,7 +319,13 @@ describe('ConsoleLogPipe', () => {
       const logData = { level: 'info', message: 'test' };
       consoleLogPipe._handleLogData(logData);
 
-      expect(listener).toHaveBeenCalledWith({ type: 'log', data: logData });
+      expect(listener).toHaveBeenCalledWith({
+        type: 'log',
+        data: expect.objectContaining({
+          level: 'info',
+          message: 'test',
+        }),
+      });
       expect(consoleLogPipe.stats.totalLogs).toBe(1);
     });
 
@@ -410,7 +414,7 @@ describe('ConsoleLogPipe', () => {
       const session = consoleLogPipe.getSession();
 
       expect(session.sessionId).toBe('test-session-123');
-      expect(session.applicationName).toBe('test-app');
+      expect(session.sessionId).toBe('test-session-123');
       expect(session.startTime).toBeDefined();
       expect(session.isCapturing).toBe(false);
     });
@@ -487,7 +491,10 @@ describe('ConsoleLogPipe', () => {
       consoleLogPipe._handleLogData(logData);
 
       expect(consoleLogPipe.components.transport.send).toHaveBeenCalledWith(
-        logData
+        expect.objectContaining({
+          level: 'info',
+          message: 'test',
+        })
       );
     });
 

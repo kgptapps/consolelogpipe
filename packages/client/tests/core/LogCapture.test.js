@@ -571,18 +571,18 @@ describe('LogCapture', () => {
   });
 
   describe('Multi-Application Support', () => {
-    it('should require applicationName parameter', () => {
+    it('should work without applicationName parameter', () => {
       expect(() => {
         new LogCapture();
-      }).toThrow('applicationName is required and must be a non-empty string');
+      }).not.toThrow();
 
       expect(() => {
-        new LogCapture({ applicationName: '' });
-      }).toThrow('applicationName is required and must be a non-empty string');
+        new LogCapture({ port: 3001 });
+      }).not.toThrow();
 
       expect(() => {
-        new LogCapture({ applicationName: 123 });
-      }).toThrow('applicationName is required and must be a non-empty string');
+        new LogCapture({ applicationName: 'legacy-app' });
+      }).not.toThrow();
     });
 
     it('should generate unique session IDs', () => {
@@ -664,23 +664,18 @@ describe('LogCapture', () => {
       );
     });
 
-    it('should log session information to console', () => {
+    it('should not log session information to console (disabled to prevent recursion)', () => {
       const originalConsoleLog = console.log;
       const mockConsoleLog = jest.fn();
       console.log = mockConsoleLog;
 
-      const capture = new LogCapture({ applicationName: 'test-app' });
+      const capture = new LogCapture({ port: 3001 });
 
-      expect(mockConsoleLog).toHaveBeenCalledWith(
-        expect.stringContaining('Console Log Pipe Session Started'),
-        expect.any(String),
-        expect.objectContaining({
-          applicationName: 'test-app',
-          sessionId: expect.stringMatching(/^clp_/),
-          environment: expect.any(String),
-          serverPort: expect.any(Number),
-        })
-      );
+      // Session logging is disabled to prevent recursion issues
+      expect(mockConsoleLog).not.toHaveBeenCalled();
+
+      // Verify capture was created successfully with correct port
+      expect(capture.options.serverPort).toBe(3001);
 
       console.log = originalConsoleLog;
     });

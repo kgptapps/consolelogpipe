@@ -380,7 +380,7 @@ npm version patch && npm publish
 
   ⚙️ DEVELOP:
   1. Enhance LogCapture.js with multi-application support
-  2. Add applicationName (required), sessionId (auto-generated)
+  2. Add sessionId (auto-generated)
   3. Add environment, developer, branch detection
   4. Implement application-specific port assignment (3001-3100)
   5. Add session ID console logging for manual inspection
@@ -388,7 +388,7 @@ npm version patch && npm publish
 
   🧪 TEST:
   1. UPDATE UNIT TESTS: packages/client/tests/core/LogCapture.test.js
-     - Test applicationName validation (required)
+     - Test port parameter validation (required)
      - Test auto-generated session ID functionality
      - Test environment/developer/branch detection
      - Test application-specific port assignment
@@ -402,7 +402,7 @@ npm version patch && npm publish
   git add packages/client/src/core/LogCapture.js packages/client/tests/core/LogCapture.test.js
   git commit -m "feat(client): add multi-application support with ai-friendly features
 
-  - Add required applicationName parameter for app isolation
+  - Add port-based server identification
   - Implement auto-generated session IDs with console logging
   - Add environment, developer, and branch context detection
   - Implement application-specific port assignment (3001-3100)
@@ -415,7 +415,7 @@ npm version patch && npm publish
   ```
 
 - **Acceptance Criteria:**
-  - [ ] applicationName parameter is required and validated
+  - [ ] port parameter is required and validated
   - [ ] Session IDs are auto-generated and logged to console
   - [ ] Environment, developer, branch are auto-detected
   - [ ] Application-specific ports assigned (3001-3100 range)

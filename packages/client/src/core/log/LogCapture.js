@@ -20,15 +20,7 @@ class LogCapture {
       this._originalConsole.debug = console.debug.bind(console);
     }
 
-    // Validate required applicationName
-    if (
-      !options.applicationName ||
-      typeof options.applicationName !== 'string'
-    ) {
-      throw new Error(
-        'applicationName is required and must be a non-empty string'
-      );
-    }
+    // Application name is now optional for backwards compatibility
 
     this.options = {
       levels: ['log', 'error', 'warn', 'info', 'debug'],
@@ -46,10 +38,7 @@ class LogCapture {
       branch: options.branch || LogUtils.detectBranch(),
 
       // Server connection configuration
-      serverPort:
-        options.serverPort ||
-        options.port ||
-        LogUtils.getApplicationPort(options.applicationName),
+      serverPort: options.serverPort || options.port || 3001,
       serverHost: options.serverHost || options.host || 'localhost',
       enableRemoteLogging: options.enableRemoteLogging || false,
       batchSize: options.batchSize || 10, // For remote logging
@@ -195,22 +184,8 @@ class LogCapture {
    * @private
    */
   logSessionInfo() {
-    if (this.options.preserveOriginal && this.interceptor.originalConsole.log) {
-      const sessionInfo = {
-        applicationName: this.options.applicationName,
-        sessionId: this.options.sessionId,
-        environment: this.options.environment,
-        serverPort: this.options.serverPort,
-        timestamp: new Date().toISOString(),
-      };
-
-      // Use original console to avoid recursion
-      this.interceptor.originalConsole.log(
-        '🔍 Console Log Pipe Session Started',
-        '',
-        sessionInfo
-      );
-    }
+    // Disable session logging to prevent recursion issues
+    // Session info is available through getSession() method instead
   }
 
   /**

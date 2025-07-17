@@ -103,15 +103,15 @@ describe('Index Module', () => {
 
   describe('create', () => {
     it('should create a ConsoleLogPipe instance', () => {
-      const clp = ConsoleLogPipeAPI.create({ applicationName: 'test-app' });
+      const clp = ConsoleLogPipeAPI.create({ port: 3001 });
 
       expect(clp).toBeInstanceOf(ConsoleLogPipeAPI.ConsoleLogPipe);
-      expect(clp.config.applicationName).toBe('test-app');
+      expect(clp.config.serverPort).toBe(3001);
     });
 
-    it('should use default applicationName when create called without it', () => {
+    it('should use default port when create called without it', () => {
       const instance = ConsoleLogPipeAPI.create();
-      expect(instance.config.applicationName).toBe('console-log-pipe');
+      expect(instance.config.serverPort).toBe(3001);
     });
   });
 
@@ -155,17 +155,17 @@ describe('Index Module', () => {
         return mockWs;
       });
 
-      clp = await ConsoleLogPipeAPI.init({ applicationName: 'init-test-app' });
+      clp = await ConsoleLogPipeAPI.init({ port: 3002 });
 
       expect(clp).toBeInstanceOf(ConsoleLogPipeAPI.ConsoleLogPipe);
-      expect(clp.config.applicationName).toBe('init-test-app');
+      expect(clp.config.serverPort).toBe(3002);
       expect(clp.isInitialized).toBe(true);
       expect(clp.isCapturing).toBe(true);
     }, 5000); // 5 second timeout should be enough
 
-    it('should use default applicationName when init called without it', async () => {
+    it('should use default port when init called without it', async () => {
       const instance = await ConsoleLogPipeAPI.init();
-      expect(instance.config.applicationName).toBe('console-log-pipe');
+      expect(instance.config.serverPort).toBe(3001);
       await instance.destroy();
     });
   });

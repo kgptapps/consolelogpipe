@@ -19,13 +19,13 @@ class ServerManager {
   );
 
   static async startServer(config) {
-    const { appName } = config;
+    const { port } = config;
 
     // Check if server is already running
-    if (this.servers.has(appName)) {
-      const existingServer = this.servers.get(appName);
+    if (this.servers.has(port)) {
+      const existingServer = this.servers.get(port);
       if (existingServer.status === 'running') {
-        throw new Error(`Server already running for "${appName}"`);
+        throw new Error(`Server already running on port ${port}`);
       }
     }
 
@@ -74,7 +74,7 @@ class ServerManager {
     app.get('/api/health', (req, res) => {
       res.json({
         status: 'ok',
-        appName: config.appName,
+        port: config.port,
         sessionId: config.sessionId,
         uptime: Date.now() - stats.startTime,
         stats,
@@ -94,7 +94,7 @@ class ServerManager {
           const processedLog = {
             ...logEntry,
             receivedAt: new Date().toISOString(),
-            appName: config.appName,
+            port: config.port,
             sessionId: config.sessionId,
           };
 
@@ -116,7 +116,7 @@ class ServerManager {
           stats.lastActivity = Date.now();
 
           // Broadcast to WebSocket clients
-          this.broadcastToClients(appName, {
+          this.broadcastToClients(config.port, {
             type: logEntry.type || 'log',
             data: processedLog,
           });
@@ -170,7 +170,7 @@ class ServerManager {
       res.json({
         logs: filteredLogs,
         total: filteredLogs.length,
-        appName: config.appName,
+        port: config.port,
         sessionId: config.sessionId,
       });
     });
@@ -187,15 +187,15 @@ class ServerManager {
     const wss = new WebSocket.Server({ server });
 
     wss.on('connection', (ws, _req) => {
-      console.log(`WebSocket client connected for ${appName}`);
+      console.log(`WebSocket client connected to port ${config.port}`);
 
       // Send welcome message
       ws.send(
         JSON.stringify({
           type: 'server_info',
           data: {
-            message: `Connected to ${appName}`,
-            appName: config.appName,
+            message: `Connected to port ${config.port}`,
+            port: config.port,
             sessionId: config.sessionId,
             stats,
           },
@@ -225,8 +225,8 @@ class ServerManager {
             const processedLog = {
               ...data.data,
               receivedAt: new Date().toISOString(),
-              appName: config.appName,
-              sessionId: config.sessionId,
+              port: config.port,
+              sessionId: data.data.sessionId || config.sessionId,
             };
 
             // Add to logs array (with size limit)
@@ -246,19 +246,11 @@ class ServerManager {
 
             stats.lastActivity = Date.now();
 
-            // Broadcast to CLI monitoring clients (always use 'console-log-pipe' for CLI)
-            this.broadcastToClients('console-log-pipe', {
+            // Broadcast to CLI monitoring clients
+            this.broadcastToClients(config.port, {
               type: data.type,
               data: processedLog,
             });
-
-            // Also broadcast to clients of the same app name if different
-            if (appName !== 'console-log-pipe') {
-              this.broadcastToClients(appName, {
-                type: data.type,
-                data: processedLog,
-              });
-            }
           }
         } catch (error) {
           console.error('Error handling WebSocket message:', error);
@@ -266,7 +258,7 @@ class ServerManager {
       });
 
       ws.on('close', () => {
-        console.log(`WebSocket client disconnected from ${appName}`);
+        console.log(`WebSocket client disconnected from port ${config.port}`);
       });
     });
 
@@ -290,10 +282,10 @@ class ServerManager {
           startTime: new Date().toISOString(),
         };
 
-        this.servers.set(appName, serverInstance);
+        this.servers.set(config.port, serverInstance);
 
         // Save server configuration for persistence
-        ConfigManager.saveServerConfig(appName, {
+        ConfigManager.saveServerConfig(config.port, {
           ...config,
           status: 'running',
           startTime: serverInstance.startTime,
@@ -301,18 +293,18 @@ class ServerManager {
         }).catch(console.error);
 
         console.log(
-          `Console Log Pipe server started for "${appName}" on http://${config.host}:${config.port}`
+          `Console Log Pipe server started on http://${config.host}:${config.port}`
         );
         resolve(serverInstance);
       });
     });
   }
 
-  static async stopServer(appName) {
-    const serverInstance = this.servers.get(appName);
+  static async stopServer(port) {
+    const serverInstance = this.servers.get(port);
 
     if (!serverInstance) {
-      throw new Error(`No server found for "${appName}"`);
+      throw new Error(`No server found on port ${port}`);
     }
 
     return new Promise((resolve, reject) => {
@@ -333,25 +325,25 @@ class ServerManager {
         serverInstance.stopTime = new Date().toISOString();
 
         // Remove from active servers
-        this.servers.delete(appName);
+        this.servers.delete(port);
 
         // Save final configuration
-        ConfigManager.saveServerConfig(appName, {
+        ConfigManager.saveServerConfig(port, {
           ...serverInstance.config,
           status: 'stopped',
           stopTime: serverInstance.stopTime,
           finalStats: serverInstance.stats,
         }).catch(console.error);
 
-        console.log(`Console Log Pipe server stopped for "${appName}"`);
+        console.log(`Console Log Pipe server stopped on port ${port}`);
         resolve();
       });
     });
   }
 
-  static async getServerInfo(appName) {
+  static async getServerInfo(port) {
     // Check if server is currently running
-    const runningServer = this.servers.get(appName);
+    const runningServer = this.servers.get(port);
     if (runningServer) {
       return {
         ...runningServer.config,
@@ -363,7 +355,7 @@ class ServerManager {
     }
 
     // Check saved configuration
-    const savedConfig = await ConfigManager.getServerConfig(appName);
+    const savedConfig = await ConfigManager.getServerConfig(port);
     if (savedConfig) {
       return {
         ...savedConfig,
@@ -376,25 +368,25 @@ class ServerManager {
 
   static async getAllServers(includeInactive = false) {
     const servers = [];
-    const processedApps = new Set();
+    const processedPorts = new Set();
 
     // Add running servers from memory
-    for (const [appName, serverInstance] of this.servers.entries()) {
+    for (const [port, serverInstance] of this.servers.entries()) {
       servers.push({
-        appName,
+        port,
         ...serverInstance.config,
         status: serverInstance.status,
         stats: serverInstance.stats,
         startTime: serverInstance.startTime,
         logCount: serverInstance.logs.length,
       });
-      processedApps.add(appName);
+      processedPorts.add(port);
     }
 
     // Check saved configurations for running servers
     const savedConfigs = await ConfigManager.getAllServerConfigs();
     for (const config of savedConfigs || []) {
-      if (!processedApps.has(config.appName)) {
+      if (!processedPorts.has(config.port)) {
         // Check if server is actually running by testing the port
         const isRunning = await this.isServerRunning(
           config.host || 'localhost',
@@ -412,7 +404,7 @@ class ServerManager {
             status: 'stopped',
           });
         }
-        processedApps.add(config.appName);
+        processedPorts.add(config.port);
       }
     }
 
@@ -444,8 +436,8 @@ class ServerManager {
     });
   }
 
-  static broadcastToClients(appName, message) {
-    const serverInstance = this.servers.get(appName);
+  static broadcastToClients(port, message) {
+    const serverInstance = this.servers.get(port);
     if (!serverInstance) return;
 
     serverInstance.wss.clients.forEach(ws => {
@@ -492,7 +484,7 @@ class ServerManager {
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Console Log Pipe - ${config.appName}</title>
+    <title>Console Log Pipe - Port ${config.port}</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
@@ -512,7 +504,7 @@ class ServerManager {
 <body>
     <div class="container">
         <h1>🚀 Console Log Pipe</h1>
-        <p><strong>Application:</strong> ${config.appName} <span class="status">Running</span></p>
+        <p><strong>Port:</strong> ${config.port} <span class="status">Running</span></p>
         <p><strong>Session ID:</strong> ${config.sessionId}</p>
         <p><strong>Environment:</strong> ${config.environment}</p>
         
@@ -537,9 +529,7 @@ class ServerManager {
 
         <div class="commands">
             <h3>CLI Commands</h3>
-            <div class="command">clp monitor ${config.appName}</div>
-            <div class="command">clp status ${config.appName}</div>
-            <div class="command">clp stop ${config.appName}</div>
+            <div class="command">clp start --port ${config.port}</div>
         </div>
     </div>
 </body>

@@ -92,6 +92,7 @@ program.addHelpText(
 Examples:
   ${chalk.cyan('clp start --port 3001')}        Start server on port 3001
   ${chalk.cyan('clp start --port 3016')}        Start server on port 3016
+  ${chalk.cyan('clp start -p 8080')}            Start server on port 8080
 
 For more information, visit: https://github.com/kgptapps/consolelogpipe
 `

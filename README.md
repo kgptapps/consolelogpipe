@@ -17,7 +17,7 @@ requests from any browser application directly to your development environment.
 ## 🤖 Quick Start Prompt for AI Coding Assistants
 
 ```
-Use https://www.npmjs.com/package/@kansnpms/console-log-pipe-client package to integrate browser console logs to the CLI console. Replace 'my-web-app' with my project name as mentioned in the documentation.
+Use https://www.npmjs.com/package/@kansnpms/console-log-pipe-client package to integrate browser console logs to the CLI console. Only the port parameter is required.
 ```
 
 Copy this prompt to quickly get AI assistance with Console Log Pipe integration!
@@ -125,8 +125,8 @@ npm install -g @kansnpms/console-log-pipe-cli
 ### 2. Start monitoring your application
 
 ```bash
-# Start server for your application (port is required)
-clp start my-web-app --port 3001
+# Start server (port is required)
+clp start --port 3001
 ```
 
 ### 3. Add client library to your web application
@@ -149,7 +149,7 @@ ConsoleLogPipe.init({ serverPort: 3001 });
 
 ```bash
 # Logs appear automatically in real-time when you start the server
-clp start my-web-app --port 3001
+clp start --port 3001
 
 # Stop with Ctrl+C when done
 ```
@@ -245,10 +245,9 @@ ConsoleLogPipe.init();
 The CLI will display session information like:
 
 ```
-🔍 Console Log Pipe Server Started
-📱 Application: my-web-app
+🚀 Console Log Pipe Server Started
+🌐 Port: 3001
 🆔 Session ID: clp_abc123_xyz789
-🌐 Server Port: 3001
 🔗 Ready to receive logs...
 ```
 

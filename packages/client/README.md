@@ -14,7 +14,7 @@ easily parse and understand.
 ## 🤖 Quick Start Prompt for AI Coding Assistants
 
 ```
-Use https://www.npmjs.com/package/@kansnpms/console-log-pipe-client package to integrate browser console logs to the CLI console. Replace 'my-web-app' with my project name as mentioned in the documentation.
+Use https://www.npmjs.com/package/@kansnpms/console-log-pipe-client package to integrate browser console logs to the CLI console. Only the port parameter is required.
 ```
 
 Copy this prompt to quickly get AI assistance with Console Log Pipe integration!
@@ -59,14 +59,13 @@ First, install and start the Console Log Pipe CLI server:
 # Install CLI globally
 npm install -g @kansnpms/console-log-pipe-cli
 
-# Start server for your application (port is required)
-clp start my-web-app --port 3001
+# Start server (port is required)
+clp start --port 3001
 
 # The CLI will display:
-# 🔍 Console Log Pipe Server Started
-# 📱 Application: my-web-app
+# 🚀 Console Log Pipe Server Started
+# 🌐 Port: 3001
 # 🆔 Session ID: clp_abc123_xyz789
-# 🌐 Server Port: 3001
 # 🔗 Ready to receive logs...
 ```
 
@@ -76,7 +75,6 @@ clp start my-web-app --port 3001
 import ConsoleLogPipe from '@kansnpms/console-log-pipe-client';
 
 ConsoleLogPipe.init({
-  applicationName: 'my-web-app', // Required: Must match CLI app name
   port: 3001, // Required: Must match CLI server port
   // sessionId is auto-generated, or use custom one from CLI output
 });
@@ -87,8 +85,8 @@ ConsoleLogPipe.init({
 > - **Client depends on CLI**: This client library requires the CLI server to be running
 > - **CLI depends on Client**: The CLI server is useless without this client library in your web app
 > - You must install and run: `npm install -g @kansnpms/console-log-pipe-cli`
-> - CLI server must be started first: `clp start my-web-app --port 3001`
-> - Client `applicationName` and `port` must match CLI exactly
+> - CLI server must be started first: `clp start --port 3001`
+> - Client `port` must match CLI exactly
 > - **Neither package works without the other**
 
 ### Step 3: Monitor Logs in Your IDE

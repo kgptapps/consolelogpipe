@@ -35,13 +35,10 @@ class StartCommand {
         );
       }
 
-      // Use a fixed app name since we removed the parameter
-      const appName = 'console-log-pipe';
-
-      // Check if server is already running for this app
-      const existingServer = await ServerManager.getServerInfo(appName);
+      // Check if server is already running on this port
+      const existingServer = await ServerManager.getServerInfo(options.port);
       if (existingServer && existingServer.status === 'running') {
-        spinner.info(`Server already running for "${appName}"`);
+        spinner.info(`Server already running on port ${options.port}`);
         console.log(
           chalk.cyan(
             `Server URL: http://${existingServer.host}:${existingServer.port}`
@@ -95,7 +92,6 @@ class StartCommand {
 
       // Create server configuration
       const serverConfig = {
-        appName,
         host: options.host || 'localhost',
         port,
         sessionId,
@@ -115,15 +111,15 @@ class StartCommand {
       await ServerManager.startServer(serverConfig);
 
       // Save configuration
-      await ConfigManager.saveServerConfig(appName, serverConfig);
+      await ConfigManager.saveServerConfig(port, serverConfig);
 
-      spinner.succeed(`Server started successfully for "${appName}"`);
+      spinner.succeed(`Server started successfully on port ${port}`);
 
       // Display essential server information only
       console.log();
       console.log(chalk.green.bold('🚀 Console Log Pipe Server Started'));
       console.log();
-      console.log(chalk.cyan('Application:'), chalk.white(appName));
+      console.log(chalk.cyan('Port:'), chalk.white(port));
       console.log(
         chalk.cyan('Server URL:'),
         chalk.white(`http://${serverConfig.host}:${serverConfig.port}`)
@@ -137,7 +133,7 @@ class StartCommand {
       console.log();
 
       // Start monitoring logs via WebSocket
-      StartCommand._startLogMonitoring(appName, serverConfig);
+      StartCommand._startLogMonitoring(port, serverConfig);
     } catch (error) {
       spinner.fail('Failed to start server');
       console.error(chalk.red('Error:'), error.message);
@@ -153,7 +149,7 @@ class StartCommand {
   /**
    * Start monitoring logs via WebSocket
    */
-  static _startLogMonitoring(appName, serverConfig) {
+  static _startLogMonitoring(port, serverConfig) {
     // Connect to WebSocket for real-time logs
     const wsUrl = `ws://${serverConfig.host}:${serverConfig.port}`;
     const ws = new WebSocket(wsUrl);
