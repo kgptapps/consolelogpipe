@@ -96,9 +96,9 @@ describe('ConsoleLogPipe', () => {
     });
 
     it('should initialize with default configuration', () => {
-      const clp = new ConsoleLogPipe({ applicationName: 'test' });
+      const clp = new ConsoleLogPipe({ port: 3001 });
 
-      expect(clp.config.applicationName).toBe('test');
+      expect(clp.config.serverPort).toBe(3001);
       expect(clp.config.enableLogCapture).toBe(true);
       expect(clp.config.enableErrorCapture).toBe(true);
       expect(clp.config.enableNetworkCapture).toBe(true);
@@ -108,20 +108,20 @@ describe('ConsoleLogPipe', () => {
 
     it('should merge custom configuration', () => {
       const clp = new ConsoleLogPipe({
-        applicationName: 'custom-app',
+        port: 3002,
         serverHost: 'custom-host',
         batchSize: 20,
         enableNetworkCapture: false,
       });
 
-      expect(clp.config.applicationName).toBe('custom-app');
+      expect(clp.config.serverPort).toBe(3002);
       expect(clp.config.serverHost).toBe('custom-host');
       expect(clp.config.batchSize).toBe(20);
       expect(clp.config.enableNetworkCapture).toBe(false);
     });
 
     it('should generate session ID if not provided', () => {
-      const clp = new ConsoleLogPipe({ applicationName: 'test' });
+      const clp = new ConsoleLogPipe({ port: 3001 });
 
       expect(clp.config.sessionId).toMatch(/^clp_\d+_[a-z0-9]+$/);
     });

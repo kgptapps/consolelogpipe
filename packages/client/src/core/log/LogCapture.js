@@ -20,16 +20,11 @@ class LogCapture {
       this._originalConsole.debug = console.debug.bind(console);
     }
 
-    // Application name is now optional for backwards compatibility
-
     this.options = {
       levels: ['log', 'error', 'warn', 'info', 'debug'],
       captureMetadata: true,
       preserveOriginal: true,
       maxLogSize: 10 * 1024, // 10KB per log
-
-      // Multi-application support (REQUIRED)
-      applicationName: options.applicationName,
       sessionId: options.sessionId || LogUtils.generateSessionId(),
 
       // AI-friendly development context

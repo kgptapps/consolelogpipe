@@ -92,9 +92,9 @@ Session ID     Error Categories    Performance Data      Smart Routing         A
 ```javascript
 import { ConsoleLogPipe } from '@kansnpms/console-log-pipe-client';
 
-// Multi-Application Usage (REQUIRED)
+// Simple Usage (Port-based identification)
 const logger = new ConsoleLogPipe({
-  applicationName: 'ecommerce-frontend', // REQUIRED - each app needs unique name
+  port: 3001, // REQUIRED - must match CLI server port
   // sessionId auto-generated and logged to console
   environment: 'development', // auto-detected or specified
   developer: 'john-doe', // auto-detected from git config
@@ -103,7 +103,7 @@ const logger = new ConsoleLogPipe({
 
 // AI-Friendly Development Context
 const logger = new ConsoleLogPipe({
-  applicationName: 'admin-panel',
+  port: 3002,
   sessionId: 'custom-session-123', // optional override
   environment: 'staging',
   developer: 'jane-smith',
@@ -112,10 +112,9 @@ const logger = new ConsoleLogPipe({
   enablePerformanceTracking: true, // default: true
 });
 
-// Advanced Multi-App Configuration
+// Advanced Configuration
 const logger = new ConsoleLogPipe({
-  applicationName: 'mobile-api-client',
-  serverPort: 3003, // auto-assigned based on app name if not specified
+  port: 3003, // REQUIRED - must match CLI server port
   serverHost: 'localhost',
   enableRemoteLogging: false, // default: false (local real-time)
   batchSize: 10, // for remote logging

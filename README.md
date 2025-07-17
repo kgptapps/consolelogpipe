@@ -35,14 +35,14 @@ I have the following error logs from my React application:
 
 [ERROR] TypeError: Cannot read property 'map' of undefined
   at UserList.jsx:15:23
-  Application: ecommerce-frontend
+  Port: 3001
   Environment: development
   Session: clp_abc123_xyz789
   Category: Runtime Error
   Stack: UserList.jsx -> App.jsx -> index.js
 
 [NETWORK] Failed to fetch /api/users - 404 Not Found
-  Application: ecommerce-frontend
+  Port: 3001
   Environment: development
   Response: {"error": "Users endpoint not found"}
 
@@ -264,14 +264,14 @@ I have the following error logs from my React application:
 
 [ERROR] TypeError: Cannot read property 'map' of undefined
   at UserList.jsx:15:23
-  Application: ecommerce-frontend
+  Port: 3001
   Environment: development
   Session: clp_abc123_xyz789
   Category: Runtime Error
   Stack: UserList.jsx -> App.jsx -> index.js
 
 [NETWORK] Failed to fetch /api/users - 404 Not Found
-  Application: ecommerce-frontend
+  Port: 3001
   Environment: development
   Response: {"error": "Users endpoint not found"}
 

@@ -108,7 +108,6 @@ and development environment!
 
 ```javascript
 ConsoleLogPipe.init({
-  applicationName: 'my-web-app', // Required: Application identifier
   port: 3001, // Required: CLI server port
   sessionId: 'custom-session-id', // Optional: Auto-generated if not provided
   environment: 'development', // Optional: Auto-detected (development/staging/production)
@@ -138,7 +137,6 @@ Initialize the log pipe with configuration options.
 
 **Required Parameters:**
 
-- `applicationName` (string) - Must match CLI app name
 - `port` (number) - Must match CLI server port
 
 **Optional Parameters:**
