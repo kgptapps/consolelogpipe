@@ -22,7 +22,10 @@ const ConsoleLogPipeAPI = {
   async init(options = {}) {
     const { serverPort = 3001, serverHost = 'localhost' } = options;
 
-    console.log('Initializing Console Log Pipe...');
+    // Store original console methods FIRST to avoid recursion
+    this.storeOriginalConsole();
+
+    this.originalConsole.log('Initializing Console Log Pipe...');
 
     // Connect to WebSocket
     const wsUrl = `ws://${serverHost}:${serverPort}`;
@@ -31,7 +34,7 @@ const ConsoleLogPipeAPI = {
     return new Promise((resolve, reject) => {
       this.ws.onopen = () => {
         this.isConnected = true;
-        console.log('✅ Connected to Console Log Pipe CLI');
+        this.originalConsole.log('✅ Connected to Console Log Pipe CLI');
 
         // Intercept console methods
         this.interceptConsole();
@@ -49,8 +52,21 @@ const ConsoleLogPipeAPI = {
 
       this.ws.onclose = () => {
         this.isConnected = false;
-        console.log('Console Log Pipe disconnected');
+        this.originalConsole.log('Console Log Pipe disconnected');
       };
+    });
+  },
+
+  /**
+   * Store original console methods to avoid recursion
+   */
+  storeOriginalConsole() {
+    const levels = ['log', 'warn', 'error', 'info', 'debug'];
+
+    levels.forEach(level => {
+      if (typeof console[level] === 'function') {
+        this.originalConsole[level] = console[level];
+      }
     });
   },
 
@@ -62,10 +78,7 @@ const ConsoleLogPipeAPI = {
 
     levels.forEach(level => {
       if (typeof console[level] === 'function') {
-        // Store original
-        this.originalConsole[level] = console[level];
-
-        // Replace with intercepted version
+        // Replace with intercepted version (original already stored)
         console[level] = (...args) => {
           // Call original console method
           this.originalConsole[level].apply(console, args);
@@ -86,7 +99,9 @@ const ConsoleLogPipeAPI = {
   interceptNetwork() {
     // Skip network interception in Node.js environment
     if (typeof window === 'undefined') {
-      console.log('✅ Network interception skipped (Node.js environment)');
+      this.originalConsole.log(
+        '✅ Network interception skipped (Node.js environment)'
+      );
       return;
     }
 
@@ -185,7 +200,7 @@ const ConsoleLogPipeAPI = {
       };
     }
 
-    console.log('✅ Network requests intercepted');
+    this.originalConsole.log('✅ Network requests intercepted');
   },
 
   /**

@@ -1,6 +1,6 @@
 {
   "name": "@kansnpms/console-log-pipe-client",
-  "version": "2.2.1",
+  "version": "2.2.2",
   "description": "Browser client library for Console Log Pipe - Real-time log streaming",
   "main": "dist/console-log-pipe.cjs.js",
   "module": "dist/console-log-pipe.esm.js",
