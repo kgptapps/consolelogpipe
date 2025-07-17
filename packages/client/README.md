@@ -155,11 +155,8 @@ Initialize the log pipe with configuration options.
 
 ### ConsoleLogPipe.destroy()
 
-Clean up and stop log capture.
-
-### ConsoleLogPipe.setSessionId(sessionId)
-
-Update the session ID for log streaming.
+Clean up and stop log capture. This method stops all logging, closes WebSocket connections, and
+cleans up resources.
 
 ## Browser Support
 

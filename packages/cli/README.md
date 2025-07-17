@@ -59,10 +59,10 @@ clp start --port 3001
 clp start --port 3016
 clp start --port 3002
 
-# With filtering options
-clp start --port 3001 --filter "error" --log-level warn
-clp start --port 3001 --since "1h" --tail 100
-clp start --port 3001 --format json --exclude "debug"
+# With additional options
+clp start --port 3001 --log-level warn --developer "John"
+clp start --port 3001 --env production --branch "feature/auth"
+clp start --port 3001 --max-logs 500 --host localhost
 
 # Stop with Ctrl+C when done
 ```
@@ -71,15 +71,15 @@ clp start --port 3001 --format json --exclude "debug"
 
 - `--port, -p <port>` - Server port (required, must be between 1024-65535)
 - `--host <host>` - Server host (default: localhost)
-- `--env <environment>` - Environment (development, staging, production)
-- `--log-level <level>` - Minimum log level (debug, info, warn, error)
+- `--env <environment>` - Environment (development, staging, production) (default: development)
+- `--log-level <level>` - Minimum log level (debug, info, warn, error) (default: debug)
 - `--max-logs <number>` - Maximum logs to store (default: 1000)
-- `--filter <pattern>` - Filter logs by pattern
-- `--since <time>` - Show logs since time (e.g., "1h", "30m", "2023-01-01")
-- `--tail <number>` - Number of recent logs to show (default: 50)
-- `--format <format>` - Output format (json, text, table) (default: text)
-- `--exclude <pattern>` - Exclude logs matching pattern
-- `--include <pattern>` - Only include logs matching pattern
+- `--developer <name>` - Developer name for identification
+- `--branch <name>` - Git branch name for context
+- `--session-id <id>` - Custom session ID (auto-generated if not provided)
+- `--no-browser` - Do not open browser automatically
+- `--enable-compression` - Enable gzip compression (default: true)
+- `--enable-cors` - Enable CORS (default: true)
 
 ## 🎯 Real-World Examples
 
