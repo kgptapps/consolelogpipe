@@ -76,7 +76,8 @@ const ConsoleLogPipeAPI = {
       }
     });
 
-    console.log('✅ Console methods intercepted');
+    // Use original console.log to avoid recursion
+    this.originalConsole.log('✅ Console methods intercepted');
   },
 
   /**
