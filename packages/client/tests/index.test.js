@@ -90,7 +90,7 @@ describe('Index Module', () => {
     it('should export version', () => {
       expect(ConsoleLogPipeAPI.version).toBeDefined();
       expect(typeof ConsoleLogPipeAPI.version).toBe('string');
-      expect(ConsoleLogPipeAPI.version).toBe('2.2.5');
+      expect(ConsoleLogPipeAPI.version).toBe('2.2.6');
     });
 
     it('should export individual components', () => {
