@@ -243,7 +243,8 @@ const networkConfig = {
 #### Technical Requirements
 
 - **Runtime:** Node.js 16+
-- **Distribution:** Global NPM package (`npm install -g @kansnpms/console-log-pipe-cli`)
+- **Distribution:** Global NPM package (`npm install -g @kansnpms/console-log-pipe-cli`) and GitHub
+  Packages (`npm install -g @kgptapps/console-log-pipe-cli --registry=https://npm.pkg.github.com`)
 - **Packaging:** Cross-platform Node.js package with optional binaries
 - **Size:** <10MB package, <50MB optional executable
 - **Platforms:** All platforms supported by Node.js 16+
@@ -251,11 +252,14 @@ const networkConfig = {
 #### Installation & Usage
 
 ```bash
-# Global installation
+# Global installation from NPM (Recommended)
 npm install -g @kansnpms/console-log-pipe-cli
 
+# Global installation from GitHub Packages
+npm install -g @kgptapps/console-log-pipe-cli --registry=https://npm.pkg.github.com
+
 # Start local server and display session info
-clp start
+clp start --port 3001
 # Output:
 # ✅ Console Log Pipe Server started
 # 🌐 Server: http://localhost:3000

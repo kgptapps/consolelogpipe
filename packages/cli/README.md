@@ -9,8 +9,16 @@ Global CLI tool for Console Log Pipe - Real-time log streaming from browsers to 
 
 ### 1. Install globally
 
+**From NPM (Recommended):**
+
 ```bash
 npm install -g @kansnpms/console-log-pipe-cli
+```
+
+**From GitHub Packages:**
+
+```bash
+npm install -g @kgptapps/console-log-pipe-cli --registry=https://npm.pkg.github.com
 ```
 
 ### 2. Start monitoring
@@ -25,8 +33,16 @@ clp start --port 3001
 
 ### 3. Add to your web application
 
+**From NPM (Recommended):**
+
 ```bash
 npm install @kansnpms/console-log-pipe-client
+```
+
+**From GitHub Packages:**
+
+```bash
+npm install @kgptapps/console-log-pipe-client --registry=https://npm.pkg.github.com
 ```
 
 ```javascript

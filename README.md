@@ -6,7 +6,7 @@
 [![npm version](https://img.shields.io/npm/v/@kansnpms/console-log-pipe-client.svg)](https://www.npmjs.com/package/@kansnpms/console-log-pipe-client)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Node.js Version](https://img.shields.io/node/v/@kansnpms/console-log-pipe-client.svg)](https://nodejs.org/)
-[![Coverage Status](https://img.shields.io/badge/coverage-85%25-brightgreen.svg)](https://github.com/kgptapps/consolelogpipe/actions/workflows/ci.yml)
+[![Coverage Status](https://img.shields.io/badge/coverage-83.45%25-brightgreen.svg)](https://github.com/kgptapps/consolelogpipe/actions/workflows/ci.yml)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/kgptapps/consolelogpipe/blob/main/CONTRIBUTING.md)
 [![GitHub issues](https://img.shields.io/github/issues/kgptapps/consolelogpipe.svg)](https://github.com/kgptapps/consolelogpipe/issues)
 [![GitHub stars](https://img.shields.io/github/stars/kgptapps/consolelogpipe.svg)](https://github.com/kgptapps/consolelogpipe/stargazers)
@@ -118,8 +118,16 @@ Context: This is a React e-commerce app with a Node.js backend.
 
 ### 1. Install the CLI tool globally
 
+**From NPM (Recommended):**
+
 ```bash
 npm install -g @kansnpms/console-log-pipe-cli
+```
+
+**From GitHub Packages:**
+
+```bash
+npm install -g @kgptapps/console-log-pipe-cli --registry=https://npm.pkg.github.com
 ```
 
 ### 2. Start monitoring your application
@@ -131,8 +139,16 @@ clp start --port 3001
 
 ### 3. Add client library to your web application
 
+**From NPM (Recommended):**
+
 ```bash
 npm install @kansnpms/console-log-pipe-client
+```
+
+**From GitHub Packages:**
+
+```bash
+npm install @kgptapps/console-log-pipe-client --registry=https://npm.pkg.github.com
 ```
 
 ```javascript
@@ -168,6 +184,24 @@ clp start --port 3001
 
 ```bash
 npm install @kansnpms/console-log-pipe-client
+```
+
+#### Option 2: GitHub Packages
+
+**📦 [View on GitHub Packages](https://github.com/kgptapps/consolelogpipe/packages)**
+
+```bash
+# Configure npm to use GitHub Packages for @kgptapps scope
+echo "@kgptapps:registry=https://npm.pkg.github.com" >> ~/.npmrc
+
+# Install from GitHub Packages
+npm install @kgptapps/console-log-pipe-client
+```
+
+**For CLI tool from GitHub Packages:**
+
+```bash
+npm install -g @kgptapps/console-log-pipe-cli --registry=https://npm.pkg.github.com
 ```
 
 ## ✨ **What's Working Right Now**

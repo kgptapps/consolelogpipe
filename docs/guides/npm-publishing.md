@@ -1,7 +1,7 @@
-# NPM Publishing Guide
+# Package Publishing Guide
 
-This guide covers the complete process for publishing Console Log Pipe packages to NPM under the
-`@kansnpms` organization.
+This guide covers the complete process for publishing Console Log Pipe packages to both NPM (under
+the `@kansnpms` organization) and GitHub Packages (under the `@kgptapps` organization).
 
 ## 📋 Prerequisites
 
@@ -295,10 +295,65 @@ For publishing issues:
 3. Contact organization admin
 4. Open GitHub issue for project-specific problems
 
+## 📦 GitHub Packages Publishing
+
+Console Log Pipe packages are also published to GitHub Packages under the `@kgptapps` organization.
+
+### Automated Publishing
+
+GitHub Packages publishing is handled automatically by the GitHub Actions workflow in
+`.github/workflows/release.yml`. The workflow:
+
+1. **Configures packages** for GitHub Packages by updating package names:
+
+   - `@kansnpms/console-log-pipe-cli` → `@kgptapps/console-log-pipe-cli`
+   - `@kansnpms/console-log-pipe-client` → `@kgptapps/console-log-pipe-client`
+
+2. **Publishes to GitHub Packages** using the `GITHUB_TOKEN`
+
+3. **Restores original package.json** files after publishing
+
+### Manual Publishing to GitHub Packages
+
+If needed, you can manually publish to GitHub Packages:
+
+```bash
+# Configure npm for GitHub Packages
+echo "@kgptapps:registry=https://npm.pkg.github.com" >> ~/.npmrc
+
+# Authenticate with GitHub token
+npm login --registry=https://npm.pkg.github.com
+
+# Update package name temporarily
+cd packages/client
+sed -i 's/@kansnpms\/console-log-pipe-client/@kgptapps\/console-log-pipe-client/' package.json
+
+# Publish to GitHub Packages
+npm publish --registry=https://npm.pkg.github.com
+
+# Restore original package name
+git checkout package.json
+```
+
+### Installation from GitHub Packages
+
+Users can install from GitHub Packages:
+
+```bash
+# Configure registry for @kgptapps scope
+echo "@kgptapps:registry=https://npm.pkg.github.com" >> ~/.npmrc
+
+# Install packages
+npm install @kgptapps/console-log-pipe-client
+npm install -g @kgptapps/console-log-pipe-cli
+```
+
 ## 🔗 Useful Links
 
 - [NPM Organization Dashboard](https://www.npmjs.com/settings/kansnpms)
+- [GitHub Packages](https://github.com/kgptapps/consolelogpipe/packages)
 - [Package Publishing Documentation](https://docs.npmjs.com/packages-and-modules/contributing-packages-to-the-registry)
+- [GitHub Packages Documentation](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-npm-registry)
 - [Semantic Versioning](https://semver.org/)
 - [Lerna Documentation](https://lerna.js.org/)
 - [GitHub Actions for NPM](https://docs.github.com/en/actions/publishing-packages/publishing-nodejs-packages)

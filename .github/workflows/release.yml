@@ -89,7 +89,79 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-  # Job 3: Create GitHub Release Assets (Optional)
+  # Job 3: Publish to GitHub Packages
+  publish-github:
+    name: Publish to GitHub Packages
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: [validate]
+    if: github.event_name == 'release' || startsWith(github.ref, 'refs/tags/v')
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js for GitHub Packages
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          cache: "npm"
+          registry-url: "https://npm.pkg.github.com"
+          scope: "@kgptapps"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build packages
+        run: npm run build
+
+      - name: Configure packages for GitHub Packages
+        run: |
+          echo "Configuring packages for GitHub Packages..."
+
+          # Update client package.json for GitHub Packages
+          cd packages/client
+          cp package.json package.json.backup
+          sed 's/"name": "@kansnpms\/console-log-pipe-client"/"name": "@kgptapps\/console-log-pipe-client"/' package.json.backup > package.json
+          echo "✅ Configured client package for GitHub Packages"
+          cd ../..
+
+          # Update CLI package.json for GitHub Packages
+          cd packages/cli
+          cp package.json package.json.backup
+          sed 's/"name": "@kansnpms\/console-log-pipe-cli"/"name": "@kgptapps\/console-log-pipe-cli"/' package.json.backup > package.json
+          echo "✅ Configured CLI package for GitHub Packages"
+          cd ../..
+
+      - name: Publish to GitHub Packages
+        run: |
+          echo "Publishing packages to GitHub Packages..."
+
+          # Publish client package
+          cd packages/client
+          npm publish --access public
+          echo "✅ Published @kgptapps/console-log-pipe-client to GitHub Packages"
+          cd ../..
+
+          # Publish CLI package
+          cd packages/cli
+          npm publish --access public
+          echo "✅ Published @kgptapps/console-log-pipe-cli to GitHub Packages"
+          cd ../..
+
+          echo "🎉 All packages published to GitHub Packages successfully!"
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Restore original package.json files
+        if: always()
+        run: |
+          cd packages/client && mv package.json.backup package.json && cd ../..
+          cd packages/cli && mv package.json.backup package.json && cd ../..
+
+  # Job 4: Create GitHub Release Assets (Optional)
   release-assets:
     name: Create Release Assets (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
@@ -157,7 +229,7 @@ jobs:
     name: Update Documentation
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    needs: [publish-npm]
+    needs: [publish-npm, publish-github]
     if: github.event_name == 'release' || startsWith(github.ref, 'refs/tags/v')
 
     steps:
@@ -197,26 +269,35 @@ jobs:
     name: Notify Release
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    needs: [publish-npm, update-docs]
+    needs: [publish-npm, publish-github, update-docs]
     if: always() && (github.event_name == 'release' || startsWith(github.ref, 'refs/tags/v'))
 
     steps:
       - name: Notify success
-        if: needs.publish-npm.result == 'success'
+        if: needs.publish-npm.result == 'success' && needs.publish-github.result == 'success'
         run: |
           echo "🎉 Release ${{ github.ref_name }} published successfully!"
           echo "📦 NPM packages updated:"
           echo "   - @kansnpms/console-log-pipe-cli@${{ github.ref_name }}"
           echo "   - @kansnpms/console-log-pipe-client@${{ github.ref_name }}"
+          echo "📦 GitHub Packages updated:"
+          echo "   - @kgptapps/console-log-pipe-cli@${{ github.ref_name }}"
+          echo "   - @kgptapps/console-log-pipe-client@${{ github.ref_name }}"
           echo "📚 Documentation updated"
           echo ""
-          echo "Install with:"
+          echo "Install from NPM:"
           echo "  npm install -g @kansnpms/console-log-pipe-cli"
           echo "  npm install @kansnpms/console-log-pipe-client"
+          echo ""
+          echo "Install from GitHub Packages:"
+          echo "  npm install -g @kgptapps/console-log-pipe-cli --registry=https://npm.pkg.github.com"
+          echo "  npm install @kgptapps/console-log-pipe-client --registry=https://npm.pkg.github.com"
 
       - name: Notify failure
-        if: needs.publish-npm.result == 'failure'
+        if: needs.publish-npm.result == 'failure' || needs.publish-github.result == 'failure'
         run: |
           echo "❌ Release ${{ github.ref_name }} failed!"
+          echo "NPM publish result: ${{ needs.publish-npm.result }}"
+          echo "GitHub Packages publish result: ${{ needs.publish-github.result }}"
           echo "Please check the logs and retry the release."
           exit 1

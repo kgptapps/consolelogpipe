@@ -35,7 +35,7 @@ Copy this prompt to quickly get AI assistance with Console Log Pipe integration!
 
 ## 📦 Installation
 
-### NPM Package (Recommended)
+### Option 1: NPM Package (Recommended)
 
 **📦 [View on NPM](https://www.npmjs.com/package/@kansnpms/console-log-pipe-client)**
 
@@ -43,7 +43,15 @@ Copy this prompt to quickly get AI assistance with Console Log Pipe integration!
 npm install @kansnpms/console-log-pipe-client
 ```
 
-### CDN
+### Option 2: GitHub Packages
+
+**📦 [View on GitHub Packages](https://github.com/kgptapps/consolelogpipe/packages)**
+
+```bash
+npm install @kgptapps/console-log-pipe-client --registry=https://npm.pkg.github.com
+```
+
+### Option 3: CDN
 
 ```html
 <script src="https://unpkg.com/@kansnpms/console-log-pipe-client"></script>
