@@ -127,7 +127,7 @@ jobs:
           # Update name and add publishConfig
           node -e "
             const pkg = JSON.parse(require('fs').readFileSync('package.json.backup', 'utf8'));
-            pkg.name = '@kgptapps/console-log-pipe-client';
+            pkg.name = '@gbpnkans/console-log-pipe-client';
             pkg.publishConfig = {
               registry: 'https://npm.pkg.github.com',
               access: 'public'
@@ -143,7 +143,7 @@ jobs:
           # Update name and add publishConfig
           node -e "
             const pkg = JSON.parse(require('fs').readFileSync('package.json.backup', 'utf8'));
-            pkg.name = '@kgptapps/console-log-pipe-cli';
+            pkg.name = '@gbpnkans/console-log-pipe-cli';
             pkg.publishConfig = {
               registry: 'https://npm.pkg.github.com',
               access: 'public'
