@@ -124,14 +124,32 @@ jobs:
           # Update client package.json for GitHub Packages
           cd packages/client
           cp package.json package.json.backup
-          sed 's/"name": "@kansnpms\/console-log-pipe-client"/"name": "@kgptapps\/console-log-pipe-client"/' package.json.backup > package.json
+          # Update name and add publishConfig
+          node -e "
+            const pkg = JSON.parse(require('fs').readFileSync('package.json.backup', 'utf8'));
+            pkg.name = '@kgptapps/console-log-pipe-client';
+            pkg.publishConfig = {
+              registry: 'https://npm.pkg.github.com',
+              access: 'public'
+            };
+            require('fs').writeFileSync('package.json', JSON.stringify(pkg, null, 2));
+          "
           echo "✅ Configured client package for GitHub Packages"
           cd ../..
 
           # Update CLI package.json for GitHub Packages
           cd packages/cli
           cp package.json package.json.backup
-          sed 's/"name": "@kansnpms\/console-log-pipe-cli"/"name": "@kgptapps\/console-log-pipe-cli"/' package.json.backup > package.json
+          # Update name and add publishConfig
+          node -e "
+            const pkg = JSON.parse(require('fs').readFileSync('package.json.backup', 'utf8'));
+            pkg.name = '@kgptapps/console-log-pipe-cli';
+            pkg.publishConfig = {
+              registry: 'https://npm.pkg.github.com',
+              access: 'public'
+            };
+            require('fs').writeFileSync('package.json', JSON.stringify(pkg, null, 2));
+          "
           echo "✅ Configured CLI package for GitHub Packages"
           cd ../..
 
@@ -141,13 +159,13 @@ jobs:
 
           # Publish client package
           cd packages/client
-          npm publish --access public
+          npm publish
           echo "✅ Published @kgptapps/console-log-pipe-client to GitHub Packages"
           cd ../..
 
           # Publish CLI package
           cd packages/cli
-          npm publish --access public
+          npm publish
           echo "✅ Published @kgptapps/console-log-pipe-cli to GitHub Packages"
           cd ../..
 
