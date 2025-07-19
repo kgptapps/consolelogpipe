@@ -13,7 +13,7 @@
     "CHANGELOG.md"
   ],
   "scripts": {
-    "build": "rollup -c",
+    "build": "rollup -c --bundleConfigAsCjs",
     "build:watch": "rollup -c --watch",
     "dev": "rollup -c --watch --environment NODE_ENV:development",
     "test": "jest",
