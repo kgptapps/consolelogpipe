@@ -17,7 +17,7 @@
 [![GitHub issues](https://img.shields.io/github/issues/kgptapps/consolelogpipe.svg)](https://github.com/kgptapps/consolelogpipe/issues)
 [![GitHub stars](https://img.shields.io/github/stars/kgptapps/consolelogpipe.svg)](https://github.com/kgptapps/consolelogpipe/stargazers)
 
-**Current Version:** `2.3.0-beta.3` | **Status:** ✅ Ready for Production
+**Current Version:** `2.3.0` | **Status:** ✅ Production Release
 
 Real-time log streaming from browsers to developers. Stream console logs, errors, and network
 requests from any browser application directly to your development environment.
@@ -34,21 +34,21 @@ requests from any browser application directly to your development environment.
 
 ```bash
 # Install CLI globally (required)
-npm install -g @kansnpms/console-log-pipe-cli@beta
+npm install -g @kansnpms/console-log-pipe-cli
 
 # Install client library for web projects
-npm install @kansnpms/console-log-pipe-client@beta
+npm install @kansnpms/console-log-pipe-client
 
 # Install storage monitor (optional)
-npm install @kansnpms/console-log-pipe-storage-beta@beta
+npm install @kansnpms/console-log-pipe-storage-beta
 ```
 
 ## 🤖 Quick Start Prompt for AI Coding Assistants
 
 ```
-Use @kansnpms/console-log-pipe-client@beta package to integrate browser console logs to the CLI console. Only the port parameter is required.
+Use @kansnpms/console-log-pipe-client package to integrate browser console logs to the CLI console. Only the port parameter is required.
 
-For storage monitoring, use @kansnpms/console-log-pipe-storage-beta@beta to track cookies, localStorage, sessionStorage, and IndexedDB changes in real-time.
+For storage monitoring, use @kansnpms/console-log-pipe-storage-beta to track cookies, localStorage, sessionStorage, and IndexedDB changes in real-time.
 
 Package Links:
 - CLI: https://www.npmjs.com/package/@kansnpms/console-log-pipe-cli
@@ -187,14 +187,14 @@ await StorageMonitor.init({ serverPort: 3002 });
 
 ### 1. Install the CLI tool globally
 
-**Current Version: 2.3.0-beta.3**
+**Current Version: 2.3.0**
 
 ```bash
-# Install latest beta version (recommended)
-npm install -g @kansnpms/console-log-pipe-cli@beta
+# Install latest stable version (recommended)
+npm install -g @kansnpms/console-log-pipe-cli
 
 # Or install specific version
-npm install -g @kansnpms/console-log-pipe-cli@2.3.0-beta.3
+npm install -g @kansnpms/console-log-pipe-cli@2.3.0
 ```
 
 **📦 [View on NPM](https://www.npmjs.com/package/@kansnpms/console-log-pipe-cli)**
@@ -208,14 +208,14 @@ clp start --port 3001
 
 ### 3. Add client library to your web application
 
-**Current Version: 2.3.0-beta.3**
+**Current Version: 2.3.0**
 
 ```bash
-# Install latest beta version (recommended)
-npm install @kansnpms/console-log-pipe-client@beta
+# Install latest stable version (recommended)
+npm install @kansnpms/console-log-pipe-client
 
 # Or install specific version
-npm install @kansnpms/console-log-pipe-client@2.3.0-beta.3
+npm install @kansnpms/console-log-pipe-client@2.3.0
 ```
 
 **📦 [View on NPM](https://www.npmjs.com/package/@kansnpms/console-log-pipe-client)**
