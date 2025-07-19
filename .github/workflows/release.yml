@@ -11,6 +11,12 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: false
 
+permissions:
+  contents: write
+  packages: write
+  actions: read
+  checks: read
+
 jobs:
   # Job 1: Validate Release
   validate:
@@ -237,6 +243,7 @@ jobs:
         run: npm run build
 
       - name: Build CLI binaries
+        shell: bash
         run: |
           cd packages/cli
           if [ -f "build/scripts/build-binaries.js" ]; then
@@ -249,6 +256,7 @@ jobs:
           cd ..
 
       - name: Package release assets
+        shell: bash
         run: |
           mkdir -p release-assets
 
