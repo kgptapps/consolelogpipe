@@ -1,11 +1,21 @@
-# Console Log Pipe Storage Monitor (Beta)
-
-🍪 **Real-time browser storage and cookies monitoring for development and debugging**
+# @kansnpms/console-log-pipe-storage-beta
 
 [![npm version](https://badge.fury.io/js/@kansnpms%2Fconsole-log-pipe-storage-beta.svg)](https://www.npmjs.com/package/@kansnpms/console-log-pipe-storage-beta)
 [![npm downloads](https://img.shields.io/npm/dt/@kansnpms/console-log-pipe-storage-beta.svg)](https://www.npmjs.com/package/@kansnpms/console-log-pipe-storage-beta)
 [![npm downloads/month](https://img.shields.io/npm/dm/@kansnpms/console-log-pipe-storage-beta.svg)](https://www.npmjs.com/package/@kansnpms/console-log-pipe-storage-beta)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+**Current Version:** `2.3.0-beta.3` | **Status:** 🧪 Beta Release
+
+🍪 **Real-time browser storage and cookies monitoring for development and debugging**
+
+## 📦 Package Information
+
+- **Package Name:** `@kansnpms/console-log-pipe-storage-beta`
+- **NPM Registry:** https://www.npmjs.com/package/@kansnpms/console-log-pipe-storage-beta
+- **Repository:** https://github.com/kgptapps/consolelogpipe
+- **License:** MIT
+- **Status:** Beta - Ready for testing and feedback
 
 > **⚠️ Beta Release**: This is a beta version of the storage monitoring feature. APIs may change in
 > future releases.

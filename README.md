@@ -17,15 +17,43 @@
 [![GitHub issues](https://img.shields.io/github/issues/kgptapps/consolelogpipe.svg)](https://github.com/kgptapps/consolelogpipe/issues)
 [![GitHub stars](https://img.shields.io/github/stars/kgptapps/consolelogpipe.svg)](https://github.com/kgptapps/consolelogpipe/stargazers)
 
+**Current Version:** `2.3.0-beta.3` | **Status:** ✅ Ready for Production
+
 Real-time log streaming from browsers to developers. Stream console logs, errors, and network
 requests from any browser application directly to your development environment.
+
+## 📦 NPM Packages
+
+| Package                                                                                                              | Version                                                                                                                                                   | Downloads                                                                                                                                                        | Description                              |
+| -------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------- |
+| **[@kansnpms/console-log-pipe-cli](https://www.npmjs.com/package/@kansnpms/console-log-pipe-cli)**                   | [![npm](https://img.shields.io/npm/v/@kansnpms/console-log-pipe-cli.svg)](https://www.npmjs.com/package/@kansnpms/console-log-pipe-cli)                   | [![downloads](https://img.shields.io/npm/dt/@kansnpms/console-log-pipe-cli.svg)](https://www.npmjs.com/package/@kansnpms/console-log-pipe-cli)                   | Global CLI tool for starting log servers |
+| **[@kansnpms/console-log-pipe-client](https://www.npmjs.com/package/@kansnpms/console-log-pipe-client)**             | [![npm](https://img.shields.io/npm/v/@kansnpms/console-log-pipe-client.svg)](https://www.npmjs.com/package/@kansnpms/console-log-pipe-client)             | [![downloads](https://img.shields.io/npm/dt/@kansnpms/console-log-pipe-client.svg)](https://www.npmjs.com/package/@kansnpms/console-log-pipe-client)             | Browser client library for log streaming |
+| **[@kansnpms/console-log-pipe-storage-beta](https://www.npmjs.com/package/@kansnpms/console-log-pipe-storage-beta)** | [![npm](https://img.shields.io/npm/v/@kansnpms/console-log-pipe-storage-beta.svg)](https://www.npmjs.com/package/@kansnpms/console-log-pipe-storage-beta) | [![downloads](https://img.shields.io/npm/dt/@kansnpms/console-log-pipe-storage-beta.svg)](https://www.npmjs.com/package/@kansnpms/console-log-pipe-storage-beta) | Browser storage monitoring (Beta)        |
+
+### 🚀 Quick Installation
+
+```bash
+# Install CLI globally (required)
+npm install -g @kansnpms/console-log-pipe-cli@beta
+
+# Install client library for web projects
+npm install @kansnpms/console-log-pipe-client@beta
+
+# Install storage monitor (optional)
+npm install @kansnpms/console-log-pipe-storage-beta@beta
+```
 
 ## 🤖 Quick Start Prompt for AI Coding Assistants
 
 ```
-Use https://www.npmjs.com/package/@kansnpms/console-log-pipe-client package to integrate browser console logs to the CLI console. Only the port parameter is required.
+Use @kansnpms/console-log-pipe-client@beta package to integrate browser console logs to the CLI console. Only the port parameter is required.
 
-For storage monitoring, use https://www.npmjs.com/package/@kansnpms/console-log-pipe-storage-beta to track cookies, localStorage, sessionStorage, and IndexedDB changes in real-time.
+For storage monitoring, use @kansnpms/console-log-pipe-storage-beta@beta to track cookies, localStorage, sessionStorage, and IndexedDB changes in real-time.
+
+Package Links:
+- CLI: https://www.npmjs.com/package/@kansnpms/console-log-pipe-cli
+- Client: https://www.npmjs.com/package/@kansnpms/console-log-pipe-client
+- Storage: https://www.npmjs.com/package/@kansnpms/console-log-pipe-storage-beta
 ```
 
 Copy this prompt to quickly get AI assistance with Console Log Pipe integration!
@@ -159,17 +187,17 @@ await StorageMonitor.init({ serverPort: 3002 });
 
 ### 1. Install the CLI tool globally
 
-**From NPM (Recommended):**
+**Current Version: 2.3.0-beta.3**
 
 ```bash
-npm install -g @kansnpms/console-log-pipe-cli
+# Install latest beta version (recommended)
+npm install -g @kansnpms/console-log-pipe-cli@beta
+
+# Or install specific version
+npm install -g @kansnpms/console-log-pipe-cli@2.3.0-beta.3
 ```
 
-**From GitHub Packages:**
-
-```bash
-npm install -g @kgptapps/console-log-pipe-cli --registry=https://npm.pkg.github.com
-```
+**📦 [View on NPM](https://www.npmjs.com/package/@kansnpms/console-log-pipe-cli)**
 
 ### 2. Start monitoring your application
 
@@ -180,17 +208,17 @@ clp start --port 3001
 
 ### 3. Add client library to your web application
 
-**From NPM (Recommended):**
+**Current Version: 2.3.0-beta.3**
 
 ```bash
-npm install @kansnpms/console-log-pipe-client
+# Install latest beta version (recommended)
+npm install @kansnpms/console-log-pipe-client@beta
+
+# Or install specific version
+npm install @kansnpms/console-log-pipe-client@2.3.0-beta.3
 ```
 
-**From GitHub Packages:**
-
-```bash
-npm install @kgptapps/console-log-pipe-client --registry=https://npm.pkg.github.com
-```
+**📦 [View on NPM](https://www.npmjs.com/package/@kansnpms/console-log-pipe-client)**
 
 ```javascript
 import ConsoleLogPipe from '@kansnpms/console-log-pipe-client';
@@ -406,10 +434,29 @@ npm test
 
 ## 📖 Documentation
 
-- [Getting Started Guide](./docs/guides/getting-started.md)
-- [API Documentation](./docs/api/)
-- [Configuration Guide](./docs/guides/configuration.md)
-- [Examples](./examples/)
+### 🚀 Quick Start & Installation
+
+- **[Package Index](./docs/Package-Index.md)** - Complete package guide with NPM links
+- **[Release Guide](./docs/Release-Guide.md)** - v2.3.0-beta.3 release information
+- **[Simple QA Test](./docs/Simple-QA-Test.md)** - 15-minute quality test guide
+
+### 📦 Package Documentation
+
+- **[CLI README](./packages/cli/README.md)** - Command-line tool documentation
+- **[Client README](./packages/client/README.md)** - Browser library documentation
+- **[Storage README](./packages/storage-monitor/README.md)** - Storage monitor documentation
+
+### 🔗 NPM Package Links
+
+- **CLI Tool:** https://www.npmjs.com/package/@kansnpms/console-log-pipe-cli
+- **Client Library:** https://www.npmjs.com/package/@kansnpms/console-log-pipe-client
+- **Storage Monitor:** https://www.npmjs.com/package/@kansnpms/console-log-pipe-storage-beta
+
+### 📋 Technical Documentation
+
+- [Technical PRD](./docs/Technical-PRD.md) - Technical specifications
+- [Architecture PRD](./docs/Architecture-PRD.md) - System architecture
+- [Task PRD](./docs/Task-PRD.md) - Development tasks and progress
 
 ## 🔄 CI/CD & Quality Assurance
 

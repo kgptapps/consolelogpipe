@@ -6,8 +6,17 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Coverage Status](https://img.shields.io/badge/coverage-96.77%25-brightgreen.svg)](https://github.com/kgptapps/consolelogpipe)
 
+**Current Version:** `2.3.0-beta.3` | **Status:** ✅ Ready for Production
+
 **Bring browser console logs to your IDE with Console Log Pipe.** Stream console logs, errors, and
 network requests from any browser application directly to your development environment.
+
+## 📦 Package Information
+
+- **Package Name:** `@kansnpms/console-log-pipe-client`
+- **NPM Registry:** https://www.npmjs.com/package/@kansnpms/console-log-pipe-client
+- **Repository:** https://github.com/kgptapps/consolelogpipe
+- **License:** MIT
 
 🚀 **AI-Friendly Web Console Integration for Faster Development** - Monitor multiple applications
 simultaneously with intelligent error categorization and structured metadata that AI tools can
@@ -37,27 +46,43 @@ Copy this prompt to quickly get AI assistance with Console Log Pipe integration!
 
 ## 📦 Installation
 
-### Option 1: NPM Package (Recommended)
+### NPM Package (Recommended)
+
+**Current Version: 2.3.0-beta.3**
+
+```bash
+# Install latest beta version (recommended)
+npm install @kansnpms/console-log-pipe-client@beta
+
+# Or install specific version
+npm install @kansnpms/console-log-pipe-client@2.3.0-beta.3
+```
 
 **📦 [View on NPM](https://www.npmjs.com/package/@kansnpms/console-log-pipe-client)**
 
-```bash
-npm install @kansnpms/console-log-pipe-client
-```
-
-### Option 2: GitHub Packages
-
-**📦 [View on GitHub Packages](https://github.com/kgptapps/consolelogpipe/packages)**
-
-```bash
-npm install @kgptapps/console-log-pipe-client --registry=https://npm.pkg.github.com
-```
-
-### Option 3: CDN
+### CDN (Alternative)
 
 ```html
-<script src="https://unpkg.com/@kansnpms/console-log-pipe-client"></script>
+<!-- Latest beta version -->
+<script src="https://unpkg.com/@kansnpms/console-log-pipe-client@beta"></script>
+
+<!-- Specific version -->
+<script src="https://unpkg.com/@kansnpms/console-log-pipe-client@2.3.0-beta.3"></script>
 ```
+
+### Required CLI Server
+
+This client library requires the CLI server to be running:
+
+```bash
+# Install CLI globally
+npm install -g @kansnpms/console-log-pipe-cli@beta
+
+# Start server
+clp start --port 3001
+```
+
+**📦 [CLI Package](https://www.npmjs.com/package/@kansnpms/console-log-pipe-cli)**
 
 ## 🚀 Quick Start
 
