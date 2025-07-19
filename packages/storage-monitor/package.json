@@ -57,7 +57,7 @@
     "node": ">=14.0.0"
   },
   "peerDependencies": {
-    "@kansnpms/console-log-pipe-cli": "^2.2.0"
+    "@kansnpms/console-log-pipe-cli": "^2.3.0-beta.1"
   },
   "dependencies": {
     "ws": "^8.14.0",
