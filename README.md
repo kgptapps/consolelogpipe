@@ -18,6 +18,8 @@ requests from any browser application directly to your development environment.
 
 ```
 Use https://www.npmjs.com/package/@kansnpms/console-log-pipe-client package to integrate browser console logs to the CLI console. Only the port parameter is required.
+
+For storage monitoring, use https://www.npmjs.com/package/@kansnpms/console-log-pipe-storage-beta to track cookies, localStorage, sessionStorage, and IndexedDB changes in real-time.
 ```
 
 Copy this prompt to quickly get AI assistance with Console Log Pipe integration!
@@ -104,6 +106,39 @@ Context: This is a React e-commerce app with a Node.js backend.
 - **Configuration Management**: Persistent server and global settings
 - **Cross-Platform Support**: macOS, Windows, Linux compatibility
 
+## 🍪 Storage Monitor (Beta)
+
+**NEW**: Real-time browser storage and cookies monitoring for enhanced debugging!
+
+- **🍪 Cookie Monitoring**: Track cookie creation, modification, and deletion in real-time
+- **💾 localStorage Tracking**: Monitor localStorage changes with automatic detection
+- **🔄 sessionStorage Monitoring**: Live updates for session data modifications
+- **🗃️ IndexedDB Support**: Basic IndexedDB operation tracking (beta)
+- **📡 Real-time Updates**: WebSocket-based instant change notifications
+- **🎯 AI-Friendly Data**: Structured JSON format perfect for AI development tools
+- **🌈 Color-coded CLI**: Green for additions, yellow for modifications, red for deletions
+- **🔧 Configurable**: Custom polling intervals and feature toggles
+
+### Quick Start - Storage Monitor
+
+```bash
+# Install beta packages
+npm install -g @kansnpms/console-log-pipe-cli@beta
+npm install @kansnpms/console-log-pipe-storage-beta@beta
+
+# Start storage monitoring service
+clp storage --port 3002
+
+# With custom options
+clp storage --port 3002 --poll-interval 500 --no-indexeddb
+```
+
+```javascript
+// Add to your web application
+import StorageMonitor from '@kansnpms/console-log-pipe-storage-beta';
+await StorageMonitor.init({ serverPort: 3002 });
+```
+
 #### 🔄 **Ready for Production Use**
 
 - **NPM Package**: Published and installable globally
@@ -175,6 +210,7 @@ clp start --port 3001
 | Command                         | Description                                        | Example                              |
 | ------------------------------- | -------------------------------------------------- | ------------------------------------ |
 | `clp start <app> --port <port>` | Start monitoring server with automatic log display | `clp start my-react-app --port 3001` |
+| `clp storage --port <port>`     | Start storage monitoring service (Beta)            | `clp storage --port 3002`            |
 
 ### Integration Options
 
@@ -333,6 +369,8 @@ This monorepo contains the following packages:
 
 - **[@kansnpms/console-log-pipe-client](./packages/client)** - Browser client library
 - **[@kansnpms/console-log-pipe-cli](./packages/cli)** - Global CLI tool and local server
+- **[@kansnpms/console-log-pipe-storage-beta](./packages/storage-monitor)** - Browser storage
+  monitoring (Beta)
 - **Browser Extensions** - Chrome, Firefox, Safari, and Edge extensions
 
 ## 🏗️ Development

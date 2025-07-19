@@ -13,6 +13,7 @@ const pkg = require('../package.json');
 
 // Import commands
 const StartCommand = require('./commands/StartCommand');
+const { StorageCommand } = require('./commands/StorageCommand');
 
 // Check for updates (temporarily disabled due to compatibility issues)
 // try {
@@ -85,14 +86,44 @@ program
   .option('--enable-cors', 'Enable CORS', true)
   .action(StartCommand.execute);
 
+// Storage monitoring command
+program
+  .command('storage')
+  .description(
+    'Start storage monitoring service for cookies, localStorage, sessionStorage, and IndexedDB'
+  )
+  .option('-p, --port <port>', 'Storage monitor port', '3002')
+  .option('-h, --host <host>', 'Storage monitor host', 'localhost')
+  .option(
+    '--session-id <sessionId>',
+    'Custom session ID for storage monitoring'
+  )
+  .option(
+    '--poll-interval <ms>',
+    'Polling interval for storage changes in milliseconds',
+    '1000'
+  )
+  .option('--no-cookies', 'Disable cookie monitoring')
+  .option('--no-localstorage', 'Disable localStorage monitoring')
+  .option('--no-sessionstorage', 'Disable sessionStorage monitoring')
+  .option('--no-indexeddb', 'Disable IndexedDB monitoring')
+  .action(StorageCommand.execute);
+
 // Add help examples
 program.addHelpText(
   'after',
   `
 Examples:
-  ${chalk.cyan('clp start --port 3001')}        Start server on port 3001
-  ${chalk.cyan('clp start --port 3016')}        Start server on port 3016
+  ${chalk.cyan(
+    'clp start --port 3001'
+  )}        Start console log server on port 3001
+  ${chalk.cyan(
+    'clp storage --port 3002'
+  )}      Start storage monitor on port 3002
   ${chalk.cyan('clp start -p 8080')}            Start server on port 8080
+  ${chalk.cyan(
+    'clp storage --no-cookies'
+  )}     Start storage monitor without cookie tracking
 
 For more information, visit: https://github.com/kgptapps/consolelogpipe
 `

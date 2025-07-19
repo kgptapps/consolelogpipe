@@ -97,6 +97,38 @@ clp start --port 3001 --max-logs 500 --host localhost
 - `--enable-compression` - Enable gzip compression (default: true)
 - `--enable-cors` - Enable CORS (default: true)
 
+### `clp storage --port <port>` (Beta)
+
+Start Storage Monitor service for real-time browser storage and cookies monitoring.
+
+```bash
+# Basic usage
+clp storage --port 3002
+
+# With custom options
+clp storage --port 3002 --poll-interval 500 --no-indexeddb
+clp storage --port 3002 --session-id "debug-session" --no-cookies
+```
+
+**Options:**
+
+- `--port, -p <port>` - Storage monitor port (default: 3002)
+- `--host <host>` - Storage monitor host (default: localhost)
+- `--session-id <sessionId>` - Custom session ID for storage monitoring
+- `--poll-interval <ms>` - Polling interval for storage changes in milliseconds (default: 1000)
+- `--no-cookies` - Disable cookie monitoring
+- `--no-localstorage` - Disable localStorage monitoring
+- `--no-sessionstorage` - Disable sessionStorage monitoring
+- `--no-indexeddb` - Disable IndexedDB monitoring
+
+**Features:**
+
+- 🍪 Real-time cookie change detection
+- 💾 localStorage monitoring with method interception
+- 🔄 sessionStorage tracking
+- 🌈 Color-coded output (green=add, yellow=modify, red=delete)
+- 📊 Web dashboard at `http://localhost:<port>`
+
 ## 🎯 Real-World Examples
 
 ### Basic Usage
