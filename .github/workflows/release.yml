@@ -198,12 +198,12 @@ jobs:
           fi
 
       - name: Create GitHub Release
-        uses: actions/create-release@v1
+        uses: softprops/action-gh-release@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ github.ref_name }}
-          release_name: Console Log Pipe ${{ github.ref_name }}
+          name: Console Log Pipe ${{ github.ref_name }}
           body_path: release_notes.md
           draft: false
           prerelease: ${{ steps.detect-beta.outputs.is_beta == 'true' }}
