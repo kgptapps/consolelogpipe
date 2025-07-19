@@ -22,7 +22,7 @@ const BrowserStorageMonitor = {
    */
   async init(options = {}) {
     if (this.instance) {
-      console.warn('🍪 Storage Monitor already initialized');
+      // Storage Monitor already initialized
       return this.instance;
     }
 
@@ -39,18 +39,13 @@ const BrowserStorageMonitor = {
       ...options,
     };
 
-    try {
-      this.instance = new StorageMonitor(config);
+    this.instance = new StorageMonitor(config);
 
-      if (config.autoStart) {
-        await this.instance.init();
-      }
-
-      return this.instance;
-    } catch (error) {
-      console.error('❌ Failed to initialize Storage Monitor:', error);
-      throw error;
+    if (config.autoStart) {
+      await this.instance.init();
     }
+
+    return this.instance;
   },
 
   /**
@@ -117,8 +112,8 @@ const BrowserStorageMonitor = {
 // Auto-initialize if window.ConsoleLogPipeStorage is configured
 if (typeof window !== 'undefined' && window.ConsoleLogPipeStorage) {
   const config = window.ConsoleLogPipeStorage;
-  BrowserStorageMonitor.init(config).catch(error => {
-    console.error('❌ Auto-initialization failed:', error);
+  BrowserStorageMonitor.init(config).catch(() => {
+    // Auto-initialization failed - silently ignore
   });
 }
 

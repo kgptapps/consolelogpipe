@@ -68,6 +68,24 @@ module.exports = {
       },
     },
     {
+      files: ['packages/storage-monitor/src/server/**/*'],
+      rules: {
+        'no-console': 'off', // Server tools need console output
+      },
+    },
+    {
+      files: ['scripts/**/*'],
+      rules: {
+        'no-console': 'off', // Scripts need console output
+      },
+    },
+    {
+      files: ['packages/client/**/*'],
+      rules: {
+        'no-console': 'warn', // Client library console interception is legitimate
+      },
+    },
+    {
       files: ['packages/client/**/*'],
       env: {
         browser: true,

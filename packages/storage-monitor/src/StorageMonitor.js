@@ -45,7 +45,7 @@ class StorageMonitor {
    * Initialize storage monitoring
    */
   async init() {
-    console.log('🍪 Initializing Storage Monitor...');
+    // Initialize Storage Monitor
 
     try {
       // Connect to WebSocket
@@ -54,10 +54,14 @@ class StorageMonitor {
       // Start monitoring
       this._startMonitoring();
 
-      console.log('✅ Storage Monitor connected and monitoring');
+      // Storage Monitor connected and monitoring
       return this;
     } catch (error) {
-      console.error('❌ Storage Monitor initialization failed:', error);
+      // Storage Monitor initialization failed
+      if (this.config.debug) {
+        // eslint-disable-next-line no-console
+        console.error('❌ Storage Monitor initialization failed:', error);
+      }
       throw error;
     }
   }
@@ -66,7 +70,7 @@ class StorageMonitor {
    * Stop monitoring and cleanup
    */
   stop() {
-    console.log('🛑 Stopping Storage Monitor...');
+    // Stopping Storage Monitor
 
     this.isMonitoring = false;
 
@@ -84,7 +88,7 @@ class StorageMonitor {
     }
 
     this.isConnected = false;
-    console.log('✅ Storage Monitor stopped');
+    // Storage Monitor stopped
   }
 
   /**
@@ -127,13 +131,16 @@ class StorageMonitor {
       };
 
       this.ws.onerror = error => {
-        console.error('❌ Storage Monitor WebSocket error:', error);
+        if (this.config.debug) {
+          // eslint-disable-next-line no-console
+          console.error('❌ Storage Monitor WebSocket error:', error);
+        }
         reject(error);
       };
 
       this.ws.onclose = () => {
         this.isConnected = false;
-        console.log('🔌 Storage Monitor disconnected');
+        // Storage Monitor disconnected
       };
 
       this.ws.onmessage = event => {
@@ -141,7 +148,10 @@ class StorageMonitor {
           const message = JSON.parse(event.data);
           this._handleServerMessage(message);
         } catch (error) {
-          console.error('Error parsing server message:', error);
+          if (this.config.debug) {
+            // eslint-disable-next-line no-console
+            console.error('Error parsing server message:', error);
+          }
         }
       };
     });
@@ -229,7 +239,6 @@ class StorageMonitor {
       );
 
       if (changes.hasChanges) {
-        console.log('🔄 Polling detected localStorage changes:', changes);
         this._sendStorageUpdate('localStorage', changes);
       }
     }, this.config.pollInterval);
@@ -317,13 +326,14 @@ class StorageMonitor {
   _handleServerMessage(message) {
     switch (message.type) {
       case 'storage_info':
-        console.log('📊 Storage Monitor server info:', message.data);
+        // Storage Monitor server info received
         break;
       case 'storage_command':
         this._handleServerCommand(message.data);
         break;
       default:
-        console.log('📨 Storage Monitor message:', message);
+        // Storage Monitor message received
+        break;
     }
   }
 
@@ -518,25 +528,16 @@ class StorageMonitor {
     this.originalMethods[`${storageType}_${methodName}`] = originalMethod;
 
     storage[methodName] = (...args) => {
-      console.log(
-        `🔍 Intercepted ${storageType}.${methodName}(${args.join(', ')})`
-      );
-
       // Call original method
       const result = originalMethod.apply(storage, args);
 
       // Send immediate update
       setTimeout(() => {
-        console.log(
-          `📊 Checking for changes after ${storageType}.${methodName}`
-        );
         const currentStorage =
           storageType === 'localStorage'
             ? this._getCurrentLocalStorage()
             : this._getCurrentSessionStorage();
         const changes = this._detectStorageChanges(storageType, currentStorage);
-
-        console.log(`📈 Changes detected:`, changes);
 
         if (changes.hasChanges) {
           this._sendStorageUpdate(storageType, {
