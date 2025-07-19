@@ -205,14 +205,13 @@ jobs:
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ github.ref_name }}
           name: Console Log Pipe ${{ github.ref_name }}
           body_path: release_notes.md
           draft: false
           prerelease: ${{ steps.detect-beta.outputs.is_beta == 'true' }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
   # Job 4: Create GitHub Release Assets (Optional)
   release-assets:

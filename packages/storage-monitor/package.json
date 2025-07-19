@@ -1,6 +1,6 @@
 {
   "name": "@kansnpms/console-log-pipe-storage-beta",
-  "version": "2.3.0-beta.1",
+  "version": "2.3.0-beta.2",
   "description": "Browser storage and cookies monitoring for Console Log Pipe - Real-time tracking of localStorage, sessionStorage, cookies, and IndexedDB",
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
@@ -57,7 +57,7 @@
     "node": ">=14.0.0"
   },
   "peerDependencies": {
-    "@kansnpms/console-log-pipe-cli": "^2.3.0-beta.1"
+    "@kansnpms/console-log-pipe-cli": "^2.3.0-beta.2"
   },
   "dependencies": {
     "ws": "^8.14.0",
