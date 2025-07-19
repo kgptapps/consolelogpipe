@@ -3,6 +3,8 @@
 🍪 **Real-time browser storage and cookies monitoring for development and debugging**
 
 [![npm version](https://badge.fury.io/js/@kansnpms%2Fconsole-log-pipe-storage-beta.svg)](https://www.npmjs.com/package/@kansnpms/console-log-pipe-storage-beta)
+[![npm downloads](https://img.shields.io/npm/dt/@kansnpms/console-log-pipe-storage-beta.svg)](https://www.npmjs.com/package/@kansnpms/console-log-pipe-storage-beta)
+[![npm downloads/month](https://img.shields.io/npm/dm/@kansnpms/console-log-pipe-storage-beta.svg)](https://www.npmjs.com/package/@kansnpms/console-log-pipe-storage-beta)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 > **⚠️ Beta Release**: This is a beta version of the storage monitoring feature. APIs may change in
