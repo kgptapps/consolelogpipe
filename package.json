@@ -1,6 +1,6 @@
 {
   "name": "console-log-pipe-monorepo",
-  "version": "2.3.5",
+  "version": "2.3.6",
   "description": "Browser Console Log Pipe - Real-time log streaming from browsers to developers",
   "private": true,
   "repository": {
