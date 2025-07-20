@@ -64,7 +64,7 @@ const monitor = await StorageMonitor.init({
 ### Basic Usage
 
 ```javascript
-import StorageMonitor from '@kansnpms/console-log-pipe-storage-beta';
+import StorageMonitor from '@kansnpms/storage-pipe';
 
 // Simple initialization
 const monitor = await StorageMonitor.init();
@@ -84,7 +84,7 @@ const monitor = await StorageMonitor.init({
 ### Advanced Configuration
 
 ```javascript
-import { ConsoleLogPipeStorage } from '@kansnpms/console-log-pipe-storage-beta';
+import { ConsoleLogPipeStorage } from '@kansnpms/storage-pipe';
 
 const storage = new ConsoleLogPipeStorage({
   serverPort: 3002,
@@ -166,7 +166,7 @@ Access the web dashboard at `http://localhost:3002` when the storage monitor is 
 ### StorageMonitor Class
 
 ```javascript
-import StorageMonitor from '@kansnpms/console-log-pipe-storage-beta';
+import StorageMonitor from '@kansnpms/storage-pipe';
 
 // Static methods
 await StorageMonitor.init(options); // Initialize and start monitoring

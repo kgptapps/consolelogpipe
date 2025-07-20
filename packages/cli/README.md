@@ -54,7 +54,7 @@ npm install @kansnpms/storage-pipe
 **📦 Package Links:**
 
 - **Client Library:** https://www.npmjs.com/package/@kansnpms/console-log-pipe-client
-- **Storage Monitor:** https://www.npmjs.com/package/@kansnpms/console-log-pipe-storage-beta
+- **Storage Monitor:** https://www.npmjs.com/package/@kansnpms/storage-pipe
 
 ### 2. Start monitoring
 

@@ -155,21 +155,21 @@ jobs:
             - WebSocket-based real-time updates
             - Web dashboard for monitoring
 
-          ## 📦 Beta Packages Published
+          ## 📦 Packages Published
           - `@kansnpms/console-log-pipe-cli@${{ github.ref_name }}`
           - `@kansnpms/console-log-pipe-client@${{ github.ref_name }}`
-          - `@kansnpms/console-log-pipe-storage-beta@${{ github.ref_name }}`
+          - `@kansnpms/storage-pipe@${{ github.ref_name }}`
 
           ## 🚀 Installation
           ```bash
-          # Install CLI (beta)
-          npm install -g @kansnpms/console-log-pipe-cli@beta
+          # Install CLI
+          npm install -g @kansnpms/console-log-pipe-cli
 
-          # Install client library (beta)
-          npm install @kansnpms/console-log-pipe-client@beta
+          # Install client library
+          npm install @kansnpms/console-log-pipe-client
 
-          # Install storage monitor (beta)
-          npm install @kansnpms/console-log-pipe-storage-beta@beta
+          # Install storage monitor
+          npm install @kansnpms/storage-pipe
           ```
 
           ## 🧪 Testing the Storage Monitor
@@ -180,7 +180,7 @@ jobs:
 
           ```javascript
           // Add to your web app
-          import StorageMonitor from '@kansnpms/console-log-pipe-storage-beta';
+          import StorageMonitor from '@kansnpms/storage-pipe';
           await StorageMonitor.init({ serverPort: 3002 });
           ```
 
