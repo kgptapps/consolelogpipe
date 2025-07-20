@@ -12,7 +12,7 @@ Console Log Pipe consists of 3 main packages, all synchronized at version `2.3.0
 | ----------- | -------- | ------------- | --------------------------------------------- |
 | **CLI**     | Required | ✅ Production | Global command-line tool for starting servers |
 | **Client**  | Required | ✅ Production | Browser library for log streaming             |
-| **Storage** | Optional | 🧪 Beta       | Browser storage monitoring (beta feature)     |
+| **Storage** | Optional | ✅ Production | Browser storage monitoring                    |
 
 ## 🎯 Package Details
 
@@ -99,32 +99,32 @@ console.log('Hello from browser!');
 
 ---
 
-### 3. Console Log Pipe Storage Monitor (Beta)
+### 3. Storage Pipe
 
 **Browser storage monitoring for cookies, localStorage, sessionStorage, and IndexedDB**
 
-- **Package Name:** `@kansnpms/console-log-pipe-storage-beta`
+- **Package Name:** `@kansnpms/storage-pipe`
 - **Current Version:** `2.3.0`
-- **NPM Registry:** https://www.npmjs.com/package/@kansnpms/console-log-pipe-storage-beta
+- **NPM Registry:** https://www.npmjs.com/package/@kansnpms/storage-pipe
 - **Repository:** https://github.com/kgptapps/consolelogpipe/tree/main/packages/storage-monitor
 - **Documentation:** [Storage README](../packages/storage-monitor/README.md)
 - **License:** MIT
-- **Status:** 🧪 Beta Release
+- **Status:** ✅ Production Ready
 
 #### Installation
 
 ```bash
-# Install latest beta version
-npm install @kansnpms/console-log-pipe-storage-beta@beta
+# Install latest stable version
+npm install @kansnpms/storage-pipe
 
 # Install specific version
-npm install @kansnpms/console-log-pipe-storage-beta@2.3.0
+npm install @kansnpms/storage-pipe@2.3.0
 ```
 
 #### Usage
 
 ```javascript
-import StorageMonitor from '@kansnpms/console-log-pipe-storage-beta';
+import StorageMonitor from '@kansnpms/storage-pipe';
 
 // Initialize (requires CLI storage server running)
 StorageMonitor.init({ serverPort: 3002 });
@@ -144,8 +144,8 @@ npm install -g @kansnpms/console-log-pipe-cli@beta
 # 2. Install client library (required for web projects)
 npm install @kansnpms/console-log-pipe-client@beta
 
-# 3. Install storage monitor (optional beta feature)
-npm install @kansnpms/console-log-pipe-storage-beta@beta
+# 3. Install storage monitor (optional)
+npm install @kansnpms/storage-pipe
 ```
 
 ### Start Servers
@@ -163,7 +163,7 @@ clp storage --port 3002
 ```javascript
 // Import packages
 import ConsoleLogPipe from '@kansnpms/console-log-pipe-client';
-import StorageMonitor from '@kansnpms/console-log-pipe-storage-beta';
+import StorageMonitor from '@kansnpms/storage-pipe';
 
 // Initialize console logging
 ConsoleLogPipe.init({ serverPort: 3001 });

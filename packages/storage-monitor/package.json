@@ -1,5 +1,5 @@
 {
-  "name": "@kansnpms/console-log-pipe-storage-beta",
+  "name": "@kansnpms/storage-pipe",
   "version": "2.3.0",
   "description": "Browser storage and cookies monitoring for Console Log Pipe - Real-time tracking of localStorage, sessionStorage, cookies, and IndexedDB",
   "main": "dist/index.js",

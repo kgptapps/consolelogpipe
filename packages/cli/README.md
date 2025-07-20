@@ -48,7 +48,7 @@ You'll also need the client library for your web applications:
 npm install @kansnpms/console-log-pipe-client
 
 # Storage monitor (optional)
-npm install @kansnpms/console-log-pipe-storage-beta
+npm install @kansnpms/storage-pipe
 ```
 
 **📦 Package Links:**

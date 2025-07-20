@@ -29,7 +29,7 @@ npm init -y
 
 # Install client packages
 npm install @kansnpms/console-log-pipe-client
-npm install @kansnpms/console-log-pipe-storage-beta
+npm install @kansnpms/storage-pipe
 ```
 
 ## 🧪 Core Tests (10 minutes)
@@ -258,7 +258,7 @@ window.testStorage = function () {
 
 ---
 
-**Tester:** ****\*\*****\_****\*\*****  
-**Date:** ****\*\*****\_****\*\*****  
-**Environment:** ****\*\*****\_****\*\*****  
+**Tester:** \***\*\*\*\*\***\_\***\*\*\*\*\***  
+**Date:** \***\*\*\*\*\***\_\***\*\*\*\*\***  
+**Environment:** \***\*\*\*\*\***\_\***\*\*\*\*\***  
 **Overall Status:** ⭐⭐⭐⭐⭐ (Rate 1-5 stars)

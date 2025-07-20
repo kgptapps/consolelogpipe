@@ -1,8 +1,8 @@
-# @kansnpms/console-log-pipe-storage-beta
+# @kansnpms/storage-pipe
 
-[![npm version](https://badge.fury.io/js/@kansnpms%2Fconsole-log-pipe-storage-beta.svg)](https://www.npmjs.com/package/@kansnpms/console-log-pipe-storage-beta)
-[![npm downloads](https://img.shields.io/npm/dt/@kansnpms/console-log-pipe-storage-beta.svg)](https://www.npmjs.com/package/@kansnpms/console-log-pipe-storage-beta)
-[![npm downloads/month](https://img.shields.io/npm/dm/@kansnpms/console-log-pipe-storage-beta.svg)](https://www.npmjs.com/package/@kansnpms/console-log-pipe-storage-beta)
+[![npm version](https://badge.fury.io/js/@kansnpms%2Fstorage-pipe.svg)](https://www.npmjs.com/package/@kansnpms/storage-pipe)
+[![npm downloads](https://img.shields.io/npm/dt/@kansnpms/storage-pipe.svg)](https://www.npmjs.com/package/@kansnpms/storage-pipe)
+[![npm downloads/month](https://img.shields.io/npm/dm/@kansnpms/storage-pipe.svg)](https://www.npmjs.com/package/@kansnpms/storage-pipe)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 **Current Version:** `2.3.0` | **Status:** ✅ Production Release
@@ -11,8 +11,8 @@
 
 ## 📦 Package Information
 
-- **Package Name:** `@kansnpms/console-log-pipe-storage-beta`
-- **NPM Registry:** https://www.npmjs.com/package/@kansnpms/console-log-pipe-storage-beta
+- **Package Name:** `@kansnpms/storage-pipe`
+- **NPM Registry:** https://www.npmjs.com/package/@kansnpms/storage-pipe
 - **Repository:** https://github.com/kgptapps/consolelogpipe
 - **License:** MIT
 - **Status:** Production - Stable and ready for use
@@ -35,11 +35,11 @@ clp storage --port 3002
 ### 3. Add to Your Web Application
 
 ```bash
-npm install @kansnpms/console-log-pipe-storage-beta
+npm install @kansnpms/storage-pipe
 ```
 
 ```javascript
-import StorageMonitor from '@kansnpms/console-log-pipe-storage-beta';
+import StorageMonitor from '@kansnpms/storage-pipe';
 
 // Initialize storage monitoring
 const monitor = await StorageMonitor.init({
