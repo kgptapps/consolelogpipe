@@ -1,0 +1,37 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+echo "🚀 Running pre-push quality gates..."
+
+# Exit on any error
+set -e
+
+# 1. Run full test suite
+echo "🧪 Running full test suite..."
+npm run test:all
+
+# 2. Run type checking
+echo "🔍 Running TypeScript type checking..."
+npm run type-check
+
+# 3. Run linting
+echo "📝 Running linting..."
+npm run lint
+
+# 4. Check code formatting
+echo "🎨 Checking code formatting..."
+npm run format:check
+
+# 5. Security audit
+echo "🔒 Running security audit..."
+npm audit --audit-level=high
+
+# 6. Build all packages
+echo "🏗️ Building all packages..."
+npm run build
+
+# 7. Check test coverage
+echo "📊 Checking test coverage..."
+npm run test:coverage
+
+echo "✅ All pre-push quality gates passed! Safe to push."

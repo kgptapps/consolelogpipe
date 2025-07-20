@@ -33,6 +33,8 @@
     "test:coverage": "jest --coverage",
     "test:all": "npm test -- --passWithNoTests && npm run test:integration -- --passWithNoTests",
     "test:integration": "jest --config tests/integration/jest.config.js",
+    "test:unit": "jest --testPathPattern='.*\\.test\\.(js|ts)$'",
+    "test:changed": "jest --onlyChanged --passWithNoTests",
     "test:e2e": "echo 'E2E tests not yet implemented'",
     "test:performance": "echo 'Performance tests not yet implemented'",
     "lint": "eslint . --ext .js,.ts",
@@ -57,7 +59,15 @@
     "release:major": "node scripts/create-release.js major",
     "dev": "lerna run dev --parallel",
     "start": "lerna run start --parallel",
-    "precommit": "lint-staged",
+    "precommit": "npm run precommit:full",
+    "precommit:full": "npm run precommit:lint && npm run precommit:types && npm run precommit:tests && npm run precommit:security",
+    "precommit:lint": "lint-staged",
+    "precommit:types": "npm run type-check",
+    "precommit:tests": "npm run test:changed",
+    "precommit:security": "npm audit --audit-level=high",
+    "quality:check": "npm run lint && npm run type-check && npm run format:check && npm run test:all",
+    "quality:fix": "npm run lint:fix && npm run format && npm run test:all",
+    "quality:full": "npm run quality:check && npm run test:coverage && npm audit --audit-level=high",
     "prepare": "husky install"
   },
   "devDependencies": {
@@ -90,7 +100,8 @@
   "lint-staged": {
     "*.{js,ts,jsx,tsx}": [
       "eslint --fix",
-      "prettier --write"
+      "prettier --write",
+      "jest --findRelatedTests --passWithNoTests"
     ],
     "*.{json,md,yml,yaml}": [
       "prettier --write"

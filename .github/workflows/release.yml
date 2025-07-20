@@ -18,11 +18,15 @@ permissions:
   checks: read
 
 jobs:
-  # Job 1: Validate Release
-  validate:
-    name: Validate Release
+  # Job 1: STRICT Quality Gates - BLOCKS release if ANY check fails
+  quality-gates:
+    name: 🚨 STRICT Quality Gates
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
+    strategy:
+      fail-fast: true # Stop immediately on first failure
+      matrix:
+        node-version: [18, 20] # Test on both supported versions
 
     steps:
       - name: Checkout code
@@ -30,30 +34,122 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup Node.js
+      - name: Setup Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
-          node-version: "18"
+          node-version: ${{ matrix.node-version }}
           cache: "npm"
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Run full test suite
-        run: npm run test:all
+      - name: 🔍 CRITICAL - Run linting (MUST PASS)
+        run: npm run lint
+        continue-on-error: false
 
-      - name: Build all packages
-        run: npm run build
+      - name: 🔍 CRITICAL - Type checking (MUST PASS)
+        run: npm run type-check
+        continue-on-error: false
 
-      - name: Security audit
+      - name: 🔍 CRITICAL - Code formatting (MUST PASS)
+        run: npm run format:check
+        continue-on-error: false
+
+      - name: 🧪 CRITICAL - Unit tests (MUST PASS)
+        run: npm run test:unit
+        continue-on-error: false
+
+      - name: 🧪 CRITICAL - Integration tests (MUST PASS)
+        run: npm run test:integration
+        continue-on-error: false
+
+      - name: 📊 CRITICAL - Test coverage check (MUST PASS)
+        run: npm run test:coverage
+        continue-on-error: false
+
+      - name: 🔒 CRITICAL - Security audit (MUST PASS)
         run: npm audit --audit-level=high
+        continue-on-error: false
 
-  # Job 2: Publish to NPM
+      - name: 🏗️ CRITICAL - Build all packages (MUST PASS)
+        run: npm run build
+        continue-on-error: false
+
+      - name: ✅ Quality Gates PASSED for Node.js ${{ matrix.node-version }}
+        run: echo "✅ All quality checks passed for Node.js ${{ matrix.node-version }}"
+
+  # Job 2: Verify CI Pipeline Status
+  verify-ci-status:
+    name: 🔍 Verify CI Pipeline Status
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: [quality-gates]
+
+    steps:
+      - name: Check CI Status for Current Commit
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const sha = context.sha;
+
+            console.log(`🔍 Checking CI status for commit: ${sha}`);
+
+            // Get all check runs for this commit
+            const { data: checkRuns } = await github.rest.checks.listForRef({
+              owner,
+              repo,
+              ref: sha,
+              per_page: 100
+            });
+
+            console.log(`Found ${checkRuns.check_runs.length} check runs`);
+
+            // Get all status checks for this commit
+            const { data: statuses } = await github.rest.repos.listCommitStatusesForRef({
+              owner,
+              repo,
+              ref: sha,
+              per_page: 100
+            });
+
+            console.log(`Found ${statuses.length} status checks`);
+
+            // Check for any failures
+            const failedChecks = checkRuns.check_runs.filter(run =>
+              run.conclusion === 'failure' || run.conclusion === 'cancelled'
+            );
+
+            const failedStatuses = statuses.filter(status =>
+              status.state === 'failure' || status.state === 'error'
+            );
+
+            if (failedChecks.length > 0) {
+              console.log('❌ FAILED CHECK RUNS:');
+              failedChecks.forEach(check => {
+                console.log(`  - ${check.name}: ${check.conclusion}`);
+              });
+            }
+
+            if (failedStatuses.length > 0) {
+              console.log('❌ FAILED STATUS CHECKS:');
+              failedStatuses.forEach(status => {
+                console.log(`  - ${status.context}: ${status.state}`);
+              });
+            }
+
+            if (failedChecks.length > 0 || failedStatuses.length > 0) {
+              core.setFailed(`🚨 RELEASE BLOCKED: ${failedChecks.length + failedStatuses.length} CI checks are failing. All CI checks must pass before release.`);
+            } else {
+              console.log('✅ All CI checks are passing - Release approved');
+            }
+
+  # Job 3: Publish to NPM
   publish-npm:
-    name: Publish to NPM
+    name: 📦 Publish to NPM
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    needs: [validate]
+    needs: [quality-gates, verify-ci-status] # BOTH quality gates AND CI status must pass
     if: github.event_name == 'release' || startsWith(github.ref, 'refs/tags/v')
 
     steps:
@@ -116,12 +212,12 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-  # Job 3: Create GitHub Release
+  # Job 4: Create GitHub Release
   create-release:
-    name: Create GitHub Release
+    name: 🏷️ Create GitHub Release
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    needs: [publish-npm]
+    needs: [quality-gates, verify-ci-status, publish-npm] # Must pass ALL quality checks
     if: github.event_name != 'release' && startsWith(github.ref, 'refs/tags/v')
 
     steps:
@@ -280,10 +376,10 @@ jobs:
 
   # Job 4: Update Documentation
   update-docs:
-    name: Update Documentation
+    name: 📚 Update Documentation
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    needs: [publish-npm]
+    needs: [quality-gates, verify-ci-status, publish-npm] # Must pass ALL quality checks
     if: github.event_name == 'release' || startsWith(github.ref, 'refs/tags/v')
 
     steps:
@@ -320,10 +416,10 @@ jobs:
 
   # Job 5: Notify Release
   notify:
-    name: Notify Release
+    name: 📢 Notify Release
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    needs: [publish-npm, update-docs]
+    needs: [quality-gates, verify-ci-status, publish-npm, update-docs] # Must pass ALL quality checks
     if: always() && (github.event_name == 'release' || startsWith(github.ref, 'refs/tags/v'))
 
     steps:
