@@ -521,15 +521,39 @@ class StorageMonitor {
    * Intercept storage methods for real-time monitoring
    */
   _interceptStorageMethod(storageType, methodName) {
-    // Support both browser and test environments
-    const storage =
-      (typeof window !== 'undefined'
-        ? window[storageType]
-        : global[storageType]) || global[storageType];
-    if (!storage) return;
+    // In test environment, we need to use the same localStorage/sessionStorage
+    // that the test is using. Try multiple approaches to find the right one.
+    let storage;
+
+    // First try: direct global reference (what tests usually use)
+    try {
+      storage = eval(storageType); // localStorage or sessionStorage
+    } catch (e) {
+      // eval failed, try other approaches
+    }
+
+    // Second try: global object
+    if (!storage && typeof global !== 'undefined' && global[storageType]) {
+      storage = global[storageType];
+    }
+
+    // Third try: window object (browser)
+    if (!storage && typeof window !== 'undefined' && window[storageType]) {
+      storage = window[storageType];
+    }
+
+    if (!storage) {
+      return;
+    }
 
     const originalMethod = storage[methodName];
     this.originalMethods[`${storageType}_${methodName}`] = originalMethod;
+
+    // Check if the property is configurable
+    const descriptor = Object.getOwnPropertyDescriptor(storage, methodName);
+    if (descriptor && descriptor.configurable === false) {
+      return;
+    }
 
     storage[methodName] = (...args) => {
       // Call original method
@@ -563,10 +587,16 @@ class StorageMonitor {
     Object.keys(this.originalMethods).forEach(key => {
       const [storageType, methodName] = key.split('_');
       // Support both browser and test environments
-      const storage =
-        (typeof window !== 'undefined'
-          ? window[storageType]
-          : global[storageType]) || global[storageType];
+      let storage;
+      if (typeof window !== 'undefined' && window[storageType]) {
+        storage = window[storageType];
+      } else if (typeof global !== 'undefined' && global[storageType]) {
+        storage = global[storageType];
+      } else {
+        // Fallback: try to get from global scope directly
+        storage = eval(storageType); // localStorage or sessionStorage
+      }
+
       if (storage && this.originalMethods[key]) {
         storage[methodName] = this.originalMethods[key];
       }
