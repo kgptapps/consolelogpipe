@@ -302,5 +302,143 @@ describe('StartCommand', () => {
         })
       );
     });
+
+    it('should handle all command options comprehensively', async () => {
+      // Temporarily restore process.exit for successful case
+      mockProcessExit.mockRestore();
+      mockProcessExit = jest.spyOn(process, 'exit').mockImplementation();
+
+      const options = {
+        port: '3001',
+        sessionId: 'custom-session',
+        appName: 'test-app',
+        host: '0.0.0.0',
+        environment: 'production',
+        developer: 'test-dev',
+        branch: 'main',
+        enableCors: true,
+        enableCompression: true,
+        enableSecurity: true,
+        logLevel: 'debug',
+        maxConnections: 100,
+        timeout: 30000,
+        enableAnalytics: false,
+      };
+      const command = { opts: () => ({}) };
+
+      await StartCommand.execute(options, command);
+
+      expect(ServerManager.startServer).toHaveBeenCalledWith(
+        expect.objectContaining({
+          port: 3001,
+          sessionId: 'custom-session',
+          appName: 'test-app',
+          host: '0.0.0.0',
+          environment: 'production',
+          developer: 'test-dev',
+          branch: 'main',
+          enableCors: true,
+          enableCompression: true,
+          enableSecurity: true,
+          logLevel: 'debug',
+          maxConnections: 100,
+          timeout: 30000,
+          enableAnalytics: false,
+        })
+      );
+    });
+
+    it('should handle port availability check failure', async () => {
+      PortManager.isPortAvailable.mockRejectedValue(
+        new Error('Port check failed')
+      );
+
+      const options = { port: '4000' };
+      const command = { opts: () => ({}) };
+
+      await expect(StartCommand.execute(options, command)).rejects.toThrow(
+        'Process exit with code 1'
+      );
+
+      expect(mockProcessExit).toHaveBeenCalledWith(1);
+    });
+
+    it('should handle browser open failure gracefully', async () => {
+      // Temporarily restore process.exit for successful case
+      mockProcessExit.mockRestore();
+      mockProcessExit = jest.spyOn(process, 'exit').mockImplementation();
+
+      openBrowser.mockRejectedValue(new Error('Browser failed'));
+
+      const options = { port: '3001' };
+      const command = { opts: () => ({}) };
+
+      // Should not throw even if browser fails to open
+      await expect(
+        StartCommand.execute(options, command)
+      ).resolves.not.toThrow();
+
+      expect(ServerManager.startServer).toHaveBeenCalled();
+    });
+
+    it('should validate port range correctly', async () => {
+      // Temporarily restore process.exit for successful case
+      mockProcessExit.mockRestore();
+      mockProcessExit = jest.spyOn(process, 'exit').mockImplementation();
+
+      // Test minimum valid port
+      const options1 = { port: '1024' };
+      const command1 = { opts: () => ({}) };
+
+      await StartCommand.execute(options1, command1);
+      expect(ServerManager.startServer).toHaveBeenCalled();
+
+      // Reset mock
+      ServerManager.startServer.mockClear();
+
+      // Test maximum valid port
+      const options2 = { port: '65535' };
+      const command2 = { opts: () => ({}) };
+
+      await StartCommand.execute(options2, command2);
+      expect(ServerManager.startServer).toHaveBeenCalled();
+    });
+
+    it('should handle server info retrieval failure', async () => {
+      // Temporarily restore process.exit for successful case
+      mockProcessExit.mockRestore();
+      mockProcessExit = jest.spyOn(process, 'exit').mockImplementation();
+
+      ServerManager.getServerInfo.mockRejectedValue(
+        new Error('Failed to get server info')
+      );
+
+      const options = { port: '3001' };
+      const command = { opts: () => ({}) };
+
+      // Should continue with starting new server
+      await StartCommand.execute(options, command);
+
+      expect(ServerManager.startServer).toHaveBeenCalled();
+    });
+
+    it('should handle stopped server status', async () => {
+      // Temporarily restore process.exit for successful case
+      mockProcessExit.mockRestore();
+      mockProcessExit = jest.spyOn(process, 'exit').mockImplementation();
+
+      ServerManager.getServerInfo.mockResolvedValue({
+        status: 'stopped',
+        host: 'localhost',
+        port: 3001,
+      });
+
+      const options = { port: '3001' };
+      const command = { opts: () => ({}) };
+
+      await StartCommand.execute(options, command);
+
+      expect(ServerManager.startServer).toHaveBeenCalled();
+    });
   });
 });

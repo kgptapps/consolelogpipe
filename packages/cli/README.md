@@ -81,12 +81,6 @@ clp start --port 3001
 npm install @kansnpms/console-log-pipe-client
 ```
 
-**From GitHub Packages:**
-
-```bash
-npm install @kgptapps/console-log-pipe-client --registry=https://npm.pkg.github.com
-```
-
 ```javascript
 import ConsoleLogPipe from '@kansnpms/console-log-pipe-client';
 

@@ -213,4 +213,129 @@ describe('TimeUtils', () => {
       expect(result).toContain('hour');
     });
   });
+
+  describe('parseTimeString', () => {
+    it('should parse relative time strings', () => {
+      const now = Date.now();
+
+      // Test seconds
+      const result1 = TimeUtils.parseTimeString('30s');
+      expect(result1).toBeInstanceOf(Date);
+      expect(result1.getTime()).toBeLessThan(now);
+
+      // Test minutes
+      const result2 = TimeUtils.parseTimeString('5m');
+      expect(result2).toBeInstanceOf(Date);
+      expect(result2.getTime()).toBeLessThan(now);
+
+      // Test hours
+      const result3 = TimeUtils.parseTimeString('2h');
+      expect(result3).toBeInstanceOf(Date);
+      expect(result3.getTime()).toBeLessThan(now);
+
+      // Test days
+      const result4 = TimeUtils.parseTimeString('1d');
+      expect(result4).toBeInstanceOf(Date);
+      expect(result4.getTime()).toBeLessThan(now);
+    });
+
+    it('should parse ISO date strings', () => {
+      const isoString = '2023-01-01T12:00:00.000Z';
+      const result = TimeUtils.parseTimeString(isoString);
+
+      expect(result).toBeInstanceOf(Date);
+      expect(result.toISOString()).toBe(isoString);
+    });
+
+    it('should handle invalid time strings', () => {
+      expect(TimeUtils.parseTimeString('')).toBeNull();
+      expect(TimeUtils.parseTimeString(null)).toBeNull();
+      expect(TimeUtils.parseTimeString(undefined)).toBeNull();
+      expect(TimeUtils.parseTimeString('invalid')).toBeNull();
+    });
+
+    it('should handle edge cases', () => {
+      expect(TimeUtils.parseTimeString('0s')).toBeInstanceOf(Date);
+      expect(TimeUtils.parseTimeString('999d')).toBeInstanceOf(Date);
+    });
+  });
+
+  describe('isValidTimestamp', () => {
+    it('should validate timestamps correctly', () => {
+      expect(TimeUtils.isValidTimestamp(Date.now())).toBe(true);
+      expect(TimeUtils.isValidTimestamp(new Date().getTime())).toBe(true);
+      expect(TimeUtils.isValidTimestamp(1640995200000)).toBe(true); // Valid timestamp
+
+      expect(TimeUtils.isValidTimestamp(-1)).toBe(false);
+      expect(TimeUtils.isValidTimestamp('invalid')).toBe(false);
+      expect(TimeUtils.isValidTimestamp(null)).toBe(false);
+      expect(TimeUtils.isValidTimestamp(undefined)).toBe(false);
+      expect(TimeUtils.isValidTimestamp(NaN)).toBe(false);
+    });
+  });
+
+  describe('getTimeZone', () => {
+    it('should return current timezone', () => {
+      const timezone = TimeUtils.getTimeZone();
+      expect(typeof timezone).toBe('string');
+      expect(timezone.length).toBeGreaterThan(0);
+    });
+  });
+
+  describe('addTime', () => {
+    it('should add time correctly', () => {
+      const baseDate = new Date('2023-01-01T12:00:00.000Z');
+
+      // Add seconds
+      const result1 = TimeUtils.addTime(baseDate, 30, 'seconds');
+      expect(result1.getTime()).toBe(baseDate.getTime() + 30 * 1000);
+
+      // Add minutes
+      const result2 = TimeUtils.addTime(baseDate, 5, 'minutes');
+      expect(result2.getTime()).toBe(baseDate.getTime() + 5 * 60 * 1000);
+
+      // Add hours
+      const result3 = TimeUtils.addTime(baseDate, 2, 'hours');
+      expect(result3.getTime()).toBe(baseDate.getTime() + 2 * 60 * 60 * 1000);
+
+      // Add days
+      const result4 = TimeUtils.addTime(baseDate, 1, 'days');
+      expect(result4.getTime()).toBe(baseDate.getTime() + 24 * 60 * 60 * 1000);
+    });
+
+    it('should handle invalid units', () => {
+      const baseDate = new Date('2023-01-01T12:00:00.000Z');
+      const result = TimeUtils.addTime(baseDate, 5, 'invalid');
+      expect(result.getTime()).toBe(baseDate.getTime());
+    });
+  });
+
+  describe('parseTimeRange', () => {
+    it('should parse time ranges correctly', () => {
+      const range1 = TimeUtils.parseTimeRange('1h');
+      expect(range1).toHaveProperty('start');
+      expect(range1).toHaveProperty('end');
+      expect(range1.start).toBeInstanceOf(Date);
+      expect(range1.end).toBeInstanceOf(Date);
+
+      const range2 = TimeUtils.parseTimeRange('30m');
+      expect(range2.start).toBeInstanceOf(Date);
+      expect(range2.end).toBeInstanceOf(Date);
+    });
+
+    it('should handle custom date ranges', () => {
+      const startDate = '2023-01-01T00:00:00.000Z';
+      const endDate = '2023-01-01T23:59:59.999Z';
+
+      const range = TimeUtils.parseTimeRange(`${startDate}..${endDate}`);
+      expect(range.start.toISOString()).toBe(startDate);
+      expect(range.end.toISOString()).toBe(endDate);
+    });
+
+    it('should handle invalid ranges', () => {
+      expect(TimeUtils.parseTimeRange('')).toBeNull();
+      expect(TimeUtils.parseTimeRange('invalid')).toBeNull();
+      expect(TimeUtils.parseTimeRange(null)).toBeNull();
+    });
+  });
 });

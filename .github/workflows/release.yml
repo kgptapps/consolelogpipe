@@ -13,7 +13,6 @@ concurrency:
 
 permissions:
   contents: write
-  packages: write
   actions: read
   checks: read
 

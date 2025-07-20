@@ -348,30 +348,12 @@ StorageMonitor.init({
 
 ### Integration Options
 
-#### Option 1: NPM Package (Recommended)
+#### NPM Package Installation
 
 **📦 [View on NPM](https://www.npmjs.com/package/@kansnpms/console-log-pipe-client)**
 
 ```bash
 npm install @kansnpms/console-log-pipe-client
-```
-
-#### Option 2: GitHub Packages
-
-**📦 [View on GitHub Packages](https://github.com/kgptapps/consolelogpipe/packages)**
-
-```bash
-# Configure npm to use GitHub Packages for @kgptapps scope
-echo "@kgptapps:registry=https://npm.pkg.github.com" >> ~/.npmrc
-
-# Install from GitHub Packages
-npm install @kgptapps/console-log-pipe-client
-```
-
-**For CLI tool from GitHub Packages:**
-
-```bash
-npm install -g @kgptapps/console-log-pipe-cli --registry=https://npm.pkg.github.com
 ```
 
 ## ✨ **What's Working Right Now**

@@ -150,5 +150,106 @@ describe('ConfigManager', () => {
         ConfigManager.deleteServerConfig('non-existent-app-12345')
       ).resolves.not.toThrow();
     });
+
+    it('should save and retrieve server config', async () => {
+      const testAppName = `test-save-retrieve-${Date.now()}`;
+      const testConfig = {
+        appName: testAppName,
+        port: 3001,
+        status: 'running',
+        startTime: new Date().toISOString(),
+      };
+
+      try {
+        // Save config
+        await ConfigManager.saveServerConfig(testAppName, testConfig);
+
+        // Retrieve config
+        const retrieved = await ConfigManager.getServerConfig(testAppName);
+
+        expect(retrieved).toBeTruthy();
+        expect(retrieved.appName).toBe(testAppName);
+        expect(retrieved.port).toBe(3001);
+        expect(retrieved.status).toBe('running');
+        expect(retrieved.lastUpdated).toBeDefined();
+
+        // Clean up
+        await ConfigManager.deleteServerConfig(testAppName);
+      } catch (error) {
+        // In CI environments, this might fail due to permissions
+        expect(error.code).toMatch(/EACCES|ENOENT|EPERM/);
+      }
+    });
+
+    it('should update server status', async () => {
+      const testAppName = `test-update-status-${Date.now()}`;
+      const testConfig = {
+        appName: testAppName,
+        port: 3002,
+        status: 'running',
+      };
+
+      try {
+        // Save initial config
+        await ConfigManager.saveServerConfig(testAppName, testConfig);
+
+        // Update status
+        await ConfigManager.updateServerStatus(testAppName, 'stopped');
+
+        // Verify update
+        const updated = await ConfigManager.getServerConfig(testAppName);
+        expect(updated.status).toBe('stopped');
+        expect(updated.lastUpdated).toBeDefined();
+
+        // Clean up
+        await ConfigManager.deleteServerConfig(testAppName);
+      } catch (error) {
+        // In CI environments, this might fail due to permissions
+        expect(error.code).toMatch(/EACCES|ENOENT|EPERM/);
+      }
+    });
+  });
+
+  describe('Global Configuration Operations', () => {
+    it('should save and retrieve global config', async () => {
+      const testConfig = {
+        defaultHost: 'test-host',
+        defaultEnvironment: 'test',
+        maxLogRetention: 14,
+        enableAnalytics: true,
+        theme: 'dark',
+      };
+
+      try {
+        // Save config
+        await ConfigManager.saveGlobalConfig(testConfig);
+
+        // Retrieve config
+        const retrieved = await ConfigManager.getGlobalConfig();
+
+        expect(retrieved.defaultHost).toBe('test-host');
+        expect(retrieved.defaultEnvironment).toBe('test');
+        expect(retrieved.maxLogRetention).toBe(14);
+        expect(retrieved.enableAnalytics).toBe(true);
+        expect(retrieved.theme).toBe('dark');
+      } catch (error) {
+        // In CI environments, this might fail due to permissions
+        expect(error.code).toMatch(/EACCES|ENOENT|EPERM/);
+      }
+    });
+  });
+
+  describe('Error Handling', () => {
+    it('should handle corrupted JSON files gracefully', async () => {
+      // This tests the JSON parsing error handling
+      const result = await ConfigManager.cleanupCorruptedConfigs();
+      expect(typeof result).toBe('number');
+    });
+
+    it('should handle file system errors gracefully', async () => {
+      // Test with invalid app name that might cause file system issues
+      const config = await ConfigManager.getServerConfig('');
+      expect(config).toBeNull();
+    });
   });
 });
