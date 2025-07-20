@@ -314,7 +314,7 @@ jobs:
     name: Create Release Assets (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     timeout-minutes: 20
-    needs: [validate]
+    needs: [quality-gates]
     continue-on-error: true
 
     strategy:
