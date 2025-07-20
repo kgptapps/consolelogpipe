@@ -5,7 +5,7 @@
 [![npm downloads/month](https://img.shields.io/npm/dm/@kansnpms/storage-pipe.svg)](https://www.npmjs.com/package/@kansnpms/storage-pipe)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**Current Version:** `2.3.0` | **Status:** ✅ Production Release
+**Current Version:** `2.3.1` | **Status:** ✅ Production Release
 
 🍪 **Real-time browser storage and cookies monitoring for development and debugging**
 

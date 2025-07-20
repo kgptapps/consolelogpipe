@@ -5,7 +5,7 @@
 [![npm downloads/month](https://img.shields.io/npm/dm/@kansnpms/console-log-pipe-cli.svg)](https://www.npmjs.com/package/@kansnpms/console-log-pipe-cli)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**Current Version:** `2.3.0` | **Status:** ✅ Production Release
+**Current Version:** `2.3.1` | **Status:** ✅ Production Release
 
 > Global CLI tool for Console Log Pipe - Stream browser console logs and storage changes to your
 > terminal in real-time.
@@ -23,18 +23,18 @@ Global CLI tool for Console Log Pipe - Real-time log streaming from browsers to 
 
 ### 1. Install globally
 
-**Current Version: 2.3.0**
+**Current Version: 2.3.1**
 
 ```bash
 # Install latest stable version (recommended)
 npm install -g @kansnpms/console-log-pipe-cli
 
 # Or install specific version
-npm install -g @kansnpms/console-log-pipe-cli@2.3.0
+npm install -g @kansnpms/console-log-pipe-cli@2.3.1
 
 # Verify installation
 clp --version
-# Expected: 2.3.0
+# Expected: 2.3.1
 ```
 
 **📦 [View on NPM](https://www.npmjs.com/package/@kansnpms/console-log-pipe-cli)**

@@ -48,14 +48,14 @@ Copy this prompt to quickly get AI assistance with Console Log Pipe integration!
 
 ### NPM Package (Recommended)
 
-**Current Version: 2.3.0**
+**Current Version: 2.3.1**
 
 ```bash
 # Install latest stable version (recommended)
 npm install @kansnpms/console-log-pipe-client
 
 # Or install specific version
-npm install @kansnpms/console-log-pipe-client@2.3.0
+npm install @kansnpms/console-log-pipe-client@2.3.1
 ```
 
 **📦 [View on NPM](https://www.npmjs.com/package/@kansnpms/console-log-pipe-client)**
@@ -67,7 +67,7 @@ npm install @kansnpms/console-log-pipe-client@2.3.0
 <script src="https://unpkg.com/@kansnpms/console-log-pipe-client"></script>
 
 <!-- Specific version -->
-<script src="https://unpkg.com/@kansnpms/console-log-pipe-client@2.3.0"></script>
+<script src="https://unpkg.com/@kansnpms/console-log-pipe-client@2.3.1"></script>
 ```
 
 ### Required CLI Server

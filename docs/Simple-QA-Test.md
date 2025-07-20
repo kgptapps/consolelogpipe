@@ -1,6 +1,6 @@
 # Console Log Pipe - Simple Quality Test
 
-**Version:** 2.3.0 **Test Duration:** 15 minutes **Status:** Production Ready ✅
+**Version:** 2.3.1 **Test Duration:** 15 minutes **Status:** Production Ready ✅
 
 ## 🎯 Quick Overview
 
@@ -17,7 +17,7 @@ npm install -g @kansnpms/console-log-pipe-cli
 
 # Verify installation
 clp --version
-# Expected: 2.3.0
+# Expected: 2.3.1
 ```
 
 ### Create Test Project
@@ -29,7 +29,7 @@ npm init -y
 
 # Install client packages
 npm install @kansnpms/console-log-pipe-client
-npm install @kansnpms/storage-pipe
+npm install @kansnpms/console-log-pipe-storage-beta
 ```
 
 ## 🧪 Core Tests (10 minutes)
@@ -47,7 +47,7 @@ npm install @kansnpms/storage-pipe
 **Expected Results:**
 
 - Help shows available commands
-- Version displays `2.3.0`
+- Version displays `2.3.1`
 - Server starts with message: "Console Log Pipe server started on port 3001"
 - No error messages
 
@@ -244,7 +244,7 @@ window.testStorage = function () {
 **Before marking as PASSED, verify:**
 
 - [ ] CLI installs without errors
-- [ ] Version shows 2.3.0
+- [ ] Version shows 2.3.1
 - [ ] Console logs stream to CLI terminal
 - [ ] Network requests are captured
 - [ ] Storage changes are monitored

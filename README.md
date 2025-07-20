@@ -24,11 +24,11 @@ requests from any browser application directly to your development environment.
 
 ## 📦 NPM Packages
 
-| Package                                                                                                  | Version                                                                                                                                       | Downloads                                                                                                                                            | Description                              |
-| -------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------- |
-| **[@kansnpms/console-log-pipe-cli](https://www.npmjs.com/package/@kansnpms/console-log-pipe-cli)**       | [![npm](https://img.shields.io/npm/v/@kansnpms/console-log-pipe-cli.svg)](https://www.npmjs.com/package/@kansnpms/console-log-pipe-cli)       | [![downloads](https://img.shields.io/npm/dt/@kansnpms/console-log-pipe-cli.svg)](https://www.npmjs.com/package/@kansnpms/console-log-pipe-cli)       | Global CLI tool for starting log servers |
-| **[@kansnpms/console-log-pipe-client](https://www.npmjs.com/package/@kansnpms/console-log-pipe-client)** | [![npm](https://img.shields.io/npm/v/@kansnpms/console-log-pipe-client.svg)](https://www.npmjs.com/package/@kansnpms/console-log-pipe-client) | [![downloads](https://img.shields.io/npm/dt/@kansnpms/console-log-pipe-client.svg)](https://www.npmjs.com/package/@kansnpms/console-log-pipe-client) | Browser client library for log streaming |
-| **[@kansnpms/storage-pipe](https://www.npmjs.com/package/@kansnpms/storage-pipe)**                       | [![npm](https://img.shields.io/npm/v/@kansnpms/storage-pipe.svg)](https://www.npmjs.com/package/@kansnpms/storage-pipe)                       | [![downloads](https://img.shields.io/npm/dt/@kansnpms/storage-pipe.svg)](https://www.npmjs.com/package/@kansnpms/storage-pipe)                       | Browser storage monitoring               |
+| Package                                                                                                              | Version                                                                                                                                                   | Downloads                                                                                                                                                        | Description                              |
+| -------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------- |
+| **[@kansnpms/console-log-pipe-cli](https://www.npmjs.com/package/@kansnpms/console-log-pipe-cli)**                   | [![npm](https://img.shields.io/npm/v/@kansnpms/console-log-pipe-cli.svg)](https://www.npmjs.com/package/@kansnpms/console-log-pipe-cli)                   | [![downloads](https://img.shields.io/npm/dt/@kansnpms/console-log-pipe-cli.svg)](https://www.npmjs.com/package/@kansnpms/console-log-pipe-cli)                   | Global CLI tool for starting log servers |
+| **[@kansnpms/console-log-pipe-client](https://www.npmjs.com/package/@kansnpms/console-log-pipe-client)**             | [![npm](https://img.shields.io/npm/v/@kansnpms/console-log-pipe-client.svg)](https://www.npmjs.com/package/@kansnpms/console-log-pipe-client)             | [![downloads](https://img.shields.io/npm/dt/@kansnpms/console-log-pipe-client.svg)](https://www.npmjs.com/package/@kansnpms/console-log-pipe-client)             | Browser client library for log streaming |
+| **[@kansnpms/console-log-pipe-storage-beta](https://www.npmjs.com/package/@kansnpms/console-log-pipe-storage-beta)** | [![npm](https://img.shields.io/npm/v/@kansnpms/console-log-pipe-storage-beta.svg)](https://www.npmjs.com/package/@kansnpms/console-log-pipe-storage-beta) | [![downloads](https://img.shields.io/npm/dt/@kansnpms/console-log-pipe-storage-beta.svg)](https://www.npmjs.com/package/@kansnpms/console-log-pipe-storage-beta) | Browser storage monitoring               |
 
 ### 🚀 Quick Installation
 
@@ -263,13 +263,13 @@ clp storage --port 3002
 #### 2. Install Storage Monitor Package
 
 ```bash
-npm install @kansnpms/storage-pipe
+npm install @kansnpms/console-log-pipe-storage-beta
 ```
 
 #### 3. Initialize Storage Monitoring
 
 ```javascript
-import StorageMonitor from '@kansnpms/storage-pipe';
+import StorageMonitor from '@kansnpms/console-log-pipe-storage-beta';
 
 // Initialize storage monitoring
 StorageMonitor.init({

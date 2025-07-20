@@ -99,13 +99,13 @@ console.log('Hello from browser!');
 
 ---
 
-### 3. Storage Pipe
+### 3. Console Log Pipe Storage Monitor
 
 **Browser storage monitoring for cookies, localStorage, sessionStorage, and IndexedDB**
 
-- **Package Name:** `@kansnpms/storage-pipe`
-- **Current Version:** `2.3.0`
-- **NPM Registry:** https://www.npmjs.com/package/@kansnpms/storage-pipe
+- **Package Name:** `@kansnpms/console-log-pipe-storage-beta`
+- **Current Version:** `2.3.1`
+- **NPM Registry:** https://www.npmjs.com/package/@kansnpms/console-log-pipe-storage-beta
 - **Repository:** https://github.com/kgptapps/consolelogpipe/tree/main/packages/storage-monitor
 - **Documentation:** [Storage README](../packages/storage-monitor/README.md)
 - **License:** MIT
