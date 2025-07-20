@@ -103,9 +103,9 @@ console.log('Hello from browser!');
 
 **Browser storage monitoring for cookies, localStorage, sessionStorage, and IndexedDB**
 
-- **Package Name:** `@kansnpms/console-log-pipe-storage-beta`
+- **Package Name:** `@kansnpms/storage-pipe`
 - **Current Version:** `2.3.1`
-- **NPM Registry:** https://www.npmjs.com/package/@kansnpms/console-log-pipe-storage-beta
+- **NPM Registry:** https://www.npmjs.com/package/@kansnpms/storage-pipe
 - **Repository:** https://github.com/kgptapps/consolelogpipe/tree/main/packages/storage-monitor
 - **Documentation:** [Storage README](../packages/storage-monitor/README.md)
 - **License:** MIT
@@ -185,7 +185,7 @@ localStorage.setItem('test', 'Storage changes stream too!');
 - **Client Downloads:**
   [![Client downloads](https://img.shields.io/npm/dt/@kansnpms/console-log-pipe-client.svg)](https://www.npmjs.com/package/@kansnpms/console-log-pipe-client)
 - **Storage Downloads:**
-  [![Storage downloads](https://img.shields.io/npm/dt/@kansnpms/console-log-pipe-storage-beta.svg)](https://www.npmjs.com/package/@kansnpms/console-log-pipe-storage-beta)
+  [![Storage downloads](https://img.shields.io/npm/dt/@kansnpms/storage-pipe.svg)](https://www.npmjs.com/package/@kansnpms/storage-pipe)
 
 ### Version Info
 
@@ -194,7 +194,7 @@ localStorage.setItem('test', 'Storage changes stream too!');
 - **Client Version:**
   [![npm version](https://img.shields.io/npm/v/@kansnpms/console-log-pipe-client.svg)](https://www.npmjs.com/package/@kansnpms/console-log-pipe-client)
 - **Storage Version:**
-  [![npm version](https://img.shields.io/npm/v/@kansnpms/console-log-pipe-storage-beta.svg)](https://www.npmjs.com/package/@kansnpms/console-log-pipe-storage-beta)
+  [![npm version](https://img.shields.io/npm/v/@kansnpms/storage-pipe.svg)](https://www.npmjs.com/package/@kansnpms/storage-pipe)
 
 ## 🔗 Useful Links
 
@@ -202,7 +202,7 @@ localStorage.setItem('test', 'Storage changes stream too!');
 
 - **CLI Package:** https://www.npmjs.com/package/@kansnpms/console-log-pipe-cli
 - **Client Package:** https://www.npmjs.com/package/@kansnpms/console-log-pipe-client
-- **Storage Package:** https://www.npmjs.com/package/@kansnpms/console-log-pipe-storage-beta
+- **Storage Package:** https://www.npmjs.com/package/@kansnpms/storage-pipe
 
 ### Documentation
 
@@ -223,7 +223,7 @@ Verify all packages are properly published:
 # Check package versions
 npm view @kansnpms/console-log-pipe-cli@beta version
 npm view @kansnpms/console-log-pipe-client@beta version
-npm view @kansnpms/console-log-pipe-storage-beta@beta version
+npm view @kansnpms/storage-pipe version
 
 # Expected output for all: 2.3.1
 ```

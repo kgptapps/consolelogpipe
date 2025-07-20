@@ -64,7 +64,7 @@ const monitor = await StorageMonitor.init({
 ### Basic Usage
 
 ```javascript
-import StorageMonitor from '@kansnpms/console-log-pipe-storage-beta';
+import StorageMonitor from '@kansnpms/storage-pipe';
 
 // Simple initialization
 const monitor = await StorageMonitor.init();
@@ -84,7 +84,7 @@ const monitor = await StorageMonitor.init({
 ### Advanced Configuration
 
 ```javascript
-import { ConsoleLogPipeStorage } from '@kansnpms/console-log-pipe-storage-beta';
+import { ConsoleLogPipeStorage } from '@kansnpms/storage-pipe';
 
 const storage = new ConsoleLogPipeStorage({
   serverPort: 3002,
@@ -110,7 +110,7 @@ storage.stop();
 ### Browser Script Tag Usage
 
 ```html
-<script src="https://unpkg.com/@kansnpms/console-log-pipe-storage-beta/dist/storage-monitor.umd.js"></script>
+<script src="https://unpkg.com/@kansnpms/storage-pipe/dist/storage-monitor.umd.js"></script>
 <script>
   // Initialize storage monitoring
   StorageMonitor.init({

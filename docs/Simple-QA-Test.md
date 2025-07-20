@@ -29,7 +29,7 @@ npm init -y
 
 # Install client packages
 npm install @kansnpms/console-log-pipe-client
-npm install @kansnpms/console-log-pipe-storage-beta
+npm install @kansnpms/storage-pipe
 ```
 
 ## 🧪 Core Tests (10 minutes)
@@ -149,7 +149,7 @@ window.testNetwork = function () {
 
 ```javascript
 // Add to script section
-import StorageMonitor from './node_modules/@kansnpms/console-log-pipe-storage-beta/dist/storage-monitor.umd.js';
+import StorageMonitor from './node_modules/@kansnpms/storage-pipe/dist/storage-monitor.umd.js';
 StorageMonitor.init({ serverPort: 3002 });
 
 window.testStorage = function () {

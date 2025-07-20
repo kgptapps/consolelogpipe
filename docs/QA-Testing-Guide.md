@@ -17,8 +17,7 @@ comprehensive testing procedures for the beta release.
 
 1. **CLI Tool** (`@kansnpms/console-log-pipe-cli@beta`) - Global command-line interface
 2. **Client Library** (`@kansnpms/console-log-pipe-client@beta`) - Browser integration library
-3. **Storage Monitor** (`@kansnpms/console-log-pipe-storage-beta@beta`) - Browser storage monitoring
-   (Beta)
+3. **Storage Monitor** (`@kansnpms/storage-pipe`) - Browser storage monitoring
 
 ### Key Features
 
@@ -47,8 +46,8 @@ npm install -g @kansnpms/console-log-pipe-cli@beta
 # Install client library for web applications
 npm install @kansnpms/console-log-pipe-client@beta
 
-# Install storage monitor (optional beta feature)
-npm install @kansnpms/console-log-pipe-storage-beta@beta
+# Install storage monitor (optional)
+npm install @kansnpms/storage-pipe
 ```
 
 ### Verification Commands
@@ -254,7 +253,7 @@ clp --help
 
 **Steps:**
 
-1. Install storage monitor: `npm install @kansnpms/console-log-pipe-storage-beta@beta`
+1. Install storage monitor: `npm install @kansnpms/storage-pipe`
 2. Verify CLI recognizes storage command: `clp storage --help`
 3. Check package dependencies are satisfied
 
@@ -279,7 +278,7 @@ clp --help
 <button onclick="testStorage()">Test Storage Operations</button>
 
 <script type="module">
-  import StorageMonitor from './node_modules/@kansnpms/console-log-pipe-storage-beta/dist/storage-monitor.umd.js';
+  import StorageMonitor from './node_modules/@kansnpms/storage-pipe/dist/storage-monitor.umd.js';
 
   await StorageMonitor.init({ serverPort: 3002 });
 
@@ -523,7 +522,7 @@ For rapid validation, complete these essential tests first:
 ### ✅ 10-Minute Core Feature Test
 
 1. Complete 5-minute smoke test
-2. **Install Storage Monitor:** `npm install @kansnpms/console-log-pipe-storage-beta@beta`
+2. **Install Storage Monitor:** `npm install @kansnpms/storage-pipe`
 3. **Test Storage Monitoring:** `clp storage --port 3002`
 4. **Multi-Port Test:** Run both servers simultaneously
 5. **Error Handling:** Test invalid port, verify error messages
@@ -546,7 +545,7 @@ cd clp-qa-test
 echo "Installing packages..."
 npm init -y
 npm install @kansnpms/console-log-pipe-client@beta
-npm install @kansnpms/console-log-pipe-storage-beta@beta
+npm install @kansnpms/storage-pipe
 
 # Create test HTML file
 cat > test.html << 'EOF'
@@ -675,7 +674,7 @@ cat > test.html << 'EOF'
     <!-- Storage Monitor Integration -->
     <script type="module">
         try {
-            const StorageMonitor = await import('./node_modules/@kansnpms/console-log-pipe-storage-beta/dist/storage-monitor.umd.js');
+            const StorageMonitor = await import('./node_modules/@kansnpms/storage-pipe/dist/storage-monitor.umd.js');
             await StorageMonitor.default.init({ serverPort: 3002 });
             console.log('🍪 Storage Monitor initialized for QA testing');
         } catch (error) {
@@ -710,7 +709,7 @@ Set-Location "clp-qa-test"
 Write-Host "Installing packages..." -ForegroundColor Yellow
 npm init -y
 npm install @kansnpms/console-log-pipe-client@beta
-npm install @kansnpms/console-log-pipe-storage-beta@beta
+npm install @kansnpms/storage-pipe
 
 Write-Host "✅ Test environment setup complete!" -ForegroundColor Green
 Write-Host "Run the bash script content above to create test.html file" -ForegroundColor Yellow
@@ -754,6 +753,6 @@ first **Command:** `clp storage --port 3002` before loading web page
 
 ---
 
-**Document Version:** 1.0 **Last Updated:** July 19, 2025 **Tester Name:**
-****\*\*****\_****\*\***** **Date Completed:** **\*\*\*\***\_\_\_**\*\*\*\*** **Signature:**
-****\*\*****\_\_\_****\*\*****
+**Document Version:** 1.0 **Last Updated:** July 19, 2025 **Tester
+Name:** \***\*\*\*\*\***\_\***\*\*\*\*\*** **Date Completed:** **\*\*\*\***\_\_\_**\*\*\*\***
+**Signature:** \***\*\*\*\*\***\_\_\_\***\*\*\*\*\***

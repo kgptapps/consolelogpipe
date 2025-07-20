@@ -36,10 +36,10 @@ All packages are published and ready for installation:
 
 ### 3. Storage Monitor (Optional)
 
-- **Package:** `@kansnpms/console-log-pipe-storage-beta`
+- **Package:** `@kansnpms/storage-pipe`
 - **Version:** `2.3.1`
-- **NPM:** https://www.npmjs.com/package/@kansnpms/console-log-pipe-storage-beta
-- **Install:** `npm install @kansnpms/console-log-pipe-storage-beta`
+- **NPM:** https://www.npmjs.com/package/@kansnpms/storage-pipe
+- **Install:** `npm install @kansnpms/storage-pipe`
 
 ## 🛠️ Installation Guide
 
@@ -66,7 +66,7 @@ npm install @kansnpms/console-log-pipe-client
 # Install all packages
 npm install -g @kansnpms/console-log-pipe-cli
 npm install @kansnpms/console-log-pipe-client
-npm install @kansnpms/console-log-pipe-storage-beta
+npm install @kansnpms/storage-pipe
 
 # Start console log server
 clp start --port 3001
@@ -132,7 +132,7 @@ clp --version                # Show version
 
 - **CLI Package:** https://www.npmjs.com/package/@kansnpms/console-log-pipe-cli
 - **Client Package:** https://www.npmjs.com/package/@kansnpms/console-log-pipe-client
-- **Storage Package:** https://www.npmjs.com/package/@kansnpms/console-log-pipe-storage-beta
+- **Storage Package:** https://www.npmjs.com/package/@kansnpms/storage-pipe
 
 ## 🎯 Usage Examples
 
@@ -154,8 +154,8 @@ console.warn('Warning message');
 ### Storage Monitoring
 
 ```javascript
-// Install: npm install @kansnpms/console-log-pipe-storage-beta@beta
-import StorageMonitor from '@kansnpms/console-log-pipe-storage-beta';
+// Install: npm install @kansnpms/storage-pipe
+import StorageMonitor from '@kansnpms/storage-pipe';
 
 // Initialize (requires CLI storage server running on port 3002)
 StorageMonitor.init({ serverPort: 3002 });
@@ -188,7 +188,7 @@ document.cookie = 'test=value';
 # Verify packages are published
 npm view @kansnpms/console-log-pipe-cli version
 npm view @kansnpms/console-log-pipe-client version
-npm view @kansnpms/console-log-pipe-storage-beta version
+npm view @kansnpms/storage-pipe version
 
 # Expected output: 2.3.1
 ```
