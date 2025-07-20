@@ -125,11 +125,15 @@ update_file() {
     else
         local before_count=$(grep -E "$pattern" "$file" 2>/dev/null | wc -l || echo "0")
         before_count=$(echo "$before_count" | tr -d ' ')
-        sed -i.bak "s|$pattern|$replacement|g" "$file"
 
         if [[ "$before_count" -gt 0 ]]; then
+            # Use different approach for macOS vs Linux sed
+            if [[ "$OSTYPE" == "darwin"* ]]; then
+                sed -i '' "s|$pattern|$replacement|g" "$file"
+            else
+                sed -i "s|$pattern|$replacement|g" "$file"
+            fi
             print_success "Updated $file: $description ($before_count matches)"
-            rm -f "$file.bak"
         fi
     fi
 }
