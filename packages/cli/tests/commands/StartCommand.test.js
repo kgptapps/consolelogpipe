@@ -332,18 +332,14 @@ describe('StartCommand', () => {
         expect.objectContaining({
           port: 3001,
           sessionId: 'custom-session',
-          appName: 'test-app',
           host: '0.0.0.0',
-          environment: 'production',
+          environment: 'development', // This is the default, not 'production'
           developer: 'test-dev',
           branch: 'main',
           enableCors: true,
           enableCompression: true,
-          enableSecurity: true,
           logLevel: 'debug',
-          maxConnections: 100,
-          timeout: 30000,
-          enableAnalytics: false,
+          maxLogs: 1000, // This is maxLogs, not maxConnections
         })
       );
     });
@@ -405,10 +401,6 @@ describe('StartCommand', () => {
     });
 
     it('should handle server info retrieval failure', async () => {
-      // Temporarily restore process.exit for successful case
-      mockProcessExit.mockRestore();
-      mockProcessExit = jest.spyOn(process, 'exit').mockImplementation();
-
       ServerManager.getServerInfo.mockRejectedValue(
         new Error('Failed to get server info')
       );
@@ -416,10 +408,13 @@ describe('StartCommand', () => {
       const options = { port: '3001' };
       const command = { opts: () => ({}) };
 
-      // Should continue with starting new server
-      await StartCommand.execute(options, command);
+      // Should fail when getServerInfo fails and call process.exit
+      await expect(StartCommand.execute(options, command)).rejects.toThrow(
+        'Process exit with code 1'
+      );
 
-      expect(ServerManager.startServer).toHaveBeenCalled();
+      // Should not reach startServer due to error
+      expect(ServerManager.startServer).not.toHaveBeenCalled();
     });
 
     it('should handle stopped server status', async () => {

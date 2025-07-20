@@ -1,35 +1,29 @@
 # @kansnpms/storage-pipe
 
-![Storage Pipe](https://raw.githubusercontent.com/kgptapps/consolelogpipe/main/images/KansStoragePipe.png)
-
-[![npm version](https://badge.fury.io/js/@kansnpms%2Fstorage-pipe.svg)](https://www.npmjs.com/package/@kansnpms/storage-pipe)
+[![npm version](https://img.shields.io/npm/v/@kansnpms/storage-pipe.svg)](https://www.npmjs.com/package/@kansnpms/storage-pipe)
 [![npm downloads](https://img.shields.io/npm/dt/@kansnpms/storage-pipe.svg)](https://www.npmjs.com/package/@kansnpms/storage-pipe)
-[![npm downloads/month](https://img.shields.io/npm/dm/@kansnpms/storage-pipe.svg)](https://www.npmjs.com/package/@kansnpms/storage-pipe)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![CI](https://github.com/kgptapps/consolelogpipe/actions/workflows/ci.yml/badge.svg)](https://github.com/kgptapps/consolelogpipe/actions/workflows/ci.yml)
+[![Code Quality](https://github.com/kgptapps/consolelogpipe/actions/workflows/code-quality.yml/badge.svg)](https://github.com/kgptapps/consolelogpipe/actions/workflows/code-quality.yml)
+[![license: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-**Status:** ✅ Production Release | **🤖 AI-Friendly Development Tool**
+> **AI‑Friendly storage monitoring client** – track real‑time changes to cookies, `localStorage`,
+> `sessionStorage`, and IndexedDB from your web applications directly to your **Console Log Pipe
+> CLI**. Perfect for **AI coding assistants** debugging storage‑related issues.
 
-🍪 **🤖 Designed for AI Coding Assistants:** Real-time browser storage and cookies monitoring for
-development and debugging. Perfect for AI-assisted development workflows.
+---
 
-## 🤖 AI Coding Assistant Integration
+## ✨ Highlights
 
-**This storage monitoring tool is specifically designed for AI coding assistants** to provide
-comprehensive browser storage debugging. Features include:
+| Feature                          | Description                                                                    |
+| -------------------------------- | ------------------------------------------------------------------------------ |
+| **Real‑time storage monitoring** | Track cookies, localStorage, sessionStorage, IndexedDB changes as they happen. |
+| **WebSocket streaming**          | <10 ms latency from browser storage changes to CLI terminal.                   |
+| **AI‑optimised JSON format**     | Storage changes formatted as structured JSON for effortless AI parsing.        |
+| **Multi‑storage support**        | Monitor all browser storage APIs in one unified interface.                     |
+| **Session isolation**            | Each browser tab/app gets unique sessionId for organized storage debugging.    |
+| **Configurable monitoring**      | Enable/disable specific storage types and adjust polling intervals.            |
 
-- **Real-time storage change detection** for AI analysis
-- **Structured JSON data format** for easy AI parsing
-- **Cookie, localStorage, sessionStorage monitoring** for complete visibility
-- **WebSocket-based real-time updates** for instant AI feedback
-- **Color-coded CLI output** for AI-friendly categorization
-
-## 📦 Package Information
-
-- **Package Name:** `@kansnpms/storage-pipe`
-- **NPM Registry:** https://www.npmjs.com/package/@kansnpms/storage-pipe
-- **Repository:** https://github.com/kgptapps/consolelogpipe
-- **License:** MIT
-- **Status:** Production - Stable and ready for use
+---
 
 ## 🚀 Quick Start
 

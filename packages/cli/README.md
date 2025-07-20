@@ -1,102 +1,91 @@
 # @kansnpms/console-log-pipe-cli
 
-![Console Log Pipe CLI](https://raw.githubusercontent.com/kgptapps/consolelogpipe/main/images/KansCLIConsoleStorage.png)
-
 [![npm version](https://img.shields.io/npm/v/@kansnpms/console-log-pipe-cli.svg)](https://www.npmjs.com/package/@kansnpms/console-log-pipe-cli)
 [![npm downloads](https://img.shields.io/npm/dt/@kansnpms/console-log-pipe-cli.svg)](https://www.npmjs.com/package/@kansnpms/console-log-pipe-cli)
-[![npm downloads/month](https://img.shields.io/npm/dm/@kansnpms/console-log-pipe-cli.svg)](https://www.npmjs.com/package/@kansnpms/console-log-pipe-cli)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![CI](https://github.com/kgptapps/consolelogpipe/actions/workflows/ci.yml/badge.svg)](https://github.com/kgptapps/consolelogpipe/actions/workflows/ci.yml)
+[![Code Quality](https://github.com/kgptapps/consolelogpipe/actions/workflows/code-quality.yml/badge.svg)](https://github.com/kgptapps/consolelogpipe/actions/workflows/code-quality.yml)
+[![license: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-**Status:** ✅ Production Release | **🤖 AI-Friendly Development Tool**
+> **AI‑Friendly CLI server** – receive real‑time browser console logs, errors, network traffic, and
+> storage changes from your web applications directly in your terminal. Perfect for **AI coding
+> assistants** and developers who want instant debugging feedback.
 
-> **Designed for AI Coding Assistants:** Global CLI tool for Console Log Pipe - Stream browser
-> console logs and storage changes to your terminal in real-time. Perfect for AI-assisted
-> development workflows.
+---
 
-## 🤖 AI Coding Assistant Integration
+## ✨ Highlights
 
-**This tool is specifically designed for AI coding assistants** to provide real-time browser
-debugging capabilities. Perfect for:
+| Feature                          | Description                                                                          |
+| -------------------------------- | ------------------------------------------------------------------------------------ |
+| **Global CLI installation**      | Install once, use everywhere → `npm i -g @kansnpms/console-log-pipe-cli`             |
+| **Real‑time WebSocket server**   | <10 ms latency from browser to terminal on typical localhost.                        |
+| **Multi‑application monitoring** | Run multiple CLI instances on different ports for isolated app debugging.            |
+| **AI‑optimised terminal output** | Structured, colorized logs designed for effortless AI parsing and human readability. |
+| **Storage + Network capture**    | Monitor cookies, localStorage, sessionStorage, and network requests in real‑time.    |
+| **Session isolation**            | Each browser tab/app gets unique sessionId for organized debugging.                  |
 
-- **AI-assisted development workflows**
-- **Real-time debugging with AI tools**
-- **Automated testing and monitoring**
-- **AI-driven development environments**
+---
 
-## 📦 Package Information
-
-- **Package Name:** `@kansnpms/console-log-pipe-cli`
-- **NPM Registry:** https://www.npmjs.com/package/@kansnpms/console-log-pipe-cli
-- **Repository:** https://github.com/kgptapps/consolelogpipe
-- **License:** MIT
-
-Global CLI tool for Console Log Pipe - Real-time log streaming from browsers to developers.
-
-## 🚀 Quick Start
-
-### 1. Install globally
+## 📦 Installation
 
 ```bash
-# Install latest stable version (recommended)
-npm install -g @kansnpms/console-log-pipe-cli
+# Install globally – use anywhere
+npm  i -g @kansnpms/console-log-pipe-cli
 
 # Verify installation
 clp --version
 ```
 
-**📦 [View on NPM](https://www.npmjs.com/package/@kansnpms/console-log-pipe-cli)**
+> **Companion client** – you'll also need the browser client:
+>
+> ```bash
+> npm  i  @kansnpms/console-log-pipe-client    # for your web app
+> ```
 
-### Related Packages
+---
 
-You'll also need the client library for your web applications:
-
-```bash
-# Client library for browser integration
-npm install @kansnpms/console-log-pipe-client
-
-# Storage monitor (optional)
-npm install @kansnpms/storage-pipe
-```
-
-**📦 Package Links:**
-
-- **Client Library:** https://www.npmjs.com/package/@kansnpms/console-log-pipe-client
-- **Storage Monitor:** https://www.npmjs.com/package/@kansnpms/storage-pipe
-
-### 2. Start monitoring
+## 🚀 Quick Start
 
 ```bash
-# Start server (port is required)
-# Monitoring happens automatically - logs appear in real-time
+# 1. Start the CLI server
 clp start --port 3001
 
-# Stop with Ctrl+C when done
+# 2. Add client to your web app
+npm install @kansnpms/console-log-pipe-client
+
+# 3. Initialize in your app
+import ConsoleLogPipe from '@kansnpms/console-log-pipe-client';
+ConsoleLogPipe.init({ port: 3001 });
+
+# 4. Watch logs stream to your terminal! 📡
 ```
 
-### 3. Add to your web application
+---
 
-**From NPM (Recommended):**
+## ⚙️ CLI Commands
+
+### `clp start --port <port>`
+
+Start the WebSocket server and begin monitoring. **Port is required.**
 
 ```bash
-npm install @kansnpms/console-log-pipe-client
+# Basic usage
+clp start --port 3001
+
+# With options
+clp start --port 3001 --developer "alice" --env production
 ```
 
-```javascript
-import ConsoleLogPipe from '@kansnpms/console-log-pipe-client';
+**Options:**
 
-ConsoleLogPipe.init({
-  port: 3001, // Required: Must match CLI server port
-});
-```
-
-> **⚠️ Critical Dependency**: CLI and Client are **mutually dependent**:
->
-> - **CLI depends on Client**: This CLI server is useless without the client library in your web app
-> - **Client depends on CLI**: The client library requires this CLI server to be running
-> - CLI server requires `--port` parameter (mandatory)
-> - Client library requires `port` parameter (mandatory)
-> - Port must match exactly: `clp start --port 3001`
-> - **Neither package works without the other**
+| Option         | Type                                         | Default       | Notes                                          |
+| -------------- | -------------------------------------------- | ------------- | ---------------------------------------------- |
+| `--port, -p`   | `number`                                     | **required**  | WebSocket server port (1024-65535).            |
+| `--host`       | `string`                                     | `localhost`   | Server host binding.                           |
+| `--env`        | `"development" \| "staging" \| "production"` | `development` | Environment context.                           |
+| `--developer`  | `string`                                     | –             | Developer name for session identification.     |
+| `--log-level`  | `"debug" \| "info" \| "warn" \| "error"`     | `debug`       | Minimum log level to display.                  |
+| `--max-logs`   | `number`                                     | `1000`        | Maximum logs to store in memory.               |
+| `--session-id` | `string`                                     | auto          | Custom session ID (auto-generated if omitted). |
 
 ## 📋 Commands
 
