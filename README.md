@@ -17,7 +17,7 @@
 [![GitHub issues](https://img.shields.io/github/issues/kgptapps/consolelogpipe.svg)](https://github.com/kgptapps/consolelogpipe/issues)
 [![GitHub stars](https://img.shields.io/github/stars/kgptapps/consolelogpipe.svg)](https://github.com/kgptapps/consolelogpipe/stargazers)
 
-**Current Version:** `2.3.0` | **Status:** ✅ Production Release
+**Current Version:** `2.3.1` | **Status:** ✅ Production Release
 
 Real-time log streaming from browsers to developers. Stream console logs, errors, and network
 requests from any browser application directly to your development environment.
