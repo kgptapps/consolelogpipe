@@ -21,7 +21,7 @@ Console Log Pipe consists of 3 main packages, all synchronized at version `2.3.0
 **Global command-line tool for starting log servers**
 
 - **Package Name:** `@kansnpms/console-log-pipe-cli`
-- **Current Version:** `2.3.0`
+- **Current Version:** `2.3.1`
 - **NPM Registry:** https://www.npmjs.com/package/@kansnpms/console-log-pipe-cli
 - **Repository:** https://github.com/kgptapps/consolelogpipe/tree/main/packages/cli
 - **Documentation:** [CLI README](../packages/cli/README.md)
@@ -58,7 +58,7 @@ clp --version                # Show version
 **Browser library for streaming console logs and network requests**
 
 - **Package Name:** `@kansnpms/console-log-pipe-client`
-- **Current Version:** `2.3.0`
+- **Current Version:** `2.3.1`
 - **NPM Registry:** https://www.npmjs.com/package/@kansnpms/console-log-pipe-client
 - **Repository:** https://github.com/kgptapps/consolelogpipe/tree/main/packages/client
 - **Documentation:** [Client README](../packages/client/README.md)
