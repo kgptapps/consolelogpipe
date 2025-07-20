@@ -6,8 +6,16 @@ const express = require('express');
 const http = require('http');
 const WebSocket = require('ws');
 const cors = require('cors');
-const compression = require('compression');
 const helmet = require('helmet');
+
+// Optional compression - handle gracefully if not available
+let compression;
+try {
+  compression = require('compression');
+} catch (error) {
+  console.warn('Compression middleware not available:', error.message);
+  compression = null;
+}
 const path = require('path');
 const ConfigManager = require('../utils/ConfigManager');
 
@@ -39,9 +47,11 @@ class ServerManager {
       })
     );
 
-    // Enable compression if configured
-    if (config.enableCompression) {
+    // Enable compression if configured and available
+    if (config.enableCompression && compression) {
       app.use(compression());
+    } else if (config.enableCompression && !compression) {
+      console.warn('Compression requested but not available');
     }
 
     // Enable CORS if configured
@@ -507,7 +517,7 @@ class ServerManager {
         <p><strong>Port:</strong> ${config.port} <span class="status">Running</span></p>
         <p><strong>Session ID:</strong> ${config.sessionId}</p>
         <p><strong>Environment:</strong> ${config.environment}</p>
-        
+
         <div class="info-grid">
             <div class="info-card">
                 <h3>Total Logs</h3>
