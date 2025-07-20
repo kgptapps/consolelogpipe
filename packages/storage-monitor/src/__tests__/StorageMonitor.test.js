@@ -11,6 +11,7 @@ global.WebSocket = class MockWebSocket {
     this.onclose = null;
     this.onerror = null;
     this.onmessage = null;
+    this.sentMessages = []; // Initialize immediately
 
     // Simulate connection after a short delay
     setTimeout(() => {
@@ -21,7 +22,6 @@ global.WebSocket = class MockWebSocket {
   send(data) {
     this.lastSentMessage = JSON.parse(data);
     // Store all sent messages for testing
-    if (!this.sentMessages) this.sentMessages = [];
     this.sentMessages.push(JSON.parse(data));
   }
 
@@ -30,6 +30,10 @@ global.WebSocket = class MockWebSocket {
     if (this.onclose) this.onclose();
   }
 };
+
+// Add WebSocket constants
+global.WebSocket.OPEN = 1;
+global.WebSocket.CLOSED = 3;
 
 // Mock browser storage APIs
 global.localStorage = {
@@ -308,13 +312,12 @@ describe('StorageMonitor', () => {
     });
 
     test('should intercept localStorage.setItem', () => {
-      const originalSetItem = localStorage.setItem;
+      // Get the original method from the monitor's stored reference
+      const originalSetItem = monitor.originalMethods['localStorage_setItem'];
 
-      // Manually trigger interception (since init() starts monitoring)
-      monitor._interceptStorageMethod('localStorage', 'setItem');
-
-      // Verify interception is active
+      // Verify interception is active (method should be different from original)
       expect(localStorage.setItem).not.toBe(originalSetItem);
+      expect(originalSetItem).toBeDefined();
 
       // Test that original functionality still works
       localStorage.setItem('intercepted_key', 'intercepted_value');
@@ -322,11 +325,12 @@ describe('StorageMonitor', () => {
     });
 
     test('should restore original methods on stop', () => {
-      const originalSetItem = localStorage.setItem;
-      monitor._interceptStorageMethod('localStorage', 'setItem');
+      // Get the original method from the monitor's stored reference
+      const originalSetItem = monitor.originalMethods['localStorage_setItem'];
 
-      // Verify interception
+      // Verify interception is active
       expect(localStorage.setItem).not.toBe(originalSetItem);
+      expect(originalSetItem).toBeDefined();
 
       // Stop monitoring
       monitor.stop();

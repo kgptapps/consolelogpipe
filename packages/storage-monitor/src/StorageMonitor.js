@@ -521,7 +521,11 @@ class StorageMonitor {
    * Intercept storage methods for real-time monitoring
    */
   _interceptStorageMethod(storageType, methodName) {
-    const storage = window[storageType];
+    // Support both browser and test environments
+    const storage =
+      (typeof window !== 'undefined'
+        ? window[storageType]
+        : global[storageType]) || global[storageType];
     if (!storage) return;
 
     const originalMethod = storage[methodName];
@@ -558,7 +562,11 @@ class StorageMonitor {
   _restoreOriginalMethods() {
     Object.keys(this.originalMethods).forEach(key => {
       const [storageType, methodName] = key.split('_');
-      const storage = window[storageType];
+      // Support both browser and test environments
+      const storage =
+        (typeof window !== 'undefined'
+          ? window[storageType]
+          : global[storageType]) || global[storageType];
       if (storage && this.originalMethods[key]) {
         storage[methodName] = this.originalMethods[key];
       }
