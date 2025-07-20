@@ -7,6 +7,8 @@
 [![Code Quality](https://github.com/kgptapps/consolelogpipe/actions/workflows/code-quality.yml/badge.svg)](https://github.com/kgptapps/consolelogpipe/actions/workflows/code-quality.yml)
 [![license: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
+![Console Log Pipe Client](https://raw.githubusercontent.com/kgptapps/consolelogpipe/main/images/KansBrowserMirrorAgents.png)
+
 > **AI‑Friendly browser logging client** – stream console output, errors, network traffic,
 > `localStorage` / `sessionStorage` changes and cookies to your local **Console Log Pipe CLI** so an
 > **AI coding assistant** (or a human!) can debug your application without ever opening DevTools.

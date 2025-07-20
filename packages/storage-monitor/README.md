@@ -6,6 +6,8 @@
 [![Code Quality](https://github.com/kgptapps/consolelogpipe/actions/workflows/code-quality.yml/badge.svg)](https://github.com/kgptapps/consolelogpipe/actions/workflows/code-quality.yml)
 [![license: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
+![Storage Pipe](https://raw.githubusercontent.com/kgptapps/consolelogpipe/main/images/KansBrowserMirrorAgents.png)
+
 > **AI‑Friendly storage monitoring client** – track real‑time changes to cookies, `localStorage`,
 > `sessionStorage`, and IndexedDB from your web applications directly to your **Console Log Pipe
 > CLI**. Perfect for **AI coding assistants** debugging storage‑related issues.

@@ -6,6 +6,8 @@
 [![Code Quality](https://github.com/kgptapps/consolelogpipe/actions/workflows/code-quality.yml/badge.svg)](https://github.com/kgptapps/consolelogpipe/actions/workflows/code-quality.yml)
 [![license: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
+![Console Log Pipe CLI](https://raw.githubusercontent.com/kgptapps/consolelogpipe/main/images/KansBrowserMirrorAgents.png)
+
 > **AI‑Friendly CLI server** – receive real‑time browser console logs, errors, network traffic, and
 > storage changes from your web applications directly in your terminal. Perfect for **AI coding
 > assistants** and developers who want instant debugging feedback.
