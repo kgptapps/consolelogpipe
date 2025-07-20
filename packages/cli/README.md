@@ -132,7 +132,7 @@ clp start --port 3001 --max-logs 500 --host localhost
 - `--enable-compression` - Enable gzip compression (default: true)
 - `--enable-cors` - Enable CORS (default: true)
 
-### `clp storage --port <port>` (Beta)
+### `clp storage --port <port>`
 
 Start Storage Monitor service for real-time browser storage and cookies monitoring.
 

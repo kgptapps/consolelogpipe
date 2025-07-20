@@ -1,6 +1,6 @@
 {
   "name": "console-log-pipe-monorepo",
-  "version": "2.3.7",
+  "version": "2.3.8",
   "description": "Browser Console Log Pipe - Real-time log streaming from browsers to developers",
   "private": true,
   "repository": {
@@ -28,6 +28,7 @@
   "scripts": {
     "bootstrap": "lerna bootstrap",
     "build": "lerna run build",
+    "sync-versions": "node scripts/sync-versions.js",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",

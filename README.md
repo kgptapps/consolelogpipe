@@ -6,10 +6,10 @@
 [![npm version](https://img.shields.io/npm/v/@kansnpms/console-log-pipe-client.svg)](https://www.npmjs.com/package/@kansnpms/console-log-pipe-client)
 [![CLI downloads](https://img.shields.io/npm/dt/@kansnpms/console-log-pipe-cli.svg?label=CLI%20downloads)](https://www.npmjs.com/package/@kansnpms/console-log-pipe-cli)
 [![Client downloads](https://img.shields.io/npm/dt/@kansnpms/console-log-pipe-client.svg?label=Client%20downloads)](https://www.npmjs.com/package/@kansnpms/console-log-pipe-client)
-[![Storage downloads](https://img.shields.io/npm/dt/@kansnpms/console-log-pipe-storage-beta.svg?label=Storage%20downloads)](https://www.npmjs.com/package/@kansnpms/console-log-pipe-storage-beta)
+[![Storage downloads](https://img.shields.io/npm/dt/@kansnpms/storage-pipe.svg?label=Storage%20downloads)](https://www.npmjs.com/package/@kansnpms/storage-pipe)
 [![CLI monthly](https://img.shields.io/npm/dm/@kansnpms/console-log-pipe-cli.svg?label=CLI%20monthly)](https://www.npmjs.com/package/@kansnpms/console-log-pipe-cli)
 [![Client monthly](https://img.shields.io/npm/dm/@kansnpms/console-log-pipe-client.svg?label=Client%20monthly)](https://www.npmjs.com/package/@kansnpms/console-log-pipe-client)
-[![Storage monthly](https://img.shields.io/npm/dm/@kansnpms/console-log-pipe-storage-beta.svg?label=Storage%20monthly)](https://www.npmjs.com/package/@kansnpms/console-log-pipe-storage-beta)
+[![Storage monthly](https://img.shields.io/npm/dm/@kansnpms/storage-pipe.svg?label=Storage%20monthly)](https://www.npmjs.com/package/@kansnpms/storage-pipe)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Node.js Version](https://img.shields.io/node/v/@kansnpms/console-log-pipe-client.svg)](https://nodejs.org/)
 [![Coverage Status](https://img.shields.io/badge/coverage-83.45%25-brightgreen.svg)](https://github.com/kgptapps/consolelogpipe/actions/workflows/ci.yml)
@@ -140,14 +140,14 @@ Context: This is a React e-commerce app with a Node.js backend.
 - **Configuration Management**: Persistent server and global settings
 - **Cross-Platform Support**: macOS, Windows, Linux compatibility
 
-## 🍪 Storage Monitor (Beta)
+## 🍪 Storage Monitor
 
 **NEW**: Real-time browser storage and cookies monitoring for enhanced debugging!
 
 - **🍪 Cookie Monitoring**: Track cookie creation, modification, and deletion in real-time
 - **💾 localStorage Tracking**: Monitor localStorage changes with automatic detection
 - **🔄 sessionStorage Monitoring**: Live updates for session data modifications
-- **🗃️ IndexedDB Support**: Basic IndexedDB operation tracking (beta)
+- **🗃️ IndexedDB Support**: Basic IndexedDB operation tracking
 - **📡 Real-time Updates**: WebSocket-based instant change notifications
 - **🎯 AI-Friendly Data**: Structured JSON format perfect for AI development tools
 - **🌈 Color-coded CLI**: Green for additions, yellow for modifications, red for deletions
@@ -262,13 +262,13 @@ clp storage --port 3002
 #### 2. Install Storage Monitor Package
 
 ```bash
-npm install @kansnpms/console-log-pipe-storage-beta
+npm install @kansnpms/storage-pipe
 ```
 
 #### 3. Initialize Storage Monitoring
 
 ```javascript
-import StorageMonitor from '@kansnpms/console-log-pipe-storage-beta';
+import StorageMonitor from '@kansnpms/storage-pipe';
 
 // Initialize storage monitoring
 StorageMonitor.init({

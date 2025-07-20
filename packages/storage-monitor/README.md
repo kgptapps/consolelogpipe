@@ -54,7 +54,7 @@ const monitor = await StorageMonitor.init({
 - **🍪 Cookie Monitoring**: Real-time tracking of cookie changes (add, modify, delete)
 - **💾 localStorage Monitoring**: Automatic detection of localStorage changes
 - **🔄 sessionStorage Monitoring**: Live updates for sessionStorage modifications
-- **🗃️ IndexedDB Monitoring**: Basic IndexedDB operation tracking (beta)
+- **🗃️ IndexedDB Monitoring**: Basic IndexedDB operation tracking
 - **📡 Real-time Updates**: WebSocket-based instant change notifications
 - **🎯 AI-Friendly**: Structured data format perfect for AI development tools
 - **🔧 Configurable**: Customizable polling intervals and feature toggles
@@ -110,7 +110,7 @@ storage.stop();
 ### Browser Script Tag Usage
 
 ```html
-<script src="https://unpkg.com/@kansnpms/console-log-pipe-storage-beta/dist/storage-monitor.umd.js"></script>
+<script src="https://unpkg.com/@kansnpms/storage-pipe/dist/storage-monitor.umd.js"></script>
 <script>
   // Initialize storage monitoring
   StorageMonitor.init({
@@ -267,9 +267,9 @@ curl http://localhost:3002/api/storage/state
 
 ## 📝 Changelog
 
-### v0.1.0 (Beta)
+### v2.3.7
 
-- Initial beta release
+- Production release
 - Cookie monitoring with real-time change detection
 - localStorage and sessionStorage monitoring
 - Basic IndexedDB support
@@ -279,7 +279,7 @@ curl http://localhost:3002/api/storage/state
 
 ## 🤝 Contributing
 
-This is a beta feature of Console Log Pipe. Feedback and contributions welcome!
+This is a production feature of Console Log Pipe. Feedback and contributions welcome!
 
 ## 📄 License
 

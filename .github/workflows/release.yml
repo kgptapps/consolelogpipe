@@ -75,41 +75,34 @@ jobs:
       - name: Build packages
         run: npm run build
 
-      - name: Detect Beta Release
-        id: detect-beta
+      - name: Set Release Type
+        id: release-type
         run: |
-          if [[ "${{ github.ref_name }}" == *"beta"* ]]; then
-            echo "is_beta=true" >> $GITHUB_OUTPUT
-            echo "npm_tag=beta" >> $GITHUB_OUTPUT
-            echo "🔍 Beta release detected"
-          else
-            echo "is_beta=false" >> $GITHUB_OUTPUT
-            echo "npm_tag=latest" >> $GITHUB_OUTPUT
-            echo "🔍 Production release detected"
-          fi
+          echo "npm_tag=latest" >> $GITHUB_OUTPUT
+          echo "🔍 Production release detected"
 
       - name: Publish to NPM
         run: |
           echo "Publishing packages to NPM..."
-          echo "Release type: ${{ steps.detect-beta.outputs.is_beta == 'true' && 'BETA' || 'PRODUCTION' }}"
-          echo "NPM tag: ${{ steps.detect-beta.outputs.npm_tag }}"
+          echo "Release type: PRODUCTION"
+          echo "NPM tag: ${{ steps.release-type.outputs.npm_tag }}"
 
           # Publish client package
           cd packages/client
-          npm publish --access public --tag ${{ steps.detect-beta.outputs.npm_tag }}
-          echo "✅ Published @kansnpms/console-log-pipe-client@${{ github.ref_name }} with tag: ${{ steps.detect-beta.outputs.npm_tag }}"
+          npm publish --access public --tag ${{ steps.release-type.outputs.npm_tag }}
+          echo "✅ Published @kansnpms/console-log-pipe-client@${{ github.ref_name }} with tag: ${{ steps.release-type.outputs.npm_tag }}"
           cd ../..
 
           # Publish CLI package
           cd packages/cli
-          npm publish --access public --tag ${{ steps.detect-beta.outputs.npm_tag }}
-          echo "✅ Published @kansnpms/console-log-pipe-cli@${{ github.ref_name }} with tag: ${{ steps.detect-beta.outputs.npm_tag }}"
+          npm publish --access public --tag ${{ steps.release-type.outputs.npm_tag }}
+          echo "✅ Published @kansnpms/console-log-pipe-cli@${{ github.ref_name }} with tag: ${{ steps.release-type.outputs.npm_tag }}"
           cd ../..
 
           # Publish Storage Monitor package
           cd packages/storage-monitor
-          npm publish --access public --tag ${{ steps.detect-beta.outputs.npm_tag }}
-          echo "✅ Published @kansnpms/storage-pipe@${{ github.ref_name }} with tag: ${{ steps.detect-beta.outputs.npm_tag }}"
+          npm publish --access public --tag ${{ steps.release-type.outputs.npm_tag }}
+          echo "✅ Published @kansnpms/storage-pipe@${{ github.ref_name }} with tag: ${{ steps.release-type.outputs.npm_tag }}"
           cd ../..
 
           echo "🎉 All packages published successfully!"
@@ -128,32 +121,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Detect Beta Release
-        id: detect-beta
+      - name: Set Release Type
+        id: release-type
         run: |
-          if [[ "${{ github.ref_name }}" == *"beta"* ]]; then
-            echo "is_beta=true" >> $GITHUB_OUTPUT
-            echo "🔍 Creating pre-release for beta"
-          else
-            echo "is_beta=false" >> $GITHUB_OUTPUT
-            echo "🔍 Creating full release"
-          fi
+          echo "🔍 Creating production release"
 
       - name: Generate Release Notes
         id: release-notes
         run: |
-          if [[ "${{ steps.detect-beta.outputs.is_beta }}" == "true" ]]; then
-            cat > release_notes.md << 'EOF'
-          # 🧪 Console Log Pipe ${{ github.ref_name }} (Beta Release)
-
-          **⚠️ This is a beta release for testing purposes.**
-
-          ## 🆕 New Features
-          - **🍪 Storage Monitor (Beta)**: Real-time browser storage and cookies monitoring
-            - Cookie change detection with color-coded output
-            - localStorage and sessionStorage monitoring
-            - WebSocket-based real-time updates
-            - Web dashboard for monitoring
+          cat > release_notes.md << 'EOF'
+          # 🎉 Console Log Pipe ${{ github.ref_name }}
 
           ## 📦 Packages Published
           - `@kansnpms/console-log-pipe-cli@${{ github.ref_name }}`
@@ -172,36 +149,19 @@ jobs:
           npm install @kansnpms/storage-pipe
           ```
 
-          ## 🧪 Testing the Storage Monitor
-          ```bash
-          # Start storage monitoring
-          clp storage --port 3002
-          ```
+          ## 🍪 Storage Monitor Features
+          - Real-time browser storage and cookies monitoring
+          - Cookie change detection with color-coded output
+          - localStorage and sessionStorage monitoring
+          - WebSocket-based real-time updates
+          - Web dashboard for monitoring
 
           ```javascript
           // Add to your web app
           import StorageMonitor from '@kansnpms/storage-pipe';
           await StorageMonitor.init({ serverPort: 3002 });
           ```
-
-          **Please test and provide feedback!** 🙏
           EOF
-          else
-            cat > release_notes.md << 'EOF'
-          # 🎉 Console Log Pipe ${{ github.ref_name }}
-
-          ## 📦 Packages Published
-          - `@kansnpms/console-log-pipe-cli@${{ github.ref_name }}`
-          - `@kansnpms/console-log-pipe-client@${{ github.ref_name }}`
-          - `@kansnpms/storage-pipe@${{ github.ref_name }}`
-
-          ## 🚀 Installation
-          ```bash
-          npm install -g @kansnpms/console-log-pipe-cli
-          npm install @kansnpms/console-log-pipe-client
-          ```
-          EOF
-          fi
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
@@ -210,7 +170,7 @@ jobs:
           name: Console Log Pipe ${{ github.ref_name }}
           body_path: release_notes.md
           draft: false
-          prerelease: ${{ steps.detect-beta.outputs.is_beta == 'true' }}
+          prerelease: false
           token: ${{ secrets.GITHUB_TOKEN }}
 
   # Job 4: Create GitHub Release Assets (Optional)
@@ -327,45 +287,20 @@ jobs:
     if: always() && (github.event_name == 'release' || startsWith(github.ref, 'refs/tags/v'))
 
     steps:
-      - name: Detect Beta Release
-        id: detect-beta
-        run: |
-          if [[ "${{ github.ref_name }}" == *"beta"* ]]; then
-            echo "is_beta=true" >> $GITHUB_OUTPUT
-          else
-            echo "is_beta=false" >> $GITHUB_OUTPUT
-          fi
-
       - name: Notify success
         if: needs.publish-npm.result == 'success'
         run: |
-          if [[ "${{ steps.detect-beta.outputs.is_beta }}" == "true" ]]; then
-            echo "🧪 Beta Release ${{ github.ref_name }} published successfully!"
-            echo "📦 NPM packages updated (BETA):"
-            echo "   - @kansnpms/console-log-pipe-cli@${{ github.ref_name }} (beta tag)"
-            echo "   - @kansnpms/console-log-pipe-client@${{ github.ref_name }} (beta tag)"
-            echo "   - @kansnpms/storage-pipe@${{ github.ref_name }} (beta tag)"
-            echo "📚 Documentation updated"
-            echo ""
-            echo "Install beta packages:"
-            echo "  npm install -g @kansnpms/console-log-pipe-cli@beta"
-            echo "  npm install @kansnpms/console-log-pipe-client@beta"
-            echo "  npm install @kansnpms/storage-pipe@beta"
-            echo ""
-            echo "🧪 This is a BETA release - please test and provide feedback!"
-          else
-            echo "🎉 Release ${{ github.ref_name }} published successfully!"
-            echo "📦 NPM packages updated:"
-            echo "   - @kansnpms/console-log-pipe-cli@${{ github.ref_name }}"
-            echo "   - @kansnpms/console-log-pipe-client@${{ github.ref_name }}"
-            echo "   - @kansnpms/storage-pipe@${{ github.ref_name }}"
-            echo "📚 Documentation updated"
-            echo ""
-            echo "Install packages:"
-            echo "  npm install -g @kansnpms/console-log-pipe-cli"
-            echo "  npm install @kansnpms/console-log-pipe-client"
-            echo "  npm install @kansnpms/storage-pipe"
-          fi
+          echo "🎉 Release ${{ github.ref_name }} published successfully!"
+          echo "📦 NPM packages updated:"
+          echo "   - @kansnpms/console-log-pipe-cli@${{ github.ref_name }}"
+          echo "   - @kansnpms/console-log-pipe-client@${{ github.ref_name }}"
+          echo "   - @kansnpms/storage-pipe@${{ github.ref_name }}"
+          echo "📚 Documentation updated"
+          echo ""
+          echo "Install packages:"
+          echo "  npm install -g @kansnpms/console-log-pipe-cli"
+          echo "  npm install @kansnpms/console-log-pipe-client"
+          echo "  npm install @kansnpms/storage-pipe"
 
       - name: Notify failure
         if: needs.publish-npm.result == 'failure'
