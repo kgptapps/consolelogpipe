@@ -193,7 +193,7 @@ jobs:
           ## 📦 Packages Published
           - `@kansnpms/console-log-pipe-cli@${{ github.ref_name }}`
           - `@kansnpms/console-log-pipe-client@${{ github.ref_name }}`
-          - `@kansnpms/console-log-pipe-storage-beta@${{ github.ref_name }}`
+          - `@kansnpms/storage-pipe@${{ github.ref_name }}`
 
           ## 🚀 Installation
           ```bash
@@ -344,13 +344,13 @@ jobs:
             echo "📦 NPM packages updated (BETA):"
             echo "   - @kansnpms/console-log-pipe-cli@${{ github.ref_name }} (beta tag)"
             echo "   - @kansnpms/console-log-pipe-client@${{ github.ref_name }} (beta tag)"
-            echo "   - @kansnpms/console-log-pipe-storage-beta@${{ github.ref_name }} (beta tag)"
+            echo "   - @kansnpms/storage-pipe@${{ github.ref_name }} (beta tag)"
             echo "📚 Documentation updated"
             echo ""
             echo "Install beta packages:"
             echo "  npm install -g @kansnpms/console-log-pipe-cli@beta"
             echo "  npm install @kansnpms/console-log-pipe-client@beta"
-            echo "  npm install @kansnpms/console-log-pipe-storage-beta@beta"
+            echo "  npm install @kansnpms/storage-pipe@beta"
             echo ""
             echo "🧪 This is a BETA release - please test and provide feedback!"
           else
@@ -358,13 +358,13 @@ jobs:
             echo "📦 NPM packages updated:"
             echo "   - @kansnpms/console-log-pipe-cli@${{ github.ref_name }}"
             echo "   - @kansnpms/console-log-pipe-client@${{ github.ref_name }}"
-            echo "   - @kansnpms/console-log-pipe-storage-beta@${{ github.ref_name }}"
+            echo "   - @kansnpms/storage-pipe@${{ github.ref_name }}"
             echo "📚 Documentation updated"
             echo ""
             echo "Install packages:"
             echo "  npm install -g @kansnpms/console-log-pipe-cli"
             echo "  npm install @kansnpms/console-log-pipe-client"
-            echo "  npm install @kansnpms/console-log-pipe-storage-beta"
+            echo "  npm install @kansnpms/storage-pipe"
           fi
 
       - name: Notify failure
