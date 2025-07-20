@@ -48,15 +48,15 @@ clp --version
 ## 🚀 Quick Start
 
 ```bash
-# 1. Start the CLI server
+# 1. Start the CLI server (port is required)
 clp start --port 3001
 
 # 2. Add client to your web app
 npm install @kansnpms/console-log-pipe-client
 
-# 3. Initialize in your app
+# 3. Initialize in your app (port must match CLI port)
 import ConsoleLogPipe from '@kansnpms/console-log-pipe-client';
-ConsoleLogPipe.init({ port: 3001 });
+await ConsoleLogPipe.init({ port: 3001 }); // ⚠️ Port is mandatory
 
 # 4. Watch logs stream to your terminal! 📡
 ```

@@ -73,6 +73,7 @@ class ConsoleLogPipe {
     // State management
     this.isInitialized = false;
     this.isCapturing = false;
+    this.isReady = false;
     this.components = {};
     this.listeners = new Set();
     this.stats = {
@@ -91,6 +92,105 @@ class ConsoleLogPipe {
     this._handleLogData = this._handleLogData.bind(this);
     this._handleErrorData = this._handleErrorData.bind(this);
     this._handleNetworkData = this._handleNetworkData.bind(this);
+  }
+
+  /**
+   * Add event listener for initialization events
+   * @param {string} event - Event name ('ready', 'error', 'connected', 'disconnected')
+   * @param {function} callback - Callback function
+   */
+  on(event, callback) {
+    if (!this.eventListeners.has(event)) {
+      this.eventListeners.set(event, new Set());
+    }
+    this.eventListeners.get(event).add(callback);
+    return this;
+  }
+
+  /**
+   * Remove event listener
+   * @param {string} event - Event name
+   * @param {function} callback - Callback function to remove
+   */
+  off(event, callback) {
+    if (this.eventListeners.has(event)) {
+      this.eventListeners.get(event).delete(callback);
+    }
+    return this;
+  }
+
+  /**
+   * Add one-time event listener
+   * @param {string} event - Event name
+   * @param {function} callback - Callback function
+   */
+  once(event, callback) {
+    const onceWrapper = (...args) => {
+      this.off(event, onceWrapper);
+      callback(...args);
+    };
+    return this.on(event, onceWrapper);
+  }
+
+  /**
+   * Emit event to all listeners
+   * @param {string} event - Event name
+   * @param {...any} args - Arguments to pass to listeners
+   */
+  _emit(event, ...args) {
+    if (this.eventListeners.has(event)) {
+      this.eventListeners.get(event).forEach(callback => {
+        try {
+          callback(...args);
+        } catch (error) {
+          console.error(`Error in ${event} event listener:`, error);
+        }
+      });
+    }
+  }
+
+  /**
+   * Check if the client is ready to use
+   * @returns {boolean} True if fully initialized and ready
+   */
+  ready() {
+    return this.isReady;
+  }
+
+  /**
+   * Wait for the client to be ready
+   * @param {number} timeout - Timeout in milliseconds (default: 10000)
+   * @returns {Promise<ConsoleLogPipe>} Promise that resolves when ready
+   */
+  waitForReady(timeout = 10000) {
+    if (this.isReady) {
+      return Promise.resolve(this);
+    }
+
+    return new Promise((resolve, reject) => {
+      const timeoutId = setTimeout(() => {
+        this.off('ready', onReady);
+        this.off('error', onError);
+        reject(
+          new Error(`ConsoleLogPipe initialization timeout after ${timeout}ms`)
+        );
+      }, timeout);
+
+      const onReady = () => {
+        clearTimeout(timeoutId);
+        this.off('error', onError);
+        resolve(this);
+      };
+
+      const onError = error => {
+        clearTimeout(timeoutId);
+        this.off('ready', onReady);
+        reject(error);
+      };
+
+      this.once('ready', onReady);
+      this.once('error', onError);
+    });
   }
 
   /**

@@ -6,11 +6,38 @@
 [![Code Quality](https://github.com/kgptapps/consolelogpipe/actions/workflows/code-quality.yml/badge.svg)](https://github.com/kgptapps/consolelogpipe/actions/workflows/code-quality.yml)
 [![license: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
+> ⚠️ **IMPORTANT**: This is a **monitoring tool** that pipes browser storage changes to your CLI
+> terminal. It does **NOT** provide storage methods like `.set()`, `.get()`, `.delete()`. If you
+> need a general storage solution, this is not the right package.
+
 ![Storage Pipe](https://raw.githubusercontent.com/kgptapps/consolelogpipe/main/images/KansBrowserMirrorAgents.png)
 
 > **AI‑Friendly storage monitoring client** – track real‑time changes to cookies, `localStorage`,
 > `sessionStorage`, and IndexedDB from your web applications directly to your **Console Log Pipe
 > CLI**. Perfect for **AI coding assistants** debugging storage‑related issues.
+
+## 🔍 What This Package Does vs. What It Doesn't Do
+
+### ✅ **What Storage Pipe DOES:**
+
+- **Monitors** browser storage changes in real-time
+- **Pipes** storage events to your CLI terminal
+- **Tracks** localStorage, sessionStorage, cookies, IndexedDB changes
+- **Streams** storage data via WebSocket to Console Log Pipe CLI
+- **Provides** monitoring methods: `.init()`, `.start()`, `.stop()`, `.getCurrentState()`
+
+### ❌ **What Storage Pipe DOES NOT DO:**
+
+- **Does NOT** provide storage methods like `.set()`, `.get()`, `.delete()`, `.clear()`
+- **Does NOT** act as a general storage solution or database
+- **Does NOT** store or persist data itself
+- **Does NOT** replace localStorage, sessionStorage, or other storage APIs
+
+### 💡 **If You Need General Storage:**
+
+- Use native browser APIs: `localStorage`, `sessionStorage`, `indexedDB`
+- Try storage libraries like: `localforage`, `dexie`, `idb`
+- This package is specifically for **monitoring existing storage**, not creating new storage
 
 ---
 
@@ -51,12 +78,18 @@ npm install @kansnpms/storage-pipe
 ```javascript
 import StorageMonitor from '@kansnpms/storage-pipe';
 
-// Initialize storage monitoring
+// Initialize storage monitoring (NOT storage creation)
 const monitor = await StorageMonitor.init({
   serverPort: 3002, // Must match CLI port
 });
 
-// Your storage changes will now appear in the CLI in real-time!
+// Now when your app uses storage, changes appear in CLI:
+localStorage.setItem('theme', 'dark'); // ← This will be monitored
+sessionStorage.setItem('user', 'john'); // ← This will be monitored
+document.cookie = 'session=abc123'; // ← This will be monitored
+
+// The monitor pipes these changes to your CLI terminal in real-time!
+// Note: Use native storage APIs for actual storage operations
 ```
 
 ## 📋 Features
@@ -173,7 +206,7 @@ Access the web dashboard at `http://localhost:3002` when the storage monitor is 
 
 ## 🔌 API Reference
 
-### StorageMonitor Class
+### ✅ Available Methods (Monitoring Only)
 
 ```javascript
 import StorageMonitor from '@kansnpms/storage-pipe';
@@ -185,11 +218,23 @@ StorageMonitor.create(options); // Create instance without starting
 // Instance methods
 await monitor.start(); // Start monitoring
 monitor.stop(); // Stop monitoring
-monitor.getCurrentState(); // Get current storage state
+monitor.getCurrentState(); // Get current storage state (read-only)
 monitor.isMonitoring(); // Check if monitoring is active
 monitor.isConnected(); // Check WebSocket connection
 monitor.getSession(); // Get session information
 monitor.checkNow(); // Force immediate storage check
+```
+
+### ❌ Methods NOT Available (This is NOT a storage library)
+
+```javascript
+// These methods DO NOT exist - use native APIs instead:
+monitor.set('key', 'value'); // ❌ Use: localStorage.setItem('key', 'value')
+monitor.get('key'); // ❌ Use: localStorage.getItem('key')
+monitor.delete('key'); // ❌ Use: localStorage.removeItem('key')
+monitor.clear(); // ❌ Use: localStorage.clear()
+monitor.setItem('key', 'value'); // ❌ Use: localStorage.setItem('key', 'value')
+monitor.getItem('key'); // ❌ Use: localStorage.getItem('key')
 ```
 
 ### Configuration Options

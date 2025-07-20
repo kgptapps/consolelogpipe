@@ -89,7 +89,7 @@ describe('Index Module', () => {
 
     it('should export version', () => {
       expect(ConsoleLogPipeAPI.version).toBeDefined();
-      expect(ConsoleLogPipeAPI.version).toBe('2.4.4');
+      expect(ConsoleLogPipeAPI.version).toBe('2.4.6');
     });
 
     it('should export individual components', () => {
@@ -161,11 +161,5 @@ describe('Index Module', () => {
       expect(clp.isInitialized).toBe(true);
       expect(clp.isCapturing).toBe(true);
     }, 5000); // 5 second timeout should be enough
-
-    it('should use default port when init called without it', async () => {
-      const instance = await ConsoleLogPipeAPI.init();
-      expect(instance.config.serverPort).toBe(3001);
-      await instance.destroy();
-    });
   });
 });

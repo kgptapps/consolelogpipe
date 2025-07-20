@@ -55,14 +55,41 @@ A CDN build is also available for quick experiments:
 ```ts
 import ConsoleLogPipe from '@kansnpms/console-log-pipe-client';
 
-ConsoleLogPipe.init({
+// Basic usage (returns a Promise)
+const client = await ConsoleLogPipe.init({
   port: 3001, // (required) – same port you gave the CLI
-  // Optional niceties ↓
   developer: 'nandana', // appears in the CLI header & AI metadata
   environment: 'dev', // dev | staging | prod (auto‑detected if omitted)
   enableNetworkCapture: true,
   includePatterns: ['/api'], // only stream matching network req/res
 });
+
+console.log('✅ Console Log Pipe is ready!');
+```
+
+```ts
+// With completion callbacks (no need to await)
+ConsoleLogPipe.init({
+  port: 3001,
+  onReady: client => {
+    console.log('✅ Console Log Pipe is ready!');
+    // Your app initialization code here
+  },
+  onError: error => {
+    console.error('❌ Console Log Pipe failed to initialize:', error);
+    // Handle initialization failure
+  },
+});
+```
+
+```ts
+// Error handling with try/catch
+try {
+  const client = await ConsoleLogPipe.init({ port: 3001 });
+  console.log('✅ Ready to capture logs!');
+} catch (error) {
+  console.error('❌ Failed to initialize:', error);
+}
 ```
 
 Open your browser console and watch the magic appear in your terminal 📡.
@@ -73,21 +100,29 @@ Open your browser console and watch the magic appear in your terminal 📡.
 
 ### `ConsoleLogPipe.init(options: InitOptions)`
 
-Initialises interception. Call it once as early as possible (before most imports if you want
-**first‑paint** logs).
+Initialises interception and returns a **Promise** that resolves when ready. Call it once as early
+as possible (before most imports if you want **first‑paint** logs).
 
-| Option                 | Type                                                     | Default      | Notes                                                  |
-| ---------------------- | -------------------------------------------------------- | ------------ | ------------------------------------------------------ |
-| `port`                 | `number`                                                 | **required** | Port where CLI WebSocket server is listening.          |
-| `sessionId`            | `string`                                                 | auto         | Custom ID useful when you manually spawn CLI sessions. |
-| `environment`          | `"development" \| "staging" \| "production"`             | auto         | Included in every payload.                             |
-| `developer`            | `string`                                                 | –            | Helpful when multiple devs share the same pipe.        |
-| `enableNetworkCapture` | `boolean`                                                | `true`       | Wraps `fetch` & XHR.                                   |
-| `enableMetadata`       | `boolean`                                                | `true`       | Adds file, line, column, user‑agent, etc.              |
-| `logLevels`            | `Array<"log" \| "warn" \| "error" \| "info" \| "debug">` | all          | Reduce noise.                                          |
-| `includePatterns`      | `string[]`                                               | –            | Regex/glob patterns to **allow**.                      |
-| `excludePatterns`      | `string[]`                                               | –            | Regex/glob patterns to **skip**.                       |
-| `maxLogSize`           | `number`                                                 | `10000`      | in bytes – large objects are truncated (with notice).  |
+**⚠️ Port is mandatory** - throws error if not provided or invalid.
+
+| Option                 | Type                                                     | Default      | Notes                                                      |
+| ---------------------- | -------------------------------------------------------- | ------------ | ---------------------------------------------------------- |
+| `port`                 | `number`                                                 | **required** | Port where CLI WebSocket server is listening (1024-65535). |
+| `onReady`              | `function`                                               | –            | Callback when initialization completes successfully.       |
+| `onError`              | `function`                                               | –            | Callback when initialization fails.                        |
+| `sessionId`            | `string`                                                 | auto         | Custom ID useful when you manually spawn CLI sessions.     |
+| `environment`          | `"development" \| "staging" \| "production"`             | auto         | Included in every payload.                                 |
+| `developer`            | `string`                                                 | –            | Helpful when multiple devs share the same pipe.            |
+| `enableNetworkCapture` | `boolean`                                                | `true`       | Wraps `fetch` & XHR.                                       |
+| `enableMetadata`       | `boolean`                                                | `true`       | Adds file, line, column, user‑agent, etc.                  |
+| `logLevels`            | `Array<"log" \| "warn" \| "error" \| "info" \| "debug">` | all          | Reduce noise.                                              |
+| `includePatterns`      | `string[]`                                               | –            | Regex/glob patterns to **allow**.                          |
+| `excludePatterns`      | `string[]`                                               | –            | Regex/glob patterns to **skip**.                           |
+| `maxLogSize`           | `number`                                                 | `10000`      | in bytes – large objects are truncated (with notice).      |
+
+**Returns:** `Promise<ConsoleLogPipe>` - Resolves when client is ready to capture logs.
+
+**Throws:** Error if port is missing, invalid, or initialization fails.
 
 ### `ConsoleLogPipe.destroy()`
 

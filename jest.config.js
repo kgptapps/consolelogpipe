@@ -3,6 +3,7 @@ module.exports = {
   projects: [
     '<rootDir>/packages/client',
     '<rootDir>/packages/cli',
+    '<rootDir>/packages/storage-monitor',
     '<rootDir>/tests/integration',
   ],
 

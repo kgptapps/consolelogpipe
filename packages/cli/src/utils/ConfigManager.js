@@ -1,197 +1,109 @@
 /**
- * ConfigManager - Manages Console Log Pipe configuration files
+ * ConfigManager - Manages Console Log Pipe runtime configuration
+ *
+ * Simplified stateless configuration manager that only handles
+ * runtime configuration without persistent file storage.
  */
 
-const fs = require('fs').promises;
-const path = require('path');
-const os = require('os');
-
 class ConfigManager {
-  static configDir = path.join(os.homedir(), '.console-log-pipe');
-  static serversDir = path.join(this.configDir, 'servers');
-  static globalConfigFile = path.join(this.configDir, 'config.json');
+  // In-memory storage for runtime server configurations
+  static runtimeConfigs = new Map();
 
-  static async ensureConfigDir() {
-    try {
-      await fs.mkdir(this.configDir, { recursive: true });
-      await fs.mkdir(this.serversDir, { recursive: true });
-    } catch (error) {
-      if (error.code !== 'EEXIST') {
-        throw error;
-      }
-    }
-  }
-
-  static async saveServerConfig(appName, config) {
-    await this.ensureConfigDir();
-
-    const configFile = path.join(this.serversDir, `${appName}.json`);
+  /**
+   * Save server configuration in memory (no file persistence)
+   * @param {string|number} identifier - Server identifier (port or app name)
+   * @param {Object} config - Server configuration
+   */
+  static async saveServerConfig(identifier, config) {
     const configData = {
       ...config,
       lastUpdated: new Date().toISOString(),
     };
 
-    await fs.writeFile(configFile, JSON.stringify(configData, null, 2));
+    this.runtimeConfigs.set(String(identifier), configData);
   }
 
-  static async getServerConfig(appName) {
-    try {
-      const configFile = path.join(this.serversDir, `${appName}.json`);
-      const data = await fs.readFile(configFile, 'utf8');
-      return JSON.parse(data);
-    } catch (error) {
-      if (error.code === 'ENOENT') {
-        return null;
-      }
-
-      // Handle JSON parsing errors by removing corrupted file
-      if (error instanceof SyntaxError && error.message.includes('JSON')) {
-        console.warn(
-          `Warning: Corrupted config file for ${appName}, removing and creating fresh config`
-        );
-        try {
-          const configFile = path.join(this.serversDir, `${appName}.json`);
-          await fs.unlink(configFile);
-        } catch (unlinkError) {
-          // Ignore unlink errors
-        }
-        return null;
-      }
-
-      throw error;
-    }
+  /**
+   * Get server configuration from memory
+   * @param {string|number} identifier - Server identifier (port or app name)
+   * @returns {Object|null} Server configuration or null if not found
+   */
+  static async getServerConfig(identifier) {
+    return this.runtimeConfigs.get(String(identifier)) || null;
   }
 
+  /**
+   * Get all server configurations from memory
+   * @returns {Array} Array of server configurations
+   */
   static async getAllServerConfigs() {
-    try {
-      await this.ensureConfigDir();
-      const files = await fs.readdir(this.serversDir);
-      const configs = [];
-
-      for (const file of files) {
-        if (file.endsWith('.json')) {
-          try {
-            const configFile = path.join(this.serversDir, file);
-            const data = await fs.readFile(configFile, 'utf8');
-            const config = JSON.parse(data);
-            configs.push(config);
-          } catch (error) {
-            console.error(`Error reading config file ${file}:`, error.message);
-          }
-        }
-      }
-
-      return configs;
-    } catch (error) {
-      if (error.code === 'ENOENT') {
-        return [];
-      }
-      throw error;
-    }
+    return Array.from(this.runtimeConfigs.values());
   }
 
-  static async deleteServerConfig(appName) {
-    try {
-      const configFile = path.join(this.serversDir, `${appName}.json`);
-      await fs.unlink(configFile);
-    } catch (error) {
-      if (error.code !== 'ENOENT') {
-        throw error;
-      }
-    }
+  /**
+   * Delete server configuration from memory
+   * @param {string|number} identifier - Server identifier (port or app name)
+   */
+  static async deleteServerConfig(identifier) {
+    this.runtimeConfigs.delete(String(identifier));
   }
 
-  static async saveGlobalConfig(config) {
-    await this.ensureConfigDir();
-
-    const globalConfig = {
-      ...config,
-      lastUpdated: new Date().toISOString(),
-    };
-
-    await fs.writeFile(
-      this.globalConfigFile,
-      JSON.stringify(globalConfig, null, 2)
-    );
-  }
-
-  static async getGlobalConfig() {
-    try {
-      const data = await fs.readFile(this.globalConfigFile, 'utf8');
-      return JSON.parse(data);
-    } catch (error) {
-      if (error.code === 'ENOENT') {
-        // Return default configuration
-        return {
-          defaultHost: 'localhost',
-          defaultEnvironment: 'development',
-          maxLogRetention: 7, // days
-          enableAnalytics: false,
-          theme: 'auto',
-        };
-      }
-
-      // Handle JSON parsing errors by removing corrupted file and returning defaults
-      if (error instanceof SyntaxError && error.message.includes('JSON')) {
-        console.warn(
-          'Warning: Corrupted global config file, removing and using defaults'
-        );
-        try {
-          await fs.unlink(this.globalConfigFile);
-        } catch (unlinkError) {
-          // Ignore unlink errors
-        }
-        return {
-          defaultHost: 'localhost',
-          defaultEnvironment: 'development',
-          maxLogRetention: 7, // days
-          enableAnalytics: false,
-          theme: 'auto',
-        };
-      }
-
-      throw error;
-    }
-  }
-
-  static async updateServerStatus(appName, status, additionalData = {}) {
-    const config = await this.getServerConfig(appName);
+  /**
+   * Update server status in memory
+   * @param {string|number} identifier - Server identifier (port or app name)
+   * @param {string} status - New status
+   */
+  static async updateServerStatus(identifier, status) {
+    const config = this.runtimeConfigs.get(String(identifier));
     if (config) {
       config.status = status;
-      config.lastStatusUpdate = new Date().toISOString();
-      Object.assign(config, additionalData);
-      await this.saveServerConfig(appName, config);
+      config.lastUpdated = new Date().toISOString();
+      this.runtimeConfigs.set(String(identifier), config);
     }
   }
 
-  static async cleanupOldConfigs(maxAge = 30) {
-    try {
-      const configs = await this.getAllServerConfigs();
-      const cutoffTime = Date.now() - maxAge * 24 * 60 * 60 * 1000; // maxAge in days
-
-      for (const config of configs) {
-        const lastUpdated = new Date(
-          config.lastUpdated || config.startTime
-        ).getTime();
-
-        if (lastUpdated < cutoffTime && config.status === 'stopped') {
-          await this.deleteServerConfig(config.appName);
-          console.log(`Cleaned up old config for ${config.appName}`);
-        }
-      }
-    } catch (error) {
-      console.error('Error cleaning up old configs:', error.message);
-    }
+  /**
+   * Get global configuration (returns defaults, no file persistence)
+   * @returns {Object} Default global configuration
+   */
+  static async getGlobalConfig() {
+    return {
+      defaultHost: 'localhost',
+      defaultEnvironment: 'development',
+      maxLogRetention: 7, // days
+      enableAnalytics: false,
+      theme: 'auto',
+    };
   }
 
-  static getConfigPath(appName) {
-    return path.join(this.serversDir, `${appName}.json`);
+  /**
+   * Save global configuration (no-op, no file persistence)
+   * @param {Object} _config - Global configuration (unused)
+   */
+  static async saveGlobalConfig(_config) {
+    // No-op: we don't persist global config
   }
 
-  static getGlobalConfigPath() {
-    return this.globalConfigFile;
+  /**
+   * Cleanup corrupted configs (no-op, no files to clean)
+   * @returns {number} Always returns 0 (no files cleaned)
+   */
+  static async cleanupCorruptedConfigs() {
+    return 0;
   }
 
+  /**
+   * Cleanup old configs (no-op, no files to clean)
+   * @param {number} _maxAge - Maximum age in days (unused)
+   */
+  static async cleanupOldConfigs(_maxAge = 30) {
+    // No-op: we don't persist configs
+  }
+
+  /**
+   * Export configurations (returns runtime configs only)
+   * @returns {Object} Export data with runtime configs
+   */
   static async exportConfigs() {
     const configs = await this.getAllServerConfigs();
     const globalConfig = await this.getGlobalConfig();
@@ -203,11 +115,11 @@ class ConfigManager {
     };
   }
 
+  /**
+   * Import configurations (saves to runtime memory only)
+   * @param {Object} data - Import data
+   */
   static async importConfigs(data) {
-    if (data.global) {
-      await this.saveGlobalConfig(data.global);
-    }
-
     if (data.servers && Array.isArray(data.servers)) {
       for (const serverConfig of data.servers) {
         if (serverConfig.appName) {
@@ -218,51 +130,10 @@ class ConfigManager {
   }
 
   /**
-   * Clean up corrupted configuration files
+   * Clear all runtime configurations
    */
-  static async cleanupCorruptedConfigs() {
-    try {
-      await this.ensureConfigDir();
-      const files = await fs.readdir(this.serversDir);
-      let cleanedCount = 0;
-
-      for (const file of files) {
-        if (file.endsWith('.json')) {
-          try {
-            const configFile = path.join(this.serversDir, file);
-            const data = await fs.readFile(configFile, 'utf8');
-            JSON.parse(data); // Test if JSON is valid
-          } catch (error) {
-            if (
-              error instanceof SyntaxError &&
-              error.message.includes('JSON')
-            ) {
-              console.warn(`Removing corrupted config file: ${file}`);
-              const configFile = path.join(this.serversDir, file);
-              await fs.unlink(configFile);
-              cleanedCount++;
-            }
-          }
-        }
-      }
-
-      // Check global config
-      try {
-        const data = await fs.readFile(this.globalConfigFile, 'utf8');
-        JSON.parse(data);
-      } catch (error) {
-        if (error instanceof SyntaxError && error.message.includes('JSON')) {
-          console.warn('Removing corrupted global config file');
-          await fs.unlink(this.globalConfigFile);
-          cleanedCount++;
-        }
-      }
-
-      return cleanedCount;
-    } catch (error) {
-      console.error('Error during config cleanup:', error.message);
-      return 0;
-    }
+  static clearAll() {
+    this.runtimeConfigs.clear();
   }
 }
 
