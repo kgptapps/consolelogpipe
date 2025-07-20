@@ -149,6 +149,6 @@ declare global {
 }
 
 // Module augmentation for different environments
-declare module '@kansnpms/console-log-pipe-storage-beta' {
+declare module '@kansnpms/storage-pipe' {
   export = ConsoleLogPipeStorage;
 }

@@ -1,12 +1,12 @@
 # Console Log Pipe - Package Index
 
-**Version:** 2.3.0 | **Status:** ✅ Production Release
+**Version:** 2.3.1 | **Status:** ✅ Production Release
 
 Complete guide to all Console Log Pipe packages with direct NPM links and installation instructions.
 
 ## 📦 Package Overview
 
-Console Log Pipe consists of 3 main packages, all synchronized at version `2.3.0`:
+Console Log Pipe consists of 3 main packages, all synchronized at version `2.3.1`:
 
 | Package     | Type     | Status        | Description                                   |
 | ----------- | -------- | ------------- | --------------------------------------------- |
@@ -31,15 +31,15 @@ Console Log Pipe consists of 3 main packages, all synchronized at version `2.3.0
 #### Installation
 
 ```bash
-# Install latest beta version (recommended)
-npm install -g @kansnpms/console-log-pipe-cli@beta
+# Install latest stable version (recommended)
+npm install -g @kansnpms/console-log-pipe-cli
 
 # Install specific version
-npm install -g @kansnpms/console-log-pipe-cli@2.3.0
+npm install -g @kansnpms/console-log-pipe-cli@2.3.1
 
 # Verify installation
 clp --version
-# Expected: 2.3.0
+# Expected: 2.3.1
 ```
 
 #### Commands
@@ -118,7 +118,7 @@ console.log('Hello from browser!');
 npm install @kansnpms/storage-pipe
 
 # Install specific version
-npm install @kansnpms/storage-pipe@2.3.0
+npm install @kansnpms/storage-pipe@2.3.1
 ```
 
 #### Usage
@@ -225,7 +225,7 @@ npm view @kansnpms/console-log-pipe-cli@beta version
 npm view @kansnpms/console-log-pipe-client@beta version
 npm view @kansnpms/console-log-pipe-storage-beta@beta version
 
-# Expected output for all: 2.3.0
+# Expected output for all: 2.3.1
 ```
 
 ## 🎉 Ready for Production
@@ -235,7 +235,7 @@ All Console Log Pipe packages are **production-ready** and available for immedia
 - ✅ **Published to NPM** - All packages available for installation
 - ✅ **Comprehensive Documentation** - Complete guides and examples
 - ✅ **Quality Tested** - 939/939 tests passing
-- ✅ **Version Synchronized** - All packages at 2.3.0
+- ✅ **Version Synchronized** - All packages at 2.3.1
 - ✅ **Support Available** - GitHub issues and discussions
 
 **Start using Console Log Pipe today!** 🚀

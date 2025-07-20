@@ -1,14 +1,14 @@
-# Console Log Pipe - Release Guide v2.3.0
+# Console Log Pipe - Release Guide v2.3.1
 
-**Release Date:** 2024-12-19 **Status:** ✅ Production Release **Test Coverage:** 83.45% (939/939
+**Release Date:** 2025-07-20 **Status:** ✅ Production Release **Test Coverage:** 83.45% (939/939
 tests passing)
 
 ## 🎯 Release Overview
 
-Console Log Pipe v2.3.0 is a **production release** featuring streamlined CLI commands,
+Console Log Pipe v2.3.1 is a **production release** featuring streamlined CLI commands,
 comprehensive testing, and robust package distribution.
 
-### 🚀 What's New in v2.3.0
+### 🚀 What's New in v2.3.1
 
 - **Streamlined CLI**: Removed unused commands (list, stop, status, monitor)
 - **Automatic Monitoring**: Built-in monitoring with start command
@@ -23,21 +23,21 @@ All packages are published and ready for installation:
 ### 1. CLI Tool (Required)
 
 - **Package:** `@kansnpms/console-log-pipe-cli`
-- **Version:** `2.3.0`
+- **Version:** `2.3.1`
 - **NPM:** https://www.npmjs.com/package/@kansnpms/console-log-pipe-cli
 - **Install:** `npm install -g @kansnpms/console-log-pipe-cli`
 
 ### 2. Client Library (Required)
 
 - **Package:** `@kansnpms/console-log-pipe-client`
-- **Version:** `2.3.0`
+- **Version:** `2.3.1`
 - **NPM:** https://www.npmjs.com/package/@kansnpms/console-log-pipe-client
 - **Install:** `npm install @kansnpms/console-log-pipe-client`
 
 ### 3. Storage Monitor (Optional)
 
 - **Package:** `@kansnpms/console-log-pipe-storage-beta`
-- **Version:** `2.3.0`
+- **Version:** `2.3.1`
 - **NPM:** https://www.npmjs.com/package/@kansnpms/console-log-pipe-storage-beta
 - **Install:** `npm install @kansnpms/console-log-pipe-storage-beta`
 
@@ -51,7 +51,7 @@ npm install -g @kansnpms/console-log-pipe-cli
 
 # 2. Verify installation
 clp --version
-# Expected: 2.3.0
+# Expected: 2.3.1
 
 # 3. Start server
 clp start --port 3001
@@ -88,7 +88,7 @@ clp storage --port 3002
 ### Validation Checklist
 
 - [x] CLI installs without errors
-- [x] Version displays correctly (2.3.0-beta.3)
+- [x] Version displays correctly (2.3.1)
 - [x] Console logs stream to terminal
 - [x] Network requests captured
 - [x] Storage changes monitored
@@ -170,7 +170,7 @@ document.cookie = 'test=value';
 
 ### GitHub Release
 
-- **Tag:** `v2.3.0`
+- **Tag:** `v2.3.1`
 - **Branch:** `main`
 - **Commit:** Latest with all updates
 - **Status:** ✅ Released
@@ -190,7 +190,7 @@ npm view @kansnpms/console-log-pipe-cli version
 npm view @kansnpms/console-log-pipe-client version
 npm view @kansnpms/console-log-pipe-storage-beta version
 
-# Expected output: 2.3.0
+# Expected output: 2.3.1
 ```
 
 ## 📞 Support & Issues
@@ -201,7 +201,7 @@ npm view @kansnpms/console-log-pipe-storage-beta version
 
 ## 🎉 Release Status
 
-**Console Log Pipe v2.3.0 is PRODUCTION READY** ✅
+**Console Log Pipe v2.3.1 is PRODUCTION READY** ✅
 
 - ✅ All packages published to NPM
 - ✅ Documentation updated and comprehensive
