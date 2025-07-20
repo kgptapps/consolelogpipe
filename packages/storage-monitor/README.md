@@ -1,13 +1,27 @@
 # @kansnpms/storage-pipe
 
+![Storage Pipe](https://raw.githubusercontent.com/kgptapps/consolelogpipe/main/images/KansStoragePipe.png)
+
 [![npm version](https://badge.fury.io/js/@kansnpms%2Fstorage-pipe.svg)](https://www.npmjs.com/package/@kansnpms/storage-pipe)
 [![npm downloads](https://img.shields.io/npm/dt/@kansnpms/storage-pipe.svg)](https://www.npmjs.com/package/@kansnpms/storage-pipe)
 [![npm downloads/month](https://img.shields.io/npm/dm/@kansnpms/storage-pipe.svg)](https://www.npmjs.com/package/@kansnpms/storage-pipe)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**Status:** ✅ Production Release
+**Status:** ✅ Production Release | **🤖 AI-Friendly Development Tool**
 
-🍪 **Real-time browser storage and cookies monitoring for development and debugging**
+🍪 **🤖 Designed for AI Coding Assistants:** Real-time browser storage and cookies monitoring for
+development and debugging. Perfect for AI-assisted development workflows.
+
+## 🤖 AI Coding Assistant Integration
+
+**This storage monitoring tool is specifically designed for AI coding assistants** to provide
+comprehensive browser storage debugging. Features include:
+
+- **Real-time storage change detection** for AI analysis
+- **Structured JSON data format** for easy AI parsing
+- **Cookie, localStorage, sessionStorage monitoring** for complete visibility
+- **WebSocket-based real-time updates** for instant AI feedback
+- **Color-coded CLI output** for AI-friendly categorization
 
 ## 📦 Package Information
 

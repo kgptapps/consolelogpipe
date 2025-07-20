@@ -1,15 +1,29 @@
 # @kansnpms/console-log-pipe-client
 
+![Console Log Pipe Client](https://raw.githubusercontent.com/kgptapps/consolelogpipe/main/images/KansCLIConsoleStorage.png)
+
 [![npm version](https://badge.fury.io/js/@kansnpms%2Fconsole-log-pipe-client.svg)](https://badge.fury.io/js/@kansnpms%2Fconsole-log-pipe-client)
 [![npm downloads](https://img.shields.io/npm/dt/@kansnpms/console-log-pipe-client.svg)](https://www.npmjs.com/package/@kansnpms/console-log-pipe-client)
 [![npm downloads/month](https://img.shields.io/npm/dm/@kansnpms/console-log-pipe-client.svg)](https://www.npmjs.com/package/@kansnpms/console-log-pipe-client)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Coverage Status](https://img.shields.io/badge/coverage-96.77%25-brightgreen.svg)](https://github.com/kgptapps/consolelogpipe)
 
-**Status:** ✅ Ready for Production
+**Status:** ✅ Ready for Production | **🤖 AI-Friendly Development Tool**
 
-**Bring browser console logs to your IDE with Console Log Pipe.** Stream console logs, errors, and
-network requests from any browser application directly to your development environment.
+**🤖 Designed for AI Coding Assistants:** Bring browser console logs to your IDE with Console Log
+Pipe. Stream console logs, errors, and network requests from any browser application directly to
+your development environment. Perfect for AI-assisted development workflows.
+
+## 🤖 AI Coding Assistant Integration
+
+**This library is specifically designed for AI coding assistants** to provide seamless browser
+debugging integration. Features include:
+
+- **Structured JSON output** for easy AI parsing
+- **Real-time error categorization** for AI analysis
+- **Multi-application monitoring** for complex AI workflows
+- **Network request/response capture** for AI debugging
+- **Intelligent metadata** that AI tools can understand
 
 ## 📦 Package Information
 

@@ -1,14 +1,27 @@
 # @kansnpms/console-log-pipe-cli
 
+![Console Log Pipe CLI](https://raw.githubusercontent.com/kgptapps/consolelogpipe/main/images/KansCLIConsoleStorage.png)
+
 [![npm version](https://img.shields.io/npm/v/@kansnpms/console-log-pipe-cli.svg)](https://www.npmjs.com/package/@kansnpms/console-log-pipe-cli)
 [![npm downloads](https://img.shields.io/npm/dt/@kansnpms/console-log-pipe-cli.svg)](https://www.npmjs.com/package/@kansnpms/console-log-pipe-cli)
 [![npm downloads/month](https://img.shields.io/npm/dm/@kansnpms/console-log-pipe-cli.svg)](https://www.npmjs.com/package/@kansnpms/console-log-pipe-cli)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**Status:** ✅ Production Release
+**Status:** ✅ Production Release | **🤖 AI-Friendly Development Tool**
 
-> Global CLI tool for Console Log Pipe - Stream browser console logs and storage changes to your
-> terminal in real-time.
+> **Designed for AI Coding Assistants:** Global CLI tool for Console Log Pipe - Stream browser
+> console logs and storage changes to your terminal in real-time. Perfect for AI-assisted
+> development workflows.
+
+## 🤖 AI Coding Assistant Integration
+
+**This tool is specifically designed for AI coding assistants** to provide real-time browser
+debugging capabilities. Perfect for:
+
+- **AI-assisted development workflows**
+- **Real-time debugging with AI tools**
+- **Automated testing and monitoring**
+- **AI-driven development environments**
 
 ## 📦 Package Information
 

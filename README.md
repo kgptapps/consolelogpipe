@@ -1,5 +1,7 @@
 # Console Log Pipe
 
+![Console Log Pipe](./images/KansCLIConsoleStorage.png)
+
 [![CI](https://github.com/kgptapps/consolelogpipe/actions/workflows/ci.yml/badge.svg)](https://github.com/kgptapps/consolelogpipe/actions/workflows/ci.yml)
 [![Code Quality](https://github.com/kgptapps/consolelogpipe/actions/workflows/code-quality.yml/badge.svg)](https://github.com/kgptapps/consolelogpipe/actions/workflows/code-quality.yml)
 [![CodeQL](https://github.com/kgptapps/consolelogpipe/actions/workflows/codeql.yml/badge.svg)](https://github.com/kgptapps/consolelogpipe/actions/workflows/codeql.yml)
@@ -17,10 +19,23 @@
 [![GitHub issues](https://img.shields.io/github/issues/kgptapps/consolelogpipe.svg)](https://github.com/kgptapps/consolelogpipe/issues)
 [![GitHub stars](https://img.shields.io/github/stars/kgptapps/consolelogpipe.svg)](https://github.com/kgptapps/consolelogpipe/stargazers)
 
-**Current Version:** `2.3.0` | **Status:** ✅ Production Release
+**Status:** ✅ Production Release | **🤖 AI-Friendly Development Tool**
 
-Real-time log streaming from browsers to developers. Stream console logs, errors, and network
-requests from any browser application directly to your development environment.
+**🤖 Designed specifically for AI Coding Assistants** - Real-time log streaming from browsers to
+developers. Stream console logs, errors, and network requests from any browser application directly
+to your development environment with structured data formats that AI tools can easily parse and
+understand.
+
+## 🤖 AI Coding Assistant Integration
+
+**This entire toolset is optimized for AI-assisted development workflows.** Features include:
+
+- **📊 Structured JSON Output** - All logs formatted for easy AI parsing
+- **🎯 Intelligent Error Categorization** - Errors grouped and tagged for AI analysis
+- **🔄 Multi-Application Monitoring** - Handle complex AI development scenarios
+- **📡 Real-time WebSocket Streaming** - Instant feedback for AI debugging
+- **🍪 Storage Change Detection** - Monitor cookies, localStorage, sessionStorage for AI
+- **🌈 Color-coded CLI Output** - Visual categorization for AI-friendly analysis
 
 ## 📦 NPM Packages
 
