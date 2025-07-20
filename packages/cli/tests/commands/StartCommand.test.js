@@ -302,5 +302,206 @@ describe('StartCommand', () => {
         })
       );
     });
+
+    it('should handle cleanup errors gracefully', async () => {
+      ConfigManager.cleanupCorruptedConfigs.mockRejectedValue(
+        new Error('Cleanup failed')
+      );
+
+      const consoleSpy = jest.spyOn(console, 'warn').mockImplementation();
+
+      const options = { port: '3001' };
+      const command = { opts: () => ({}) };
+
+      await StartCommand.execute(options, command);
+
+      expect(consoleSpy).toHaveBeenCalledWith(
+        'Warning: Could not clean up config files:',
+        'Cleanup failed'
+      );
+
+      consoleSpy.mockRestore();
+    });
+
+    it('should handle git info detection errors', async () => {
+      detectGitInfo.mockRejectedValue(new Error('Git not found'));
+
+      const options = { port: '3001' };
+      const command = { opts: () => ({}) };
+
+      await expect(StartCommand.execute(options, command)).rejects.toThrow(
+        'Process exit with code 1'
+      );
+
+      expect(mockProcessExit).toHaveBeenCalledWith(1);
+      expect(mockConsoleError).toHaveBeenCalledWith(
+        expect.stringContaining('Error:'),
+        'Git not found'
+      );
+    });
+
+    it('should use default values for optional config', async () => {
+      const options = { port: '3001' };
+      const command = { opts: () => ({}) };
+
+      await StartCommand.execute(options, command);
+
+      expect(ServerManager.startServer).toHaveBeenCalledWith(
+        expect.objectContaining({
+          host: 'localhost',
+          environment: 'development',
+          logLevel: 'debug',
+          maxLogs: 1000,
+          enableCompression: true,
+          enableCors: true,
+        })
+      );
+    });
+
+    it('should use custom values when provided', async () => {
+      const options = {
+        port: '3001',
+        host: 'custom-host',
+        env: 'production',
+        logLevel: 'info',
+        maxLogs: '500',
+        enableCompression: false,
+        enableCors: false,
+      };
+      const command = { opts: () => ({}) };
+
+      await StartCommand.execute(options, command);
+
+      expect(ServerManager.startServer).toHaveBeenCalledWith(
+        expect.objectContaining({
+          host: 'custom-host',
+          environment: 'production',
+          logLevel: 'info',
+          maxLogs: 500,
+          enableCompression: false,
+          enableCors: false,
+        })
+      );
+    });
+  });
+
+  describe('_displayLog', () => {
+    let mockConsoleLog;
+
+    beforeEach(() => {
+      mockConsoleLog = jest.spyOn(console, 'log').mockImplementation();
+    });
+
+    afterEach(() => {
+      mockConsoleLog.mockRestore();
+    });
+
+    it('should display error logs with red color and error icon', () => {
+      const logData = { level: 'error', message: 'Test error message' };
+
+      StartCommand._displayLog(logData, 'error');
+
+      expect(mockConsoleLog).toHaveBeenCalledWith(
+        expect.stringContaining('❌')
+      );
+      expect(mockConsoleLog).toHaveBeenCalledWith(
+        expect.stringContaining('Test error message')
+      );
+    });
+
+    it('should display warning logs with yellow color and warning icon', () => {
+      const logData = { level: 'warn', message: 'Test warning message' };
+
+      StartCommand._displayLog(logData, 'warn');
+
+      expect(mockConsoleLog).toHaveBeenCalledWith(
+        expect.stringContaining('⚠️')
+      );
+      expect(mockConsoleLog).toHaveBeenCalledWith(
+        expect.stringContaining('Test warning message')
+      );
+    });
+
+    it('should display info logs with blue color and info icon', () => {
+      const logData = { level: 'info', message: 'Test info message' };
+
+      StartCommand._displayLog(logData, 'info');
+
+      expect(mockConsoleLog).toHaveBeenCalledWith(
+        expect.stringContaining('ℹ️')
+      );
+      expect(mockConsoleLog).toHaveBeenCalledWith(
+        expect.stringContaining('Test info message')
+      );
+    });
+
+    it('should display debug logs with gray color and debug icon', () => {
+      const logData = { level: 'debug', message: 'Test debug message' };
+
+      StartCommand._displayLog(logData, 'debug');
+
+      expect(mockConsoleLog).toHaveBeenCalledWith(
+        expect.stringContaining('🔍')
+      );
+      expect(mockConsoleLog).toHaveBeenCalledWith(
+        expect.stringContaining('Test debug message')
+      );
+    });
+
+    it('should display network logs with cyan color and network icon', () => {
+      const logData = { level: 'network', url: 'https://api.example.com' };
+
+      StartCommand._displayLog(logData, 'network');
+
+      expect(mockConsoleLog).toHaveBeenCalledWith(
+        expect.stringContaining('🌐')
+      );
+      expect(mockConsoleLog).toHaveBeenCalledWith(
+        expect.stringContaining('https://api.example.com')
+      );
+    });
+
+    it('should handle logs without level using type', () => {
+      const logData = { message: 'Test message without level' };
+
+      StartCommand._displayLog(logData, 'error');
+
+      expect(mockConsoleLog).toHaveBeenCalledWith(
+        expect.stringContaining('❌')
+      );
+    });
+
+    it('should handle logs without message using JSON stringify', () => {
+      const logData = { data: 'some data', value: 123 };
+
+      StartCommand._displayLog(logData, 'log');
+
+      expect(mockConsoleLog).toHaveBeenCalledWith(
+        expect.stringContaining('{"data":"some data","value":123}')
+      );
+    });
+
+    it('should handle warning level with different case', () => {
+      const logData = { level: 'WARNING', message: 'Test warning' };
+
+      StartCommand._displayLog(logData, 'warning');
+
+      expect(mockConsoleLog).toHaveBeenCalledWith(
+        expect.stringContaining('⚠️')
+      );
+    });
+
+    it('should use default icon and color for unknown levels', () => {
+      const logData = { level: 'unknown', message: 'Test unknown level' };
+
+      StartCommand._displayLog(logData, 'unknown');
+
+      expect(mockConsoleLog).toHaveBeenCalledWith(
+        expect.stringContaining('📝')
+      );
+      expect(mockConsoleLog).toHaveBeenCalledWith(
+        expect.stringContaining('Test unknown level')
+      );
+    });
   });
 });

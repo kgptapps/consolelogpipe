@@ -167,6 +167,102 @@ describe('TimeUtils', () => {
     });
   });
 
+  describe('parseTimeString', () => {
+    it('should parse relative time strings', () => {
+      const result = TimeUtils.parseTimeString('1h');
+      expect(result instanceof Date).toBe(true);
+    });
+
+    it('should handle null/undefined input', () => {
+      expect(TimeUtils.parseTimeString(null)).toBeNull();
+      expect(TimeUtils.parseTimeString(undefined)).toBeNull();
+      expect(TimeUtils.parseTimeString('')).toBeNull();
+    });
+
+    it('should parse various time formats', () => {
+      const result1 = TimeUtils.parseTimeString('5m');
+      const result2 = TimeUtils.parseTimeString('2h');
+      const result3 = TimeUtils.parseTimeString('1d');
+
+      expect(result1 instanceof Date).toBe(true);
+      expect(result2 instanceof Date).toBe(true);
+      expect(result3 instanceof Date).toBe(true);
+    });
+  });
+
+  describe('getTimeZoneInfo', () => {
+    it('should return timezone information', () => {
+      const info = TimeUtils.getTimeZoneInfo();
+
+      expect(info).toHaveProperty('name');
+      expect(info).toHaveProperty('offset');
+      expect(info).toHaveProperty('offsetString');
+      expect(typeof info.name).toBe('string');
+      expect(typeof info.offset).toBe('number');
+      expect(typeof info.offsetString).toBe('string');
+    });
+  });
+
+  describe('formatTimezoneOffset', () => {
+    it('should format positive offset', () => {
+      const result = TimeUtils.formatTimezoneOffset(-300); // UTC-5
+      expect(result).toBe('+05:00');
+    });
+
+    it('should format negative offset', () => {
+      const result = TimeUtils.formatTimezoneOffset(300); // UTC+5
+      expect(result).toBe('-05:00');
+    });
+
+    it('should handle zero offset', () => {
+      const result = TimeUtils.formatTimezoneOffset(0);
+      expect(result).toBe('+00:00');
+    });
+  });
+
+  describe('Date Checking Methods', () => {
+    it('should check if date is today', () => {
+      const today = new Date();
+      expect(TimeUtils.isToday(today)).toBe(true);
+
+      const yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+      expect(TimeUtils.isToday(yesterday)).toBe(false);
+    });
+
+    it('should check if date is yesterday', () => {
+      const yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+      expect(TimeUtils.isYesterday(yesterday)).toBe(true);
+
+      const today = new Date();
+      expect(TimeUtils.isYesterday(today)).toBe(false);
+    });
+  });
+
+  describe('Date Range Methods', () => {
+    it('should get start of week', () => {
+      const date = new Date('2023-01-15T15:30:45.123Z'); // Sunday
+      const result = TimeUtils.getStartOfWeek(date);
+
+      expect(result.getHours()).toBe(0);
+      expect(result.getMinutes()).toBe(0);
+      expect(result.getSeconds()).toBe(0);
+      expect(result.getMilliseconds()).toBe(0);
+    });
+
+    it('should get start of month', () => {
+      const date = new Date('2023-01-15T15:30:45.123Z');
+      const result = TimeUtils.getStartOfMonth(date);
+
+      expect(result.getDate()).toBe(1);
+      expect(result.getHours()).toBe(0);
+      expect(result.getMinutes()).toBe(0);
+      expect(result.getSeconds()).toBe(0);
+      expect(result.getMilliseconds()).toBe(0);
+    });
+  });
+
   describe('Utility Methods', () => {
     it('should create sleep promise', async () => {
       const start = Date.now();
@@ -211,6 +307,16 @@ describe('TimeUtils', () => {
       const result = TimeUtils.timeAgo(oneHourAgo);
 
       expect(result).toContain('hour');
+    });
+
+    it('should convert milliseconds to various units', () => {
+      const result = TimeUtils.convertMs(3600000); // 1 hour
+
+      expect(result.milliseconds).toBe(3600000);
+      expect(result.seconds).toBe(3600);
+      expect(result.minutes).toBe(60);
+      expect(result.hours).toBe(1);
+      expect(result.days).toBeCloseTo(0.0417, 3);
     });
   });
 });
