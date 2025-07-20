@@ -1,152 +1,188 @@
 <!DOCTYPE html>
 <html>
-<head>
+  <head>
     <title>WebSocket Console Log Pipe Test</title>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <style>
-        body { font-family: Arial, sans-serif; margin: 40px; }
-        .container { max-width: 800px; margin: 0 auto; }
-        .log { background: #f8f9fa; border: 1px solid #dee2e6; padding: 15px; margin: 10px 0; border-radius: 5px; font-family: monospace; white-space: pre-wrap; }
-        .status { padding: 10px; margin: 10px 0; border-radius: 5px; }
-        .success { background-color: #d4edda; color: #155724; }
-        .error { background-color: #f8d7da; color: #721c24; }
-        .info { background-color: #d1ecf1; color: #0c5460; }
+      body {
+        font-family: Arial, sans-serif;
+        margin: 40px;
+      }
+      .container {
+        max-width: 800px;
+        margin: 0 auto;
+      }
+      .log {
+        background: #f8f9fa;
+        border: 1px solid #dee2e6;
+        padding: 15px;
+        margin: 10px 0;
+        border-radius: 5px;
+        font-family: monospace;
+        white-space: pre-wrap;
+      }
+      .status {
+        padding: 10px;
+        margin: 10px 0;
+        border-radius: 5px;
+      }
+      .success {
+        background-color: #d4edda;
+        color: #155724;
+      }
+      .error {
+        background-color: #f8d7da;
+        color: #721c24;
+      }
+      .info {
+        background-color: #d1ecf1;
+        color: #0c5460;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="container">
-        <h1>🔌 WebSocket Console Log Pipe Test</h1>
-        
-        <div id="status" class="status info">
-            Status: Starting WebSocket test...
-        </div>
-        
-        <div id="logs" class="log">
-WebSocket Test Log:
-==================
-        </div>
+      <h1>🔌 WebSocket Console Log Pipe Test</h1>
+
+      <div id="status" class="status info">
+        Status: Starting WebSocket test...
+      </div>
+
+      <div id="logs" class="log">WebSocket Test Log: ==================</div>
     </div>
 
     <script src="./console-log-pipe.umd.js"></script>
-    
+
     <script>
-        let testStep = 0;
-        let logOutput = '';
-        
-        function updateStatus(message, type = 'info') {
-            const statusDiv = document.getElementById('status');
-            statusDiv.className = 'status ' + type;
-            statusDiv.innerHTML = message;
+      let testStep = 0;
+      let logOutput = '';
+
+      function updateStatus(message, type = 'info') {
+        const statusDiv = document.getElementById('status');
+        statusDiv.className = 'status ' + type;
+        statusDiv.innerHTML = message;
+      }
+
+      function addLog(message) {
+        logOutput += new Date().toISOString() + ': ' + message + '\n';
+        document.getElementById('logs').textContent =
+          'WebSocket Test Log:\n==================\n' + logOutput;
+      }
+
+      async function runWebSocketTest() {
+        try {
+          addLog('🚀 Starting WebSocket-based Console Log Pipe test...');
+          updateStatus('Running WebSocket test...', 'info');
+
+          // Step 1: Check availability
+          testStep = 1;
+          addLog('Step 1: Checking Console Log Pipe availability...');
+          if (typeof ConsoleLogPipe === 'undefined') {
+            throw new Error('ConsoleLogPipe not found');
+          }
+          addLog('✅ Console Log Pipe library loaded');
+
+          // Step 2: Initialize with WebSocket transport
+          testStep = 2;
+          addLog(
+            'Step 2: Initializing Console Log Pipe with WebSocket transport...'
+          );
+          await new Promise(resolve => setTimeout(resolve, 500));
+
+          ConsoleLogPipe.init({
+            applicationName: 'react-test-app',
+            port: 3008,
+            enableRemoteLogging: true, // This should now use WebSocket
+          });
+
+          addLog('✅ Console Log Pipe initialized with WebSocket transport');
+
+          // Step 3: Wait for WebSocket connection
+          testStep = 3;
+          addLog('Step 3: Waiting for WebSocket connection...');
+          await new Promise(resolve => setTimeout(resolve, 2000)); // Longer wait for connection
+
+          // Step 4: Send test messages via WebSocket
+          testStep = 4;
+          addLog('Step 4: Sending test messages via WebSocket...');
+
+          console.log('🔌 WEBSOCKET-TEST: First message via WebSocket');
+          addLog('Sent: First WebSocket message');
+
+          await new Promise(resolve => setTimeout(resolve, 500));
+          console.warn('🔌 WEBSOCKET-TEST: Warning message via WebSocket');
+          addLog('Sent: Warning via WebSocket');
+
+          await new Promise(resolve => setTimeout(resolve, 500));
+          console.error('🔌 WEBSOCKET-TEST: Error message via WebSocket');
+          addLog('Sent: Error via WebSocket');
+
+          await new Promise(resolve => setTimeout(resolve, 500));
+          console.info('🔌 WEBSOCKET-TEST: Info message via WebSocket');
+          addLog('Sent: Info via WebSocket');
+
+          // Step 5: Send complex data
+          testStep = 5;
+          addLog('Step 5: Sending complex data via WebSocket...');
+          await new Promise(resolve => setTimeout(resolve, 500));
+
+          const complexData = {
+            testType: 'websocket-transport',
+            timestamp: new Date().toISOString(),
+            sessionId: 'ws-test-' + Date.now(),
+            data: {
+              array: [1, 2, 3, 'websocket', 'test'],
+              nested: {
+                level1: {
+                  level2: {
+                    message: 'Deep nested WebSocket test',
+                  },
+                },
+              },
+            },
+          };
+
+          console.log('🔌 WEBSOCKET-TEST: Complex data:', complexData);
+          addLog('Sent: Complex data object via WebSocket');
+
+          // Step 6: Rapid fire test
+          testStep = 6;
+          addLog('Step 6: Rapid fire WebSocket test...');
+          await new Promise(resolve => setTimeout(resolve, 500));
+
+          for (let i = 1; i <= 3; i++) {
+            console.log(`🔌 WEBSOCKET-TEST: Rapid message #${i}`);
+            await new Promise(resolve => setTimeout(resolve, 100));
+          }
+          addLog('Sent: 3 rapid WebSocket messages');
+
+          // Final step
+          addLog('🎉 WebSocket test sequence completed!');
+          addLog('📊 Total WebSocket messages sent: ~8 messages');
+          addLog(
+            '🔍 Check CLI terminal - messages should appear via WebSocket!'
+          );
+
+          updateStatus(
+            '✅ WebSocket test completed! Check CLI terminal for messages.',
+            'success'
+          );
+        } catch (error) {
+          addLog(
+            `❌ WebSocket test failed at step ${testStep}: ${error.message}`
+          );
+          updateStatus(
+            `❌ WebSocket test failed at step ${testStep}: ${error.message}`,
+            'error'
+          );
+          console.error('🔌 WEBSOCKET-TEST: Test failure:', error);
         }
-        
-        function addLog(message) {
-            logOutput += new Date().toISOString() + ': ' + message + '\n';
-            document.getElementById('logs').textContent = 'WebSocket Test Log:\n==================\n' + logOutput;
-        }
-        
-        async function runWebSocketTest() {
-            try {
-                addLog('🚀 Starting WebSocket-based Console Log Pipe test...');
-                updateStatus('Running WebSocket test...', 'info');
-                
-                // Step 1: Check availability
-                testStep = 1;
-                addLog('Step 1: Checking Console Log Pipe availability...');
-                if (typeof ConsoleLogPipe === 'undefined') {
-                    throw new Error('ConsoleLogPipe not found');
-                }
-                addLog('✅ Console Log Pipe library loaded');
-                
-                // Step 2: Initialize with WebSocket transport
-                testStep = 2;
-                addLog('Step 2: Initializing Console Log Pipe with WebSocket transport...');
-                await new Promise(resolve => setTimeout(resolve, 500));
-                
-                ConsoleLogPipe.init({
-                    applicationName: 'react-test-app',
-                    port: 3008,
-                    enableRemoteLogging: true  // This should now use WebSocket
-                });
-                
-                addLog('✅ Console Log Pipe initialized with WebSocket transport');
-                
-                // Step 3: Wait for WebSocket connection
-                testStep = 3;
-                addLog('Step 3: Waiting for WebSocket connection...');
-                await new Promise(resolve => setTimeout(resolve, 2000)); // Longer wait for connection
-                
-                // Step 4: Send test messages via WebSocket
-                testStep = 4;
-                addLog('Step 4: Sending test messages via WebSocket...');
-                
-                console.log('🔌 WEBSOCKET-TEST: First message via WebSocket');
-                addLog('Sent: First WebSocket message');
-                
-                await new Promise(resolve => setTimeout(resolve, 500));
-                console.warn('🔌 WEBSOCKET-TEST: Warning message via WebSocket');
-                addLog('Sent: Warning via WebSocket');
-                
-                await new Promise(resolve => setTimeout(resolve, 500));
-                console.error('🔌 WEBSOCKET-TEST: Error message via WebSocket');
-                addLog('Sent: Error via WebSocket');
-                
-                await new Promise(resolve => setTimeout(resolve, 500));
-                console.info('🔌 WEBSOCKET-TEST: Info message via WebSocket');
-                addLog('Sent: Info via WebSocket');
-                
-                // Step 5: Send complex data
-                testStep = 5;
-                addLog('Step 5: Sending complex data via WebSocket...');
-                await new Promise(resolve => setTimeout(resolve, 500));
-                
-                const complexData = {
-                    testType: 'websocket-transport',
-                    timestamp: new Date().toISOString(),
-                    sessionId: 'ws-test-' + Date.now(),
-                    data: {
-                        array: [1, 2, 3, 'websocket', 'test'],
-                        nested: {
-                            level1: {
-                                level2: {
-                                    message: 'Deep nested WebSocket test'
-                                }
-                            }
-                        }
-                    }
-                };
-                
-                console.log('🔌 WEBSOCKET-TEST: Complex data:', complexData);
-                addLog('Sent: Complex data object via WebSocket');
-                
-                // Step 6: Rapid fire test
-                testStep = 6;
-                addLog('Step 6: Rapid fire WebSocket test...');
-                await new Promise(resolve => setTimeout(resolve, 500));
-                
-                for (let i = 1; i <= 3; i++) {
-                    console.log(`🔌 WEBSOCKET-TEST: Rapid message #${i}`);
-                    await new Promise(resolve => setTimeout(resolve, 100));
-                }
-                addLog('Sent: 3 rapid WebSocket messages');
-                
-                // Final step
-                addLog('🎉 WebSocket test sequence completed!');
-                addLog('📊 Total WebSocket messages sent: ~8 messages');
-                addLog('🔍 Check CLI terminal - messages should appear via WebSocket!');
-                
-                updateStatus('✅ WebSocket test completed! Check CLI terminal for messages.', 'success');
-                
-            } catch (error) {
-                addLog(`❌ WebSocket test failed at step ${testStep}: ${error.message}`);
-                updateStatus(`❌ WebSocket test failed at step ${testStep}: ${error.message}`, 'error');
-                console.error('🔌 WEBSOCKET-TEST: Test failure:', error);
-            }
-        }
-        
-        // Start the WebSocket test when page loads
-        window.addEventListener('load', function() {
-            setTimeout(runWebSocketTest, 1000);
-        });
+      }
+
+      // Start the WebSocket test when page loads
+      window.addEventListener('load', function () {
+        setTimeout(runWebSocketTest, 1000);
+      });
     </script>
-</body>
+  </body>
 </html>

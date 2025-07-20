@@ -1,211 +1,214 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Storage Monitor - Simple Test</title>
     <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            background: #f5f5f5;
-        }
-        .container {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
-        }
-        button {
-            background: #007acc;
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 4px;
-            cursor: pointer;
-            margin: 5px;
-        }
-        button:hover {
-            background: #005a9e;
-        }
-        .status {
-            padding: 10px;
-            border-radius: 4px;
-            margin: 10px 0;
-        }
-        .status.success {
-            background: #d4edda;
-            color: #155724;
-        }
-        .status.error {
-            background: #f8d7da;
-            color: #721c24;
-        }
-        .log {
-            background: #f8f9fa;
-            padding: 10px;
-            border-radius: 4px;
-            font-family: monospace;
-            font-size: 0.9em;
-            max-height: 300px;
-            overflow-y: auto;
-            margin: 10px 0;
-            white-space: pre-wrap;
-        }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+          sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        background: #f5f5f5;
+      }
+      .container {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+      }
+      button {
+        background: #007acc;
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 4px;
+        cursor: pointer;
+        margin: 5px;
+      }
+      button:hover {
+        background: #005a9e;
+      }
+      .status {
+        padding: 10px;
+        border-radius: 4px;
+        margin: 10px 0;
+      }
+      .status.success {
+        background: #d4edda;
+        color: #155724;
+      }
+      .status.error {
+        background: #f8d7da;
+        color: #721c24;
+      }
+      .log {
+        background: #f8f9fa;
+        padding: 10px;
+        border-radius: 4px;
+        font-family: monospace;
+        font-size: 0.9em;
+        max-height: 300px;
+        overflow-y: auto;
+        margin: 10px 0;
+        white-space: pre-wrap;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="container">
-        <h1>🍪 Storage Monitor - Simple Test</h1>
-        <p>Testing Console Log Pipe Storage Monitor browser integration.</p>
-        
-        <div id="status" class="status">
-            Not connected to Storage Monitor
-        </div>
+      <h1>🍪 Storage Monitor - Simple Test</h1>
+      <p>Testing Console Log Pipe Storage Monitor browser integration.</p>
 
-        <h3>Controls</h3>
-        <button onclick="testConnection()">Test Connection</button>
-        <button onclick="testStorage()">Test Storage Operations</button>
-        <button onclick="testDeletion()">Test Storage Deletion</button>
-        <button onclick="clearLog()">Clear Log</button>
+      <div id="status" class="status">Not connected to Storage Monitor</div>
 
-        <h3>Activity Log</h3>
-        <div id="log" class="log">Ready to test...\n</div>
+      <h3>Controls</h3>
+      <button onclick="testConnection()">Test Connection</button>
+      <button onclick="testStorage()">Test Storage Operations</button>
+      <button onclick="testDeletion()">Test Storage Deletion</button>
+      <button onclick="clearLog()">Clear Log</button>
+
+      <h3>Activity Log</h3>
+      <div id="log" class="log">Ready to test...\n</div>
     </div>
 
     <!-- Load the storage monitor library directly -->
     <script src="./dist/storage-monitor.umd.js"></script>
-    
+
     <script>
-        let storageMonitor = null;
-        
-        function log(message) {
-            const logDiv = document.getElementById('log');
-            const timestamp = new Date().toLocaleTimeString();
-            logDiv.textContent += `[${timestamp}] ${message}\n`;
-            logDiv.scrollTop = logDiv.scrollHeight;
-            console.log(message);
+      let storageMonitor = null;
+
+      function log(message) {
+        const logDiv = document.getElementById('log');
+        const timestamp = new Date().toLocaleTimeString();
+        logDiv.textContent += `[${timestamp}] ${message}\n`;
+        logDiv.scrollTop = logDiv.scrollHeight;
+        console.log(message);
+      }
+
+      function updateStatus(message, isSuccess = true) {
+        const statusDiv = document.getElementById('status');
+        statusDiv.textContent = message;
+        statusDiv.className = `status ${isSuccess ? 'success' : 'error'}`;
+      }
+
+      async function testConnection() {
+        try {
+          log('🔍 Testing StorageMonitor availability...');
+
+          if (typeof StorageMonitor === 'undefined') {
+            throw new Error('StorageMonitor is not defined');
+          }
+
+          log('✅ StorageMonitor class is available');
+          log(`📋 StorageMonitor type: ${typeof StorageMonitor}`);
+
+          log('🍪 Initializing Storage Monitor...');
+
+          storageMonitor = await StorageMonitor.init({
+            serverPort: 3006,
+            serverHost: 'localhost',
+            enableCookies: true,
+            enableLocalStorage: true,
+            enableSessionStorage: true,
+            enableIndexedDB: false,
+            pollInterval: 1000,
+          });
+
+          updateStatus('✅ Connected to Storage Monitor', true);
+          log('✅ Storage Monitor connected successfully');
+        } catch (error) {
+          updateStatus(`❌ Connection failed: ${error.message}`, false);
+          log(`❌ Failed to connect: ${error.message}`);
+          console.error('Full error:', error);
+        }
+      }
+
+      function testStorage() {
+        if (!storageMonitor) {
+          log(
+            '❌ Storage Monitor not connected. Click "Test Connection" first.'
+          );
+          return;
         }
 
-        function updateStatus(message, isSuccess = true) {
-            const statusDiv = document.getElementById('status');
-            statusDiv.textContent = message;
-            statusDiv.className = `status ${isSuccess ? 'success' : 'error'}`;
+        log('🧪 Testing storage operations...');
+
+        // Test localStorage
+        localStorage.setItem('test_key', 'test_value_' + Date.now());
+        log('💾 Set localStorage item');
+
+        // Test sessionStorage
+        sessionStorage.setItem('session_key', 'session_value_' + Date.now());
+        log('🔄 Set sessionStorage item');
+
+        // Test cookies
+        document.cookie = `test_cookie=cookie_value_${Date.now()}; path=/`;
+        log('🍪 Set cookie');
+
+        log('✅ Storage operations completed - check CLI for updates!');
+      }
+
+      function testDeletion() {
+        if (!storageMonitor) {
+          log(
+            '❌ Storage Monitor not connected. Click "Test Connection" first.'
+          );
+          return;
         }
 
-        async function testConnection() {
-            try {
-                log('🔍 Testing StorageMonitor availability...');
-                
-                if (typeof StorageMonitor === 'undefined') {
-                    throw new Error('StorageMonitor is not defined');
-                }
-                
-                log('✅ StorageMonitor class is available');
-                log(`📋 StorageMonitor type: ${typeof StorageMonitor}`);
-                
-                log('🍪 Initializing Storage Monitor...');
-                
-                storageMonitor = await StorageMonitor.init({
-                    serverPort: 3006,
-                    serverHost: 'localhost',
-                    enableCookies: true,
-                    enableLocalStorage: true,
-                    enableSessionStorage: true,
-                    enableIndexedDB: false,
-                    pollInterval: 1000
-                });
+        log('🗑️ Testing storage deletion...');
 
-                updateStatus('✅ Connected to Storage Monitor', true);
-                log('✅ Storage Monitor connected successfully');
-                
-            } catch (error) {
-                updateStatus(`❌ Connection failed: ${error.message}`, false);
-                log(`❌ Failed to connect: ${error.message}`);
-                console.error('Full error:', error);
-            }
+        // First add some items to delete
+        localStorage.setItem('delete_test_1', 'value1');
+        localStorage.setItem('delete_test_2', 'value2');
+        sessionStorage.setItem('delete_session_1', 'session_value1');
+        document.cookie = 'delete_cookie=cookie_value; path=/';
+
+        log('📦 Added items to delete...');
+
+        // Wait a moment, then delete them
+        setTimeout(() => {
+          log('🗑️ Now deleting items...');
+
+          // Delete localStorage items
+          localStorage.removeItem('delete_test_1');
+          localStorage.removeItem('delete_test_2');
+          log('💾 Removed localStorage items');
+
+          // Delete sessionStorage items
+          sessionStorage.removeItem('delete_session_1');
+          log('🔄 Removed sessionStorage items');
+
+          // Delete cookie
+          document.cookie =
+            'delete_cookie=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
+          log('🍪 Removed cookie');
+
+          log('✅ Deletion test completed - check CLI for deletion events!');
+        }, 2000);
+      }
+
+      function clearLog() {
+        document.getElementById('log').textContent = 'Log cleared...\n';
+      }
+
+      // Auto-test on page load
+      window.addEventListener('load', () => {
+        log('📄 Test page loaded');
+        log('💡 Make sure the CLI is running: clp storage --port 3006');
+        log('💡 Click "Test Connection" to start');
+
+        // Check if StorageMonitor is available
+        if (typeof StorageMonitor !== 'undefined') {
+          log('✅ StorageMonitor class detected');
+        } else {
+          log('❌ StorageMonitor class not found');
         }
-
-        function testStorage() {
-            if (!storageMonitor) {
-                log('❌ Storage Monitor not connected. Click "Test Connection" first.');
-                return;
-            }
-
-            log('🧪 Testing storage operations...');
-            
-            // Test localStorage
-            localStorage.setItem('test_key', 'test_value_' + Date.now());
-            log('💾 Set localStorage item');
-            
-            // Test sessionStorage
-            sessionStorage.setItem('session_key', 'session_value_' + Date.now());
-            log('🔄 Set sessionStorage item');
-            
-            // Test cookies
-            document.cookie = `test_cookie=cookie_value_${Date.now()}; path=/`;
-            log('🍪 Set cookie');
-            
-            log('✅ Storage operations completed - check CLI for updates!');
-        }
-
-        function testDeletion() {
-            if (!storageMonitor) {
-                log('❌ Storage Monitor not connected. Click "Test Connection" first.');
-                return;
-            }
-
-            log('🗑️ Testing storage deletion...');
-
-            // First add some items to delete
-            localStorage.setItem('delete_test_1', 'value1');
-            localStorage.setItem('delete_test_2', 'value2');
-            sessionStorage.setItem('delete_session_1', 'session_value1');
-            document.cookie = 'delete_cookie=cookie_value; path=/';
-
-            log('📦 Added items to delete...');
-
-            // Wait a moment, then delete them
-            setTimeout(() => {
-                log('🗑️ Now deleting items...');
-
-                // Delete localStorage items
-                localStorage.removeItem('delete_test_1');
-                localStorage.removeItem('delete_test_2');
-                log('💾 Removed localStorage items');
-
-                // Delete sessionStorage items
-                sessionStorage.removeItem('delete_session_1');
-                log('🔄 Removed sessionStorage items');
-
-                // Delete cookie
-                document.cookie = 'delete_cookie=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
-                log('🍪 Removed cookie');
-
-                log('✅ Deletion test completed - check CLI for deletion events!');
-            }, 2000);
-        }
-
-        function clearLog() {
-            document.getElementById('log').textContent = 'Log cleared...\n';
-        }
-
-        // Auto-test on page load
-        window.addEventListener('load', () => {
-            log('📄 Test page loaded');
-            log('💡 Make sure the CLI is running: clp storage --port 3006');
-            log('💡 Click "Test Connection" to start');
-            
-            // Check if StorageMonitor is available
-            if (typeof StorageMonitor !== 'undefined') {
-                log('✅ StorageMonitor class detected');
-            } else {
-                log('❌ StorageMonitor class not found');
-            }
-        });
+      });
     </script>
-</body>
+  </body>
 </html>

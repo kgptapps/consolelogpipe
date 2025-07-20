@@ -14,7 +14,7 @@ function App() {
       // Use the correct parameters as per documentation
       ConsoleLogPipe.init({
         applicationName: 'react-test-app', // Must match CLI app name
-        port: 3008 // Must match CLI server port
+        port: 3008, // Must match CLI server port
       });
       setIsConnected(true);
 
@@ -28,19 +28,31 @@ function App() {
 
   // Test different console log types with delays to avoid recursion
   const testConsoleLog = () => {
-    setTimeout(() => console.log('📝 Regular log message from button click'), 10);
+    setTimeout(
+      () => console.log('📝 Regular log message from button click'),
+      10
+    );
   };
 
   const testConsoleWarn = () => {
-    setTimeout(() => console.warn('⚠️ Warning message - something might be wrong'), 10);
+    setTimeout(
+      () => console.warn('⚠️ Warning message - something might be wrong'),
+      10
+    );
   };
 
   const testConsoleError = () => {
-    setTimeout(() => console.error('🚨 Error message - something went wrong!'), 10);
+    setTimeout(
+      () => console.error('🚨 Error message - something went wrong!'),
+      10
+    );
   };
 
   const testConsoleInfo = () => {
-    setTimeout(() => console.info('ℹ️ Info message with useful information'), 10);
+    setTimeout(
+      () => console.info('ℹ️ Info message with useful information'),
+      10
+    );
   };
 
   const testCustomLog = () => {
@@ -58,7 +70,7 @@ function App() {
     const testObject = {
       name: 'Test Object',
       timestamp: new Date().toISOString(),
-      data: { nested: true, array: [1, 2, 3, 'test'] }
+      data: { nested: true, array: [1, 2, 3, 'test'] },
     };
     setTimeout(() => console.log('📦 Object logging test:', testObject), 10);
   };
@@ -66,7 +78,9 @@ function App() {
   const testNetworkRequest = async () => {
     setTimeout(() => console.log('🌐 Making network request...'), 10);
     try {
-      const response = await fetch('https://jsonplaceholder.typicode.com/posts/1');
+      const response = await fetch(
+        'https://jsonplaceholder.typicode.com/posts/1'
+      );
       const data = await response.json();
       setTimeout(() => console.log('✅ Network request successful:', data), 10);
     } catch (error) {
@@ -87,32 +101,44 @@ function App() {
         <img src={logo} className="App-logo" alt="logo" />
         <h1>Console Log Pipe Test App</h1>
 
-        <div className="status-indicator" style={{
-          padding: '10px',
-          margin: '10px 0',
-          borderRadius: '5px',
-          backgroundColor: isConnected ? '#d4edda' : '#f8d7da',
-          color: isConnected ? '#155724' : '#721c24',
-          border: `1px solid ${isConnected ? '#c3e6cb' : '#f5c6cb'}`
-        }}>
-          {isConnected ? '✅ Console Log Pipe Connected' : '❌ Console Log Pipe Disconnected'}
+        <div
+          className="status-indicator"
+          style={{
+            padding: '10px',
+            margin: '10px 0',
+            borderRadius: '5px',
+            backgroundColor: isConnected ? '#d4edda' : '#f8d7da',
+            color: isConnected ? '#155724' : '#721c24',
+            border: `1px solid ${isConnected ? '#c3e6cb' : '#f5c6cb'}`,
+          }}
+        >
+          {isConnected
+            ? '✅ Console Log Pipe Connected'
+            : '❌ Console Log Pipe Disconnected'}
         </div>
 
         <div className="card">
-          <button onClick={() => {
-            setCount((count) => count + 1);
-            console.log(`Counter clicked: ${count + 1}`);
-          }}>
+          <button
+            onClick={() => {
+              setCount(count => count + 1);
+              console.log(`Counter clicked: ${count + 1}`);
+            }}
+          >
             count is {count}
           </button>
-          <p>
-            Counter clicks will generate console logs automatically
-          </p>
+          <p>Counter clicks will generate console logs automatically</p>
         </div>
 
         <div className="test-section" style={{ margin: '20px 0' }}>
           <h2>Console Log Tests</h2>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginBottom: '20px' }}>
+          <div
+            style={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              gap: '10px',
+              marginBottom: '20px',
+            }}
+          >
             <button onClick={testConsoleLog}>Test Log</button>
             <button onClick={testConsoleWarn}>Test Warn</button>
             <button onClick={testConsoleError}>Test Error</button>
@@ -123,7 +149,7 @@ function App() {
             <input
               type="text"
               value={logMessage}
-              onChange={(e) => setLogMessage(e.target.value)}
+              onChange={e => setLogMessage(e.target.value)}
               placeholder="Enter custom log message"
               style={{ marginRight: '10px', padding: '5px' }}
             />

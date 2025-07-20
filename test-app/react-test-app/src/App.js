@@ -37,15 +37,14 @@ function App() {
     try {
       ConsoleLogPipe.init({
         applicationName: 'react-test-app',
-        port: 3008
+        port: 3008,
       });
       setIsConnected(true);
-      
+
       // Test a simple log after initialization
       setTimeout(() => {
         console.log('✅ Console Log Pipe initialized and working!');
       }, 100);
-      
     } catch (error) {
       console.error('Failed to initialize Console Log Pipe:', error);
       setIsConnected(false);
@@ -82,7 +81,7 @@ function App() {
     const testObject = {
       name: 'Test Object',
       timestamp: new Date().toISOString(),
-      data: { nested: true, array: [1, 2, 3, 'test'] }
+      data: { nested: true, array: [1, 2, 3, 'test'] },
     };
     console.log('📦 Object logging test:', testObject);
   };
@@ -90,7 +89,9 @@ function App() {
   const testNetworkRequest = async () => {
     console.log('🌐 Making network request...');
     try {
-      const response = await fetch('https://jsonplaceholder.typicode.com/posts/1');
+      const response = await fetch(
+        'https://jsonplaceholder.typicode.com/posts/1'
+      );
       const data = await response.json();
       console.log('✅ Network request successful:', data);
     } catch (error) {
@@ -111,31 +112,42 @@ function App() {
         <img src={logo} className="App-logo" alt="logo" />
         <h1>Console Log Pipe Test App (Safe Version)</h1>
 
-        <div className="status-indicator" style={{
-          padding: '10px',
-          margin: '10px 0',
-          borderRadius: '5px',
-          backgroundColor: isConnected ? '#d4edda' : isLoaded ? '#fff3cd' : '#f8d7da',
-          color: isConnected ? '#155724' : isLoaded ? '#856404' : '#721c24',
-          border: `1px solid ${isConnected ? '#c3e6cb' : isLoaded ? '#ffeaa7' : '#f5c6cb'}`
-        }}>
-          {isConnected ? '✅ Console Log Pipe Connected' : 
-           isLoaded ? '⚠️ Console Log Pipe Loaded (Click Initialize)' : 
-           '❌ Console Log Pipe Loading...'}
+        <div
+          className="status-indicator"
+          style={{
+            padding: '10px',
+            margin: '10px 0',
+            borderRadius: '5px',
+            backgroundColor: isConnected
+              ? '#d4edda'
+              : isLoaded
+              ? '#fff3cd'
+              : '#f8d7da',
+            color: isConnected ? '#155724' : isLoaded ? '#856404' : '#721c24',
+            border: `1px solid ${
+              isConnected ? '#c3e6cb' : isLoaded ? '#ffeaa7' : '#f5c6cb'
+            }`,
+          }}
+        >
+          {isConnected
+            ? '✅ Console Log Pipe Connected'
+            : isLoaded
+            ? '⚠️ Console Log Pipe Loaded (Click Initialize)'
+            : '❌ Console Log Pipe Loading...'}
         </div>
 
         {isLoaded && !isConnected && (
-          <button 
+          <button
             onClick={initializeConsoleLogPipe}
-            style={{ 
-              padding: '10px 20px', 
-              fontSize: '16px', 
-              backgroundColor: '#007bff', 
-              color: 'white', 
-              border: 'none', 
+            style={{
+              padding: '10px 20px',
+              fontSize: '16px',
+              backgroundColor: '#007bff',
+              color: 'white',
+              border: 'none',
               borderRadius: '5px',
               cursor: 'pointer',
-              margin: '10px'
+              margin: '10px',
             }}
           >
             🚀 Initialize Console Log Pipe
@@ -143,21 +155,28 @@ function App() {
         )}
 
         <div className="card">
-          <button onClick={() => {
-            setCount((count) => count + 1);
-            console.log(`Counter clicked: ${count + 1}`);
-          }}>
+          <button
+            onClick={() => {
+              setCount(count => count + 1);
+              console.log(`Counter clicked: ${count + 1}`);
+            }}
+          >
             count is {count}
           </button>
-          <p>
-            Counter clicks will generate console logs automatically
-          </p>
+          <p>Counter clicks will generate console logs automatically</p>
         </div>
 
         {isConnected && (
           <div className="test-section" style={{ margin: '20px 0' }}>
             <h2>Console Log Tests</h2>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginBottom: '20px' }}>
+            <div
+              style={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: '10px',
+                marginBottom: '20px',
+              }}
+            >
               <button onClick={testConsoleLog}>Test Log</button>
               <button onClick={testConsoleWarn}>Test Warn</button>
               <button onClick={testConsoleError}>Test Error</button>
@@ -168,7 +187,7 @@ function App() {
               <input
                 type="text"
                 value={logMessage}
-                onChange={(e) => setLogMessage(e.target.value)}
+                onChange={e => setLogMessage(e.target.value)}
                 placeholder="Enter custom log message"
                 style={{ marginRight: '10px', padding: '5px' }}
               />
@@ -183,20 +202,25 @@ function App() {
           </div>
         )}
 
-        <div className="instructions" style={{
-          backgroundColor: '#f8f9fa',
-          padding: '15px',
-          borderRadius: '5px',
-          marginTop: '20px',
-          textAlign: 'left'
-        }}>
+        <div
+          className="instructions"
+          style={{
+            backgroundColor: '#f8f9fa',
+            padding: '15px',
+            borderRadius: '5px',
+            marginTop: '20px',
+            textAlign: 'left',
+          }}
+        >
           <h3>Safe Testing Instructions:</h3>
           <ol>
             <li>Wait for "Console Log Pipe Loaded" status</li>
             <li>Click "Initialize Console Log Pipe" button</li>
             <li>Check CLI terminal for connection confirmation</li>
             <li>Use test buttons to send logs</li>
-            <li>Verify logs appear in both browser DevTools and CLI terminal</li>
+            <li>
+              Verify logs appear in both browser DevTools and CLI terminal
+            </li>
           </ol>
         </div>
       </header>

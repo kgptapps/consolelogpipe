@@ -46,4 +46,3 @@ ConsoleLogPipeAPI.ErrorCapture = ErrorCapture;
 
 // Single export following npm publishing standards
 module.exports = ConsoleLogPipeAPI;
-
