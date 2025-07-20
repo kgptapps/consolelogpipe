@@ -6,7 +6,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Coverage Status](https://img.shields.io/badge/coverage-96.77%25-brightgreen.svg)](https://github.com/kgptapps/consolelogpipe)
 
-**Current Version:** `2.3.0-beta.3` | **Status:** ✅ Ready for Production
+**Status:** ✅ Ready for Production
 
 **Bring browser console logs to your IDE with Console Log Pipe.** Stream console logs, errors, and
 network requests from any browser application directly to your development environment.
@@ -48,14 +48,9 @@ Copy this prompt to quickly get AI assistance with Console Log Pipe integration!
 
 ### NPM Package (Recommended)
 
-**Current Version: 2.3.1**
-
 ```bash
 # Install latest stable version (recommended)
 npm install @kansnpms/console-log-pipe-client
-
-# Or install specific version
-npm install @kansnpms/console-log-pipe-client@2.3.1
 ```
 
 **📦 [View on NPM](https://www.npmjs.com/package/@kansnpms/console-log-pipe-client)**
@@ -65,9 +60,6 @@ npm install @kansnpms/console-log-pipe-client@2.3.1
 ```html
 <!-- Latest stable version -->
 <script src="https://unpkg.com/@kansnpms/console-log-pipe-client"></script>
-
-<!-- Specific version -->
-<script src="https://unpkg.com/@kansnpms/console-log-pipe-client@2.3.1"></script>
 ```
 
 ### Required CLI Server
