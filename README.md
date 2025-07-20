@@ -244,7 +244,93 @@ clp start --port 3001
 | Command                         | Description                                        | Example                              |
 | ------------------------------- | -------------------------------------------------- | ------------------------------------ |
 | `clp start <app> --port <port>` | Start monitoring server with automatic log display | `clp start my-react-app --port 3001` |
-| `clp storage --port <port>`     | Start storage monitoring service (Beta)            | `clp storage --port 3002`            |
+| `clp storage --port <port>`     | Start storage monitoring service                   | `clp storage --port 3002`            |
+
+## 🍪 Storage Monitoring (Advanced Feature)
+
+Console Log Pipe includes powerful browser storage monitoring capabilities that track changes to
+cookies, localStorage, sessionStorage, and IndexedDB in real-time.
+
+### 🚀 Quick Storage Setup
+
+#### 1. Start Storage Monitor Server
+
+```bash
+# Start storage monitoring on a separate port
+clp storage --port 3002
+```
+
+#### 2. Install Storage Monitor Package
+
+```bash
+npm install @kansnpms/console-log-pipe-storage-beta
+```
+
+#### 3. Initialize Storage Monitoring
+
+```javascript
+import StorageMonitor from '@kansnpms/console-log-pipe-storage-beta';
+
+// Initialize storage monitoring
+StorageMonitor.init({
+  serverPort: 3002, // Must match CLI port
+});
+
+// Now all storage changes will stream to your CLI terminal!
+```
+
+### 📊 What Gets Monitored
+
+| Storage Type       | Operations Tracked               | Real-time Updates |
+| ------------------ | -------------------------------- | ----------------- |
+| **localStorage**   | `setItem`, `removeItem`, `clear` | ✅ Yes            |
+| **sessionStorage** | `setItem`, `removeItem`, `clear` | ✅ Yes            |
+| **Cookies**        | `document.cookie` changes        | ✅ Yes            |
+| **IndexedDB**      | Database operations              | ✅ Yes            |
+
+### 🎯 Storage Monitor Features
+
+- **🔴 Real-time Updates**: See storage changes instantly in your CLI
+- **🎨 Color-coded Output**: Green (add), Yellow (modify), Red (delete)
+- **📝 Detailed Information**: Key, value, timestamp, and operation type
+- **🔍 Change Detection**: Automatic detection of all storage modifications
+- **⚡ Zero Configuration**: Works out of the box with any web application
+
+### 💡 Example Usage
+
+```javascript
+// Your normal application code - no changes needed!
+localStorage.setItem('user', JSON.stringify({ name: 'John', id: 123 }));
+sessionStorage.setItem('session', 'abc123');
+document.cookie = 'theme=dark; path=/';
+
+// All these changes appear instantly in your CLI terminal:
+// ✅ [localStorage] SET user: {"name":"John","id":123}
+// ✅ [sessionStorage] SET session: abc123
+// ✅ [cookies] SET theme: dark
+```
+
+### 🛠️ Advanced Configuration
+
+```javascript
+StorageMonitor.init({
+  serverPort: 3002,
+
+  // Optional: Filter what gets monitored
+  monitor: {
+    localStorage: true,
+    sessionStorage: true,
+    cookies: true,
+    indexedDB: true,
+  },
+
+  // Optional: Custom formatting
+  formatters: {
+    timestamp: true,
+    colors: true,
+  },
+});
+```
 
 ### Integration Options
 
@@ -437,7 +523,7 @@ npm test
 ### 🚀 Quick Start & Installation
 
 - **[Package Index](./docs/Package-Index.md)** - Complete package guide with NPM links
-- **[Release Guide](./docs/Release-Guide.md)** - v2.3.0-beta.3 release information
+- **[Release Guide](./docs/Release-Guide.md)** - v2.3.0 release information
 - **[Simple QA Test](./docs/Simple-QA-Test.md)** - 15-minute quality test guide
 
 ### 📦 Package Documentation

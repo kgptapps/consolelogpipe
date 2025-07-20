@@ -48,14 +48,14 @@ Copy this prompt to quickly get AI assistance with Console Log Pipe integration!
 
 ### NPM Package (Recommended)
 
-**Current Version: 2.3.0-beta.3**
+**Current Version: 2.3.0**
 
 ```bash
-# Install latest beta version (recommended)
-npm install @kansnpms/console-log-pipe-client@beta
+# Install latest stable version (recommended)
+npm install @kansnpms/console-log-pipe-client
 
 # Or install specific version
-npm install @kansnpms/console-log-pipe-client@2.3.0-beta.3
+npm install @kansnpms/console-log-pipe-client@2.3.0
 ```
 
 **📦 [View on NPM](https://www.npmjs.com/package/@kansnpms/console-log-pipe-client)**
@@ -63,11 +63,11 @@ npm install @kansnpms/console-log-pipe-client@2.3.0-beta.3
 ### CDN (Alternative)
 
 ```html
-<!-- Latest beta version -->
-<script src="https://unpkg.com/@kansnpms/console-log-pipe-client@beta"></script>
+<!-- Latest stable version -->
+<script src="https://unpkg.com/@kansnpms/console-log-pipe-client"></script>
 
 <!-- Specific version -->
-<script src="https://unpkg.com/@kansnpms/console-log-pipe-client@2.3.0-beta.3"></script>
+<script src="https://unpkg.com/@kansnpms/console-log-pipe-client@2.3.0"></script>
 ```
 
 ### Required CLI Server
@@ -76,7 +76,7 @@ This client library requires the CLI server to be running:
 
 ```bash
 # Install CLI globally
-npm install -g @kansnpms/console-log-pipe-cli@beta
+npm install -g @kansnpms/console-log-pipe-cli
 
 # Start server
 clp start --port 3001

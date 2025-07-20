@@ -5,7 +5,7 @@
 [![npm downloads/month](https://img.shields.io/npm/dm/@kansnpms/console-log-pipe-storage-beta.svg)](https://www.npmjs.com/package/@kansnpms/console-log-pipe-storage-beta)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**Current Version:** `2.3.0-beta.3` | **Status:** 🧪 Beta Release
+**Current Version:** `2.3.0` | **Status:** ✅ Production Release
 
 🍪 **Real-time browser storage and cookies monitoring for development and debugging**
 
@@ -15,17 +15,14 @@
 - **NPM Registry:** https://www.npmjs.com/package/@kansnpms/console-log-pipe-storage-beta
 - **Repository:** https://github.com/kgptapps/consolelogpipe
 - **License:** MIT
-- **Status:** Beta - Ready for testing and feedback
-
-> **⚠️ Beta Release**: This is a beta version of the storage monitoring feature. APIs may change in
-> future releases.
+- **Status:** Production - Stable and ready for use
 
 ## 🚀 Quick Start
 
-### 1. Install the CLI (Beta)
+### 1. Install the CLI
 
 ```bash
-npm install -g @kansnpms/console-log-pipe-cli@beta
+npm install -g @kansnpms/console-log-pipe-cli
 ```
 
 ### 2. Start the Storage Monitor Service
@@ -38,7 +35,7 @@ clp storage --port 3002
 ### 3. Add to Your Web Application
 
 ```bash
-npm install @kansnpms/console-log-pipe-storage-beta@beta
+npm install @kansnpms/console-log-pipe-storage-beta
 ```
 
 ```javascript

@@ -5,7 +5,7 @@
 [![npm downloads/month](https://img.shields.io/npm/dm/@kansnpms/console-log-pipe-cli.svg)](https://www.npmjs.com/package/@kansnpms/console-log-pipe-cli)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**Current Version:** `2.3.0-beta.3` | **Status:** ✅ Ready for Production
+**Current Version:** `2.3.0` | **Status:** ✅ Production Release
 
 > Global CLI tool for Console Log Pipe - Stream browser console logs and storage changes to your
 > terminal in real-time.
@@ -23,18 +23,18 @@ Global CLI tool for Console Log Pipe - Real-time log streaming from browsers to 
 
 ### 1. Install globally
 
-**Current Version: 2.3.0-beta.3**
+**Current Version: 2.3.0**
 
 ```bash
-# Install latest beta version (recommended)
-npm install -g @kansnpms/console-log-pipe-cli@beta
+# Install latest stable version (recommended)
+npm install -g @kansnpms/console-log-pipe-cli
 
 # Or install specific version
-npm install -g @kansnpms/console-log-pipe-cli@2.3.0-beta.3
+npm install -g @kansnpms/console-log-pipe-cli@2.3.0
 
 # Verify installation
 clp --version
-# Expected: 2.3.0-beta.3
+# Expected: 2.3.0
 ```
 
 **📦 [View on NPM](https://www.npmjs.com/package/@kansnpms/console-log-pipe-cli)**
@@ -45,10 +45,10 @@ You'll also need the client library for your web applications:
 
 ```bash
 # Client library for browser integration
-npm install @kansnpms/console-log-pipe-client@beta
+npm install @kansnpms/console-log-pipe-client
 
-# Storage monitor (optional beta feature)
-npm install @kansnpms/console-log-pipe-storage-beta@beta
+# Storage monitor (optional)
+npm install @kansnpms/console-log-pipe-storage-beta
 ```
 
 **📦 Package Links:**
