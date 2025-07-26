@@ -74,7 +74,7 @@ jobs:
         run: npm ci
 
       - name: Run unit tests
-        run: npm test -- --coverage --passWithNoTests
+        run: npm run test:coverage -- --passWithNoTests
 
       - name: Run integration tests
         run: npm run test:integration -- --passWithNoTests || echo "Integration tests not yet implemented"
@@ -148,7 +148,7 @@ jobs:
         continue-on-error: true
 
       - name: Run E2E tests
-        run: npm run test:e2e || echo "E2E tests not yet implemented"
+        run: npm run test:e2e
 
   # Job 5: Performance Tests
   performance:
@@ -178,7 +178,7 @@ jobs:
         continue-on-error: true
 
       - name: Run performance tests
-        run: npm run test:performance || echo "Performance tests not yet implemented"
+        run: npm run test:performance
 
   # Job 6: Package Size Analysis
   size-analysis:
