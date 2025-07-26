@@ -39,7 +39,7 @@ jobs:
         run: npm ci
 
       - name: Run full test suite
-        run: npm run test:all
+        run: npm test
 
       - name: Build all packages
         run: npm run build
