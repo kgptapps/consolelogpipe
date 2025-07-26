@@ -1,183 +1,233 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Console Log Pipe Test - Corrected</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        .status { padding: 10px; margin: 10px 0; border-radius: 5px; }
-        .success { background: #d4edda; color: #155724; }
-        .error { background: #f8d7da; color: #721c24; }
-        .info { background: #d1ecf1; color: #0c5460; }
-        button { padding: 10px 20px; margin: 5px; font-size: 16px; }
-        #logs { background: #f8f9fa; padding: 15px; border: 1px solid #dee2e6; border-radius: 5px; white-space: pre-wrap; font-family: monospace; max-height: 400px; overflow-y: auto; }
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+      }
+      .status {
+        padding: 10px;
+        margin: 10px 0;
+        border-radius: 5px;
+      }
+      .success {
+        background: #d4edda;
+        color: #155724;
+      }
+      .error {
+        background: #f8d7da;
+        color: #721c24;
+      }
+      .info {
+        background: #d1ecf1;
+        color: #0c5460;
+      }
+      button {
+        padding: 10px 20px;
+        margin: 5px;
+        font-size: 16px;
+      }
+      #logs {
+        background: #f8f9fa;
+        padding: 15px;
+        border: 1px solid #dee2e6;
+        border-radius: 5px;
+        white-space: pre-wrap;
+        font-family: monospace;
+        max-height: 400px;
+        overflow-y: auto;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <h1>🧪 Console Log Pipe Test - Corrected</h1>
-    
+
     <div class="status info">
-        <strong>Instructions:</strong>
-        <ol>
-            <li>Start CLI server: <code>npx @kansnpms/console-log-pipe-cli start test --port 3001</code></li>
-            <li>Click "Test Console Log Pipe" below</li>
-            <li>Check CLI terminal for console messages</li>
-        </ol>
+      <strong>Instructions:</strong>
+      <ol>
+        <li>
+          Start CLI server:
+          <code>npx @kansnpms/console-log-pipe-cli start test --port 3001</code>
+        </li>
+        <li>Click "Test Console Log Pipe" below</li>
+        <li>Check CLI terminal for console messages</li>
+      </ol>
     </div>
-    
+
     <div id="status" class="status info">Ready to test...</div>
-    
+
     <button onclick="testConsoleLogPipe()">🚀 Test Console Log Pipe</button>
     <button onclick="testDirectWebSocket()">🔌 Test Direct WebSocket</button>
     <button onclick="clearLogs()">🧹 Clear Logs</button>
-    
+
     <div id="logs"></div>
 
     <!-- Load Console Log Pipe Client from CDN -->
     <script src="https://unpkg.com/@kansnpms/console-log-pipe-client@2.4.7/dist/console-log-pipe.umd.js"></script>
     <script>
-        function updateStatus(message, type = 'info') {
-            const statusDiv = document.getElementById('status');
-            statusDiv.className = 'status ' + type;
-            statusDiv.innerHTML = message;
+      function updateStatus(message, type = 'info') {
+        const statusDiv = document.getElementById('status');
+        statusDiv.className = 'status ' + type;
+        statusDiv.innerHTML = message;
+      }
+
+      function addLog(message) {
+        const logsDiv = document.getElementById('logs');
+        const timestamp = new Date().toISOString();
+        logsDiv.innerHTML += `[${timestamp}] ${message}\n`;
+        logsDiv.scrollTop = logsDiv.scrollHeight;
+      }
+
+      function clearLogs() {
+        document.getElementById('logs').innerHTML = '';
+      }
+
+      async function testConsoleLogPipe() {
+        updateStatus('🧪 Testing Console Log Pipe...', 'info');
+        clearLogs();
+
+        addLog('=== Console Log Pipe Test ===');
+
+        try {
+          // Check if ConsoleLogPipe is available
+          if (typeof ConsoleLogPipe === 'undefined') {
+            addLog('❌ ConsoleLogPipe not available - CDN loading failed');
+            updateStatus('❌ ConsoleLogPipe not available', 'error');
+            return;
+          }
+
+          addLog('✅ ConsoleLogPipe loaded successfully');
+          addLog(`📋 Version: ${ConsoleLogPipe.version}`);
+
+          // Initialize Console Log Pipe
+          addLog('🔧 Initializing Console Log Pipe...');
+          await ConsoleLogPipe.init({
+            serverPort: 3001,
+            serverHost: 'localhost',
+          });
+
+          addLog('✅ Console Log Pipe initialized successfully');
+          updateStatus('✅ Connected to CLI server', 'success');
+
+          // Test console messages
+          addLog('📝 Sending test console messages...');
+          console.log('🧪 TEST LOG: This should appear in CLI terminal');
+          console.error('🧪 TEST ERROR: This should appear in CLI terminal');
+          console.warn('🧪 TEST WARN: This should appear in CLI terminal');
+          console.info('🧪 TEST INFO: This should appear in CLI terminal');
+
+          // Test with objects
+          console.log('🧪 TEST OBJECT:', {
+            test: true,
+            data: [1, 2, 3],
+            timestamp: new Date(),
+          });
+
+          addLog('✅ Test messages sent - check CLI terminal!');
+          updateStatus(
+            '✅ Test completed - check CLI terminal for messages',
+            'success'
+          );
+        } catch (error) {
+          addLog(`❌ Error: ${error.message}`);
+          updateStatus(`❌ Test failed: ${error.message}`, 'error');
         }
-        
-        function addLog(message) {
-            const logsDiv = document.getElementById('logs');
-            const timestamp = new Date().toISOString();
-            logsDiv.innerHTML += `[${timestamp}] ${message}\n`;
-            logsDiv.scrollTop = logsDiv.scrollHeight;
-        }
-        
-        function clearLogs() {
-            document.getElementById('logs').innerHTML = '';
-        }
-        
-        async function testConsoleLogPipe() {
-            updateStatus('🧪 Testing Console Log Pipe...', 'info');
-            clearLogs();
-            
-            addLog('=== Console Log Pipe Test ===');
-            
-            try {
-                // Check if ConsoleLogPipe is available
-                if (typeof ConsoleLogPipe === 'undefined') {
-                    addLog('❌ ConsoleLogPipe not available - CDN loading failed');
-                    updateStatus('❌ ConsoleLogPipe not available', 'error');
-                    return;
-                }
-                
-                addLog('✅ ConsoleLogPipe loaded successfully');
-                addLog(`📋 Version: ${ConsoleLogPipe.version}`);
-                
-                // Initialize Console Log Pipe
-                addLog('🔧 Initializing Console Log Pipe...');
-                await ConsoleLogPipe.init({
-                    serverPort: 3001,
-                    serverHost: 'localhost'
-                });
-                
-                addLog('✅ Console Log Pipe initialized successfully');
-                updateStatus('✅ Connected to CLI server', 'success');
-                
-                // Test console messages
-                addLog('📝 Sending test console messages...');
-                console.log('🧪 TEST LOG: This should appear in CLI terminal');
-                console.error('🧪 TEST ERROR: This should appear in CLI terminal');
-                console.warn('🧪 TEST WARN: This should appear in CLI terminal');
-                console.info('🧪 TEST INFO: This should appear in CLI terminal');
-                
-                // Test with objects
-                console.log('🧪 TEST OBJECT:', { test: true, data: [1, 2, 3], timestamp: new Date() });
-                
-                addLog('✅ Test messages sent - check CLI terminal!');
-                updateStatus('✅ Test completed - check CLI terminal for messages', 'success');
-                
-            } catch (error) {
-                addLog(`❌ Error: ${error.message}`);
-                updateStatus(`❌ Test failed: ${error.message}`, 'error');
+      }
+
+      function testDirectWebSocket() {
+        updateStatus('🔌 Testing direct WebSocket...', 'info');
+        clearLogs();
+
+        addLog('=== Direct WebSocket Test ===');
+        addLog(
+          '🔌 Testing direct WebSocket connection to ws://localhost:3001...'
+        );
+
+        try {
+          const ws = new WebSocket('ws://localhost:3001');
+
+          ws.onopen = event => {
+            addLog('✅ WebSocket connection opened successfully!');
+
+            // Send a test message in the format Console Log Pipe expects
+            const testMessage = {
+              type: 'console',
+              level: 'log',
+              message: ['🧪 DIRECT WS TEST: Direct WebSocket test message'],
+              timestamp: Date.now(),
+              url: window.location.href,
+              userAgent: navigator.userAgent,
+            };
+
+            ws.send(JSON.stringify(testMessage));
+            addLog('📤 Test message sent via direct WebSocket');
+          };
+
+          ws.onmessage = event => {
+            addLog('📥 Message received: ' + event.data);
+          };
+
+          ws.onerror = event => {
+            addLog('❌ WebSocket error occurred');
+            addLog('Error event type: ' + event.type);
+            updateStatus('❌ WebSocket connection failed', 'error');
+          };
+
+          ws.onclose = event => {
+            addLog('🔌 WebSocket connection closed');
+            addLog('Close code: ' + event.code);
+            addLog('Close reason: ' + event.reason);
+            if (event.code === 1006) {
+              addLog(
+                '❌ Connection failed - is CLI server running on port 3001?'
+              );
+              updateStatus(
+                '❌ Connection failed - check if CLI server is running',
+                'error'
+              );
             }
-        }
-        
-        function testDirectWebSocket() {
-            updateStatus('🔌 Testing direct WebSocket...', 'info');
-            clearLogs();
-            
-            addLog('=== Direct WebSocket Test ===');
-            addLog('🔌 Testing direct WebSocket connection to ws://localhost:3001...');
-            
-            try {
-                const ws = new WebSocket('ws://localhost:3001');
-                
-                ws.onopen = (event) => {
-                    addLog('✅ WebSocket connection opened successfully!');
-                    
-                    // Send a test message in the format Console Log Pipe expects
-                    const testMessage = {
-                        type: 'console',
-                        level: 'log',
-                        message: ['🧪 DIRECT WS TEST: Direct WebSocket test message'],
-                        timestamp: Date.now(),
-                        url: window.location.href,
-                        userAgent: navigator.userAgent
-                    };
-                    
-                    ws.send(JSON.stringify(testMessage));
-                    addLog('📤 Test message sent via direct WebSocket');
-                };
-                
-                ws.onmessage = (event) => {
-                    addLog('📥 Message received: ' + event.data);
-                };
-                
-                ws.onerror = (event) => {
-                    addLog('❌ WebSocket error occurred');
-                    addLog('Error event type: ' + event.type);
-                    updateStatus('❌ WebSocket connection failed', 'error');
-                };
-                
-                ws.onclose = (event) => {
-                    addLog('🔌 WebSocket connection closed');
-                    addLog('Close code: ' + event.code);
-                    addLog('Close reason: ' + event.reason);
-                    if (event.code === 1006) {
-                        addLog('❌ Connection failed - is CLI server running on port 3001?');
-                        updateStatus('❌ Connection failed - check if CLI server is running', 'error');
-                    }
-                };
-                
-                // Test connection timeout
-                setTimeout(() => {
-                    if (ws.readyState === WebSocket.CONNECTING) {
-                        addLog('⏰ Connection timeout - still connecting after 5 seconds');
-                        ws.close();
-                        updateStatus('❌ Connection timeout', 'error');
-                    }
-                }, 5000);
-                
-            } catch (error) {
-                addLog('❌ Exception creating WebSocket: ' + error.message);
-                updateStatus('❌ WebSocket creation failed', 'error');
+          };
+
+          // Test connection timeout
+          setTimeout(() => {
+            if (ws.readyState === WebSocket.CONNECTING) {
+              addLog(
+                '⏰ Connection timeout - still connecting after 5 seconds'
+              );
+              ws.close();
+              updateStatus('❌ Connection timeout', 'error');
             }
+          }, 5000);
+        } catch (error) {
+          addLog('❌ Exception creating WebSocket: ' + error.message);
+          updateStatus('❌ WebSocket creation failed', 'error');
         }
-        
-        // Auto-run basic checks when page loads
-        window.addEventListener('load', function() {
-            updateStatus('Ready to test Console Log Pipe', 'info');
-            addLog('🔍 Console Log Pipe test page loaded');
-            
-            // Check if ConsoleLogPipe is available
-            if (typeof ConsoleLogPipe !== 'undefined') {
-                addLog('✅ ConsoleLogPipe is available globally');
-                addLog(`📋 Version: ${ConsoleLogPipe.version}`);
-            } else {
-                addLog('❌ ConsoleLogPipe not available - CDN loading may have failed');
-            }
-            
-            addLog('📋 Make sure CLI server is running: npx @kansnpms/console-log-pipe-cli start test --port 3001');
-            addLog('📋 Then click "Test Console Log Pipe" button');
-        });
+      }
+
+      // Auto-run basic checks when page loads
+      window.addEventListener('load', function () {
+        updateStatus('Ready to test Console Log Pipe', 'info');
+        addLog('🔍 Console Log Pipe test page loaded');
+
+        // Check if ConsoleLogPipe is available
+        if (typeof ConsoleLogPipe !== 'undefined') {
+          addLog('✅ ConsoleLogPipe is available globally');
+          addLog(`📋 Version: ${ConsoleLogPipe.version}`);
+        } else {
+          addLog(
+            '❌ ConsoleLogPipe not available - CDN loading may have failed'
+          );
+        }
+
+        addLog(
+          '📋 Make sure CLI server is running: npx @kansnpms/console-log-pipe-cli start test --port 3001'
+        );
+        addLog('📋 Then click "Test Console Log Pipe" button');
+      });
     </script>
-</body>
+  </body>
 </html>

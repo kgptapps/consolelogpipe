@@ -1,141 +1,172 @@
 <!DOCTYPE html>
 <html>
-<head>
+  <head>
     <title>Test Published Package</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        .status { padding: 10px; margin: 10px 0; border-radius: 5px; }
-        .success { background: #d4edda; color: #155724; }
-        .error { background: #f8d7da; color: #721c24; }
-        .info { background: #d1ecf1; color: #0c5460; }
-        #logs { background: #f8f9fa; padding: 15px; border: 1px solid #dee2e6; border-radius: 5px; white-space: pre-wrap; font-family: monospace; max-height: 400px; overflow-y: auto; }
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+      }
+      .status {
+        padding: 10px;
+        margin: 10px 0;
+        border-radius: 5px;
+      }
+      .success {
+        background: #d4edda;
+        color: #155724;
+      }
+      .error {
+        background: #f8d7da;
+        color: #721c24;
+      }
+      .info {
+        background: #d1ecf1;
+        color: #0c5460;
+      }
+      #logs {
+        background: #f8f9fa;
+        padding: 15px;
+        border: 1px solid #dee2e6;
+        border-radius: 5px;
+        white-space: pre-wrap;
+        font-family: monospace;
+        max-height: 400px;
+        overflow-y: auto;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <h1>🧪 Test Published Package from NPM</h1>
-    
+
     <div class="status info">
-        <strong>Testing:</strong> @kansnpms/console-log-pipe-client@2.4.7 from NPM registry
+      <strong>Testing:</strong> @kansnpms/console-log-pipe-client@2.4.7 from NPM
+      registry
     </div>
-    
+
     <div id="status" class="status info">Loading...</div>
-    
+
     <button onclick="testPublishedPackage()">🚀 Test Published Package</button>
     <button onclick="clearLogs()">🧹 Clear Logs</button>
-    
+
     <div id="logs"></div>
 
     <!-- Load from local node_modules (published package) -->
     <script src="./node_modules/@kansnpms/console-log-pipe-client/dist/console-log-pipe.umd.js"></script>
     <script>
-        function updateStatus(message, type = 'info') {
-            const statusDiv = document.getElementById('status');
-            statusDiv.className = 'status ' + type;
-            statusDiv.innerHTML = message;
+      function updateStatus(message, type = 'info') {
+        const statusDiv = document.getElementById('status');
+        statusDiv.className = 'status ' + type;
+        statusDiv.innerHTML = message;
+      }
+
+      function addLog(message) {
+        const logsDiv = document.getElementById('logs');
+        const timestamp = new Date().toISOString();
+        logsDiv.innerHTML += `[${timestamp}] ${message}\n`;
+        logsDiv.scrollTop = logsDiv.scrollHeight;
+      }
+
+      function clearLogs() {
+        document.getElementById('logs').innerHTML = '';
+      }
+
+      async function testPublishedPackage() {
+        updateStatus('🧪 Testing published package...', 'info');
+        clearLogs();
+
+        addLog('=== Testing Published Package from NPM ===');
+
+        // Test 1: Check if ConsoleLogPipe is available
+        addLog('1. Checking global availability...');
+        if (typeof ConsoleLogPipe !== 'undefined') {
+          addLog('✅ ConsoleLogPipe is available globally');
+          addLog(`📋 Type: ${typeof ConsoleLogPipe}`);
+          addLog(`📋 Version: ${ConsoleLogPipe.version || 'undefined'}`);
+
+          // Check properties
+          const props = Object.getOwnPropertyNames(ConsoleLogPipe);
+          addLog(`📋 Properties: ${props.join(', ')}`);
+
+          // Check if it has init method
+          if (typeof ConsoleLogPipe.init === 'function') {
+            addLog('✅ init method is available');
+          } else {
+            addLog('❌ init method is missing');
+            updateStatus('❌ Published package missing init method', 'error');
+            return;
+          }
+        } else {
+          addLog('❌ ConsoleLogPipe is not available globally');
+          updateStatus('❌ Published package not loading correctly', 'error');
+          return;
         }
-        
-        function addLog(message) {
-            const logsDiv = document.getElementById('logs');
-            const timestamp = new Date().toISOString();
-            logsDiv.innerHTML += `[${timestamp}] ${message}\n`;
-            logsDiv.scrollTop = logsDiv.scrollHeight;
+
+        // Test 2: Try to initialize (without WebSocket for now)
+        addLog('2. Testing initialization...');
+        try {
+          // Don't actually connect, just test the method exists and can be called
+          addLog('📋 Attempting to call init method...');
+
+          // This should fail gracefully since no server is running
+          const result = ConsoleLogPipe.init({
+            serverPort: 9999, // Use a port that's definitely not running
+            serverHost: 'localhost',
+          });
+
+          addLog(`📋 Init method returned: ${typeof result}`);
+
+          if (result && typeof result.then === 'function') {
+            addLog('📋 Init returned a Promise (expected)');
+
+            // Let it fail gracefully
+            result.catch(error => {
+              addLog(`📋 Expected connection error: ${error.message}`);
+              addLog('✅ Init method works (connection failed as expected)');
+            });
+          } else {
+            addLog('📋 Init returned synchronously');
+          }
+        } catch (error) {
+          addLog(`❌ Init method error: ${error.message}`);
+          addLog(`📋 Stack: ${error.stack}`);
+          updateStatus(
+            `❌ Published package init method broken: ${error.message}`,
+            'error'
+          );
+          return;
         }
-        
-        function clearLogs() {
-            document.getElementById('logs').innerHTML = '';
-        }
-        
-        async function testPublishedPackage() {
-            updateStatus('🧪 Testing published package...', 'info');
-            clearLogs();
-            
-            addLog('=== Testing Published Package from NPM ===');
-            
-            // Test 1: Check if ConsoleLogPipe is available
-            addLog('1. Checking global availability...');
-            if (typeof ConsoleLogPipe !== 'undefined') {
-                addLog('✅ ConsoleLogPipe is available globally');
-                addLog(`📋 Type: ${typeof ConsoleLogPipe}`);
-                addLog(`📋 Version: ${ConsoleLogPipe.version || 'undefined'}`);
-                
-                // Check properties
-                const props = Object.getOwnPropertyNames(ConsoleLogPipe);
-                addLog(`📋 Properties: ${props.join(', ')}`);
-                
-                // Check if it has init method
-                if (typeof ConsoleLogPipe.init === 'function') {
-                    addLog('✅ init method is available');
-                } else {
-                    addLog('❌ init method is missing');
-                    updateStatus('❌ Published package missing init method', 'error');
-                    return;
-                }
-            } else {
-                addLog('❌ ConsoleLogPipe is not available globally');
-                updateStatus('❌ Published package not loading correctly', 'error');
-                return;
-            }
-            
-            // Test 2: Try to initialize (without WebSocket for now)
-            addLog('2. Testing initialization...');
-            try {
-                // Don't actually connect, just test the method exists and can be called
-                addLog('📋 Attempting to call init method...');
-                
-                // This should fail gracefully since no server is running
-                const result = ConsoleLogPipe.init({
-                    serverPort: 9999, // Use a port that's definitely not running
-                    serverHost: 'localhost'
-                });
-                
-                addLog(`📋 Init method returned: ${typeof result}`);
-                
-                if (result && typeof result.then === 'function') {
-                    addLog('📋 Init returned a Promise (expected)');
-                    
-                    // Let it fail gracefully
-                    result.catch(error => {
-                        addLog(`📋 Expected connection error: ${error.message}`);
-                        addLog('✅ Init method works (connection failed as expected)');
-                    });
-                } else {
-                    addLog('📋 Init returned synchronously');
-                }
-                
-            } catch (error) {
-                addLog(`❌ Init method error: ${error.message}`);
-                addLog(`📋 Stack: ${error.stack}`);
-                updateStatus(`❌ Published package init method broken: ${error.message}`, 'error');
-                return;
-            }
-            
-            // Test 3: Check console methods
-            addLog('3. Testing console method availability...');
-            const originalLog = console.log;
-            const originalError = console.error;
-            
-            addLog(`📋 console.log type: ${typeof originalLog}`);
-            addLog(`📋 console.error type: ${typeof originalError}`);
-            
-            // Test 4: Summary
-            addLog('=== Test Summary ===');
-            addLog('✅ Global object available');
-            addLog('✅ Version property present');
-            addLog('✅ Init method available');
-            addLog('✅ Console methods accessible');
-            
-            updateStatus('✅ Published package appears to be working correctly', 'success');
-        }
-        
-        // Auto-run test when page loads
-        window.addEventListener('load', function() {
-            updateStatus('Ready to test published package', 'info');
-            addLog('🔍 Published package test page loaded');
-            addLog('📋 Click "Test Published Package" to validate');
-            
-            // Auto-run test
-            setTimeout(testPublishedPackage, 1000);
-        });
+
+        // Test 3: Check console methods
+        addLog('3. Testing console method availability...');
+        const originalLog = console.log;
+        const originalError = console.error;
+
+        addLog(`📋 console.log type: ${typeof originalLog}`);
+        addLog(`📋 console.error type: ${typeof originalError}`);
+
+        // Test 4: Summary
+        addLog('=== Test Summary ===');
+        addLog('✅ Global object available');
+        addLog('✅ Version property present');
+        addLog('✅ Init method available');
+        addLog('✅ Console methods accessible');
+
+        updateStatus(
+          '✅ Published package appears to be working correctly',
+          'success'
+        );
+      }
+
+      // Auto-run test when page loads
+      window.addEventListener('load', function () {
+        updateStatus('Ready to test published package', 'info');
+        addLog('🔍 Published package test page loaded');
+        addLog('📋 Click "Test Published Package" to validate');
+
+        // Auto-run test
+        setTimeout(testPublishedPackage, 1000);
+      });
     </script>
-</body>
+  </body>
 </html>
