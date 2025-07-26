@@ -56,7 +56,10 @@ npm install @kansnpms/console-log-pipe-client
 
 # 3. Initialize in your app (port must match CLI port)
 import ConsoleLogPipe from '@kansnpms/console-log-pipe-client';
-await ConsoleLogPipe.init({ port: 3001 }); // ⚠️ Port is mandatory
+await ConsoleLogPipe.init({
+  serverPort: 3001,        // ⚠️ serverPort is mandatory
+  serverHost: 'localhost'  // optional, defaults to 'localhost'
+});
 
 # 4. Watch logs stream to your terminal! 📡
 ```

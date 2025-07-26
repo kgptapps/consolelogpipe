@@ -57,35 +57,28 @@ import ConsoleLogPipe from '@kansnpms/console-log-pipe-client';
 
 // Basic usage (returns a Promise)
 const client = await ConsoleLogPipe.init({
-  port: 3001, // (required) – same port you gave the CLI
-  developer: 'nandana', // appears in the CLI header & AI metadata
-  environment: 'dev', // dev | staging | prod (auto‑detected if omitted)
-  enableNetworkCapture: true,
-  includePatterns: ['/api'], // only stream matching network req/res
+  serverPort: 3001, // (required) – same port you gave the CLI
+  serverHost: 'localhost', // (optional) – defaults to 'localhost'
 });
 
 console.log('✅ Console Log Pipe is ready!');
 ```
 
 ```ts
-// With completion callbacks (no need to await)
-ConsoleLogPipe.init({
-  port: 3001,
-  onReady: client => {
-    console.log('✅ Console Log Pipe is ready!');
-    // Your app initialization code here
-  },
-  onError: error => {
-    console.error('❌ Console Log Pipe failed to initialize:', error);
-    // Handle initialization failure
-  },
+// Simple initialization (most common)
+await ConsoleLogPipe.init({
+  serverPort: 3001,
+  serverHost: 'localhost', // optional
 });
 ```
 
 ```ts
 // Error handling with try/catch
 try {
-  const client = await ConsoleLogPipe.init({ port: 3001 });
+  const client = await ConsoleLogPipe.init({
+    serverPort: 3001,
+    serverHost: 'localhost',
+  });
   console.log('✅ Ready to capture logs!');
 } catch (error) {
   console.error('❌ Failed to initialize:', error);
@@ -103,7 +96,7 @@ Open your browser console and watch the magic appear in your terminal 📡.
 Initialises interception and returns a **Promise** that resolves when ready. Call it once as early
 as possible (before most imports if you want **first‑paint** logs).
 
-**⚠️ Port is mandatory** - throws error if not provided or invalid.
+**⚠️ serverPort is mandatory** - throws error if not provided or invalid.
 
 | Option                 | Type                                                     | Default      | Notes                                                      |
 | ---------------------- | -------------------------------------------------------- | ------------ | ---------------------------------------------------------- |

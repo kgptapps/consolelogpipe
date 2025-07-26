@@ -1,8 +1,6 @@
 # Console Log Pipe - Quality Assurance Testing Guide
 
-**Version:** 2.3.0-beta.2  
-**Date:** July 19, 2025  
-**Testing Type:** Beta Release Validation  
+**Version:** 2.3.0-beta.2 **Date:** July 19, 2025 **Testing Type:** Beta Release Validation
 **Repository:** https://github.com/kgptapps/consolelogpipe
 
 ## 📋 Executive Summary
@@ -176,7 +174,10 @@ clp --help
       import ConsoleLogPipe from './node_modules/@kansnpms/console-log-pipe-client/dist/console-log-pipe.esm.js';
 
       // Initialize with server port
-      ConsoleLogPipe.init({ port: 3001 });
+      ConsoleLogPipe.init({
+        serverPort: 3001,
+        serverHost: 'localhost',
+      });
 
       window.testLogs = function () {
         console.log('Test log message');
@@ -588,7 +589,10 @@ cat > test.html << 'EOF'
         import ConsoleLogPipe from './node_modules/@kansnpms/console-log-pipe-client/dist/console-log-pipe.esm.js';
 
         // Initialize Console Log Pipe
-        ConsoleLogPipe.init({ port: 3001 });
+        ConsoleLogPipe.init({
+          serverPort: 3001,
+          serverHost: 'localhost'
+        });
         console.log('Console Log Pipe initialized for QA testing');
 
         // Basic logging tests
@@ -754,6 +758,6 @@ first **Command:** `clp storage --port 3002` before loading web page
 
 ---
 
-**Document Version:** 1.0 **Last Updated:** July 19, 2025 **Tester Name:**
-****\*\*****\_****\*\***** **Date Completed:** **\*\*\*\***\_\_\_**\*\*\*\*** **Signature:**
-****\*\*****\_\_\_****\*\*****
+**Document Version:** 1.0 **Last Updated:** July 19, 2025 **Tester
+Name:** \***\*\*\*\*\***\_\***\*\*\*\*\*** **Date Completed:** **\*\*\*\***\_\_\_**\*\*\*\***
+**Signature:** \***\*\*\*\*\***\_\_\_\***\*\*\*\*\***

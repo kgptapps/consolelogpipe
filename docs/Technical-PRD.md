@@ -93,12 +93,9 @@ Session ID     Error Categories    Performance Data      Smart Routing         A
 import { ConsoleLogPipe } from '@kansnpms/console-log-pipe-client';
 
 // Simple Usage (Port-based identification)
-const logger = new ConsoleLogPipe({
-  port: 3001, // REQUIRED - must match CLI server port
-  // sessionId auto-generated and logged to console
-  environment: 'development', // auto-detected or specified
-  developer: 'john-doe', // auto-detected from git config
-  branch: 'feature/checkout-redesign', // auto-detected from git
+await ConsoleLogPipe.init({
+  serverPort: 3001, // REQUIRED - must match CLI server port
+  serverHost: 'localhost', // optional - defaults to 'localhost'
 });
 
 // AI-Friendly Development Context

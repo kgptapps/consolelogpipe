@@ -1,102 +1,59 @@
 /**
  * Console Log Pipe Client Library TypeScript Definitions
+ * Matches the actual published package API v2.4.7
  */
 
-export interface ConsoleLogPipeOptions {
-  // Application context (required)
-  applicationName: string;
-  sessionId?: string;
-  environment?: 'development' | 'staging' | 'production';
-  developer?: string;
-  branch?: string;
+export interface ConsoleLogPipeInitOptions {
+  /**
+   * Server port number (required)
+   * Must match the port used when starting the CLI server
+   */
+  serverPort: number;
 
-  // Server configuration
+  /**
+   * Server host (optional)
+   * Defaults to 'localhost'
+   */
   serverHost?: string;
-  serverPort?: number;
-  serverPath?: string;
-  enableRemoteLogging?: boolean;
-
-  // Feature toggles
-  enableLogCapture?: boolean;
-  enableErrorCapture?: boolean;
-  enableNetworkCapture?: boolean;
-  preserveOriginal?: boolean;
-
-  // AI-friendly features
-  enableMetadata?: boolean;
-  enableErrorCategorization?: boolean;
-  enablePerformanceTracking?: boolean;
-  enableNetworkAnalysis?: boolean;
-
-  // Filtering options
-  logLevels?: string[];
-  excludePatterns?: string[];
-  includePatterns?: string[];
-  excludeUrls?: string[];
-  includeUrls?: string[];
-
-  // Performance options
-  maxLogSize?: number;
-  maxQueueSize?: number;
-  batchSize?: number;
-  batchTimeout?: number;
-
-  // Transport options
-  maxRetries?: number;
-  retryDelay?: number;
-  enableCompression?: boolean;
-  enableAutoDiscovery?: boolean;
 }
 
-export interface CapturedData {
-  type: 'log' | 'error' | 'network';
-  data: any;
-}
+export interface ConsoleLogPipeInstance {
+  /**
+   * WebSocket connection to CLI server
+   */
+  ws: WebSocket | null;
 
-export interface SessionInfo {
-  sessionId: string;
-  applicationName: string;
-  environment: string;
-  developer: string;
-  branch: string;
-  startTime: number;
-  isCapturing: boolean;
-}
+  /**
+   * Whether the client is connected to the CLI server
+   */
+  isConnected: boolean;
 
-export interface Statistics {
-  totalLogs: number;
-  totalErrors: number;
-  totalNetworkRequests: number;
-  startTime: number;
-  lastActivity: number;
-  transport?: any;
-}
-
-export declare class ConsoleLogPipe {
-  constructor(options: ConsoleLogPipeOptions);
-
-  init(): Promise<ConsoleLogPipe>;
-  start(): ConsoleLogPipe;
-  stop(): ConsoleLogPipe;
-  destroy(): Promise<ConsoleLogPipe>;
-
-  addListener(callback: (data: CapturedData) => void): ConsoleLogPipe;
-  removeListener(callback: (data: CapturedData) => void): ConsoleLogPipe;
-
-  getConfig(): ConsoleLogPipeOptions;
-  updateConfig(newConfig: Partial<ConsoleLogPipeOptions>): ConsoleLogPipe;
-  getStats(): Statistics;
-  getSession(): SessionInfo;
-  flush(): Promise<ConsoleLogPipe>;
+  /**
+   * Original console methods (preserved)
+   */
+  originalConsole: {
+    log: (...args: any[]) => void;
+    error: (...args: any[]) => void;
+    warn: (...args: any[]) => void;
+    info: (...args: any[]) => void;
+    debug: (...args: any[]) => void;
+  };
 }
 
 export interface ConsoleLogPipeAPI {
-  init(options: ConsoleLogPipeOptions): Promise<ConsoleLogPipe>;
-  create(options: ConsoleLogPipeOptions): ConsoleLogPipe;
-  ConsoleLogPipe: typeof ConsoleLogPipe;
+  /**
+   * Initialize Console Log Pipe client
+   * @param options Configuration options
+   * @returns Promise that resolves to ConsoleLogPipe instance
+   */
+  init(options: ConsoleLogPipeInitOptions): Promise<ConsoleLogPipeInstance>;
+
+  /**
+   * Version of the Console Log Pipe client library
+   */
   version: string;
 }
 
-declare const ConsoleLogPipeAPI: ConsoleLogPipeAPI;
+declare const ConsoleLogPipe: ConsoleLogPipeAPI;
 
-export default ConsoleLogPipeAPI;
+export default ConsoleLogPipe;

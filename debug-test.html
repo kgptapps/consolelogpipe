@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug Console Log Pipe Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .status { padding: 10px; margin: 10px 0; border-radius: 5px; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .info { background: #d1ecf1; color: #0c5460; }
+        button { padding: 10px 20px; margin: 5px; font-size: 16px; }
+        #output { background: #f8f9fa; padding: 15px; border: 1px solid #dee2e6; border-radius: 5px; font-family: monospace; max-height: 400px; overflow-y: auto; }
+    </style>
+</head>
+<body>
+    <h1>🔍 Debug Console Log Pipe Test (Port 9229)</h1>
+    
+    <div class="status info">
+        <strong>CLI Command:</strong> <code>npx clp start --port 9229 --no-browser</code><br>
+        <strong>Purpose:</strong> Debug why console messages aren't reaching CLI
+    </div>
+    
+    <button onclick="testStep1()">1️⃣ Test CDN Loading</button>
+    <button onclick="testStep2()">2️⃣ Test WebSocket Connection</button>
+    <button onclick="testStep3()">3️⃣ Test Console Interception</button>
+    <button onclick="testStep4()">4️⃣ Test Direct WebSocket</button>
+    <button onclick="clearOutput()">🧹 Clear</button>
+    
+    <div id="output"></div>
+
+    <!-- Load Console Log Pipe from CDN -->
+    <script src="https://unpkg.com/@kansnpms/console-log-pipe-client@2.4.7/dist/console-log-pipe.umd.js"></script>
+    <script>
+        const output = document.getElementById('output');
+        let clpInstance = null;
+        
+        function log(message) {
+            const timestamp = new Date().toLocaleTimeString();
+            output.innerHTML += `[${timestamp}] ${message}<br>`;
+            output.scrollTop = output.scrollHeight;
+        }
+        
+        function clearOutput() {
+            output.innerHTML = '';
+        }
+        
+        function testStep1() {
+            log('=== Step 1: Testing CDN Loading ===');
+            
+            if (typeof ConsoleLogPipe === 'undefined') {
+                log('❌ ConsoleLogPipe not available');
+                return;
+            }
+            
+            log('✅ ConsoleLogPipe loaded successfully');
+            log(`📋 Type: ${typeof ConsoleLogPipe}`);
+            log(`📋 Version: ${ConsoleLogPipe.version}`);
+            log(`📋 Properties: ${Object.keys(ConsoleLogPipe).join(', ')}`);
+            
+            if (typeof ConsoleLogPipe.init === 'function') {
+                log('✅ init method available');
+            } else {
+                log('❌ init method missing');
+            }
+        }
+        
+        async function testStep2() {
+            log('=== Step 2: Testing WebSocket Connection ===');
+            
+            if (typeof ConsoleLogPipe === 'undefined') {
+                log('❌ ConsoleLogPipe not available - run Step 1 first');
+                return;
+            }
+            
+            try {
+                log('🔌 Attempting to connect to ws://localhost:9229...');
+                
+                clpInstance = await ConsoleLogPipe.init({
+                    serverPort: 9229,
+                    serverHost: 'localhost'
+                });
+                
+                log('✅ Console Log Pipe initialized successfully');
+                log(`📋 Instance type: ${typeof clpInstance}`);
+                
+                // Check if WebSocket is connected
+                if (clpInstance && clpInstance.ws) {
+                    log(`📋 WebSocket state: ${clpInstance.ws.readyState}`);
+                    log(`📋 WebSocket URL: ${clpInstance.ws.url}`);
+                } else {
+                    log('⚠️ No WebSocket instance found');
+                }
+                
+            } catch (error) {
+                log(`❌ Connection failed: ${error.message}`);
+                log(`📋 Error stack: ${error.stack}`);
+            }
+        }
+        
+        function testStep3() {
+            log('=== Step 3: Testing Console Interception ===');
+            
+            if (!clpInstance) {
+                log('❌ Console Log Pipe not initialized - run Step 2 first');
+                return;
+            }
+            
+            // Store original console methods to check if they're intercepted
+            const originalLog = console.log;
+            const originalError = console.error;
+            
+            log('📋 Checking console method interception...');
+            log(`📋 console.log toString: ${originalLog.toString().substring(0, 100)}...`);
+            
+            // Check if console methods have been modified
+            const isIntercepted = originalLog.toString().includes('originalConsole') || 
+                                originalLog.toString().includes('sendLog') ||
+                                originalLog.toString().includes('intercepted');
+            
+            if (isIntercepted) {
+                log('✅ Console methods appear to be intercepted');
+            } else {
+                log('❌ Console methods do not appear to be intercepted');
+            }
+            
+            // Send test messages
+            log('📤 Sending test console messages...');
+            console.log('🧪 DEBUG TEST LOG: This should appear in CLI');
+            console.error('🧪 DEBUG TEST ERROR: This should appear in CLI');
+            console.warn('🧪 DEBUG TEST WARN: This should appear in CLI');
+            
+            log('✅ Console messages sent - check CLI terminal');
+        }
+        
+        function testStep4() {
+            log('=== Step 4: Testing Direct WebSocket ===');
+            log('🔌 Testing direct WebSocket connection...');
+            
+            try {
+                const ws = new WebSocket('ws://localhost:9229');
+                
+                ws.onopen = () => {
+                    log('✅ Direct WebSocket connected successfully');
+                    
+                    // Send a message in the expected format
+                    const message = {
+                        type: 'console',
+                        level: 'log',
+                        message: ['🧪 DIRECT WS: Direct WebSocket test message'],
+                        timestamp: Date.now(),
+                        url: window.location.href,
+                        userAgent: navigator.userAgent
+                    };
+                    
+                    ws.send(JSON.stringify(message));
+                    log('📤 Direct message sent via WebSocket');
+                    
+                    // Close after sending
+                    setTimeout(() => ws.close(), 1000);
+                };
+                
+                ws.onerror = (error) => {
+                    log('❌ Direct WebSocket error');
+                    log(`📋 Error: ${error}`);
+                };
+                
+                ws.onclose = (event) => {
+                    log(`🔌 Direct WebSocket closed (code: ${event.code})`);
+                    if (event.code === 1006) {
+                        log('❌ Connection refused - is CLI server running on port 9229?');
+                    }
+                };
+                
+            } catch (error) {
+                log(`❌ Direct WebSocket failed: ${error.message}`);
+            }
+        }
+        
+        // Auto-run basic checks when page loads
+        window.addEventListener('load', function() {
+            log('🔍 Debug test page loaded');
+            log('📋 Run tests in order: 1 → 2 → 3 → 4');
+            
+            // Auto-run step 1
+            setTimeout(testStep1, 500);
+        });
+    </script>
+</body>
+</html>

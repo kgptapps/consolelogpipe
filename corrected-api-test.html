@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>✅ CORRECTED API Test - Console Log Pipe</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .status {
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 8px;
+            border-left: 4px solid;
+        }
+        .status.info { background: #e3f2fd; border-color: #2196f3; color: #1565c0; }
+        .status.success { background: #e8f5e8; border-color: #4caf50; color: #2e7d32; }
+        .status.error { background: #ffebee; border-color: #f44336; color: #c62828; }
+        
+        button {
+            background: #4caf50;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px 10px 10px 0;
+            transition: background 0.2s;
+        }
+        button:hover { background: #45a049; }
+        button:disabled { background: #ccc; cursor: not-allowed; }
+        
+        .logs {
+            background: #1e1e1e;
+            color: #e0e0e0;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            max-height: 500px;
+            overflow-y: auto;
+            margin: 20px 0;
+        }
+        .timestamp { color: #888; }
+        .success-text { color: #4caf50; }
+        .error-text { color: #f44336; }
+        .info-text { color: #2196f3; }
+        
+        code {
+            background: #f0f0f0;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+        
+        .api-example {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        
+        .api-example h4 {
+            margin-top: 0;
+            color: #495057;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>✅ CORRECTED API Test - Console Log Pipe</h1>
+        
+        <div class="status success">
+            <strong>🎯 FIXED DOCUMENTATION!</strong><br>
+            This test uses the <strong>CORRECT API</strong> that actually works with the published package v2.4.7
+        </div>
+        
+        <div class="api-example">
+            <h4>✅ CORRECT API (Working):</h4>
+            <code>
+                ConsoleLogPipe.init({<br>
+                &nbsp;&nbsp;serverPort: 9229,<br>
+                &nbsp;&nbsp;serverHost: 'localhost'<br>
+                });
+            </code>
+        </div>
+        
+        <div class="api-example">
+            <h4>❌ WRONG API (Documentation Error):</h4>
+            <code>
+                ConsoleLogPipe.init({<br>
+                &nbsp;&nbsp;port: 9229  // This parameter doesn't exist!<br>
+                });
+            </code>
+        </div>
+        
+        <div class="status info">
+            <strong>CLI Server:</strong> <code>npx clp start --port 9229 --no-browser</code><br>
+            <strong>Test Purpose:</strong> Verify corrected documentation examples work
+        </div>
+        
+        <div id="status" class="status info">Ready to test corrected API...</div>
+        
+        <div>
+            <button onclick="testCorrectedAPI()" id="testBtn">🚀 Test CORRECTED API</button>
+            <button onclick="testWrongAPI()" id="wrongBtn">❌ Test WRONG API (Should Fail)</button>
+            <button onclick="clearLogs()">🧹 Clear Logs</button>
+        </div>
+        
+        <div id="logs" class="logs"></div>
+    </div>
+
+    <!-- Console Log Pipe Client -->
+    <script src="https://unpkg.com/@kansnpms/console-log-pipe-client@2.4.7/dist/console-log-pipe.umd.js"></script>
+    
+    <script>
+        const statusDiv = document.getElementById('status');
+        const logsDiv = document.getElementById('logs');
+        const testBtn = document.getElementById('testBtn');
+        const wrongBtn = document.getElementById('wrongBtn');
+        
+        function updateStatus(message, type = 'info') {
+            statusDiv.className = `status ${type}`;
+            statusDiv.innerHTML = message;
+        }
+        
+        function addLog(message, type = '') {
+            const timestamp = new Date().toLocaleTimeString();
+            const typeClass = type ? ` class="${type}-text"` : '';
+            logsDiv.innerHTML += `<div><span class="timestamp">[${timestamp}]</span> <span${typeClass}>${message}</span></div>`;
+            logsDiv.scrollTop = logsDiv.scrollHeight;
+        }
+        
+        function clearLogs() {
+            logsDiv.innerHTML = '';
+        }
+        
+        async function testCorrectedAPI() {
+            testBtn.disabled = true;
+            clearLogs();
+            updateStatus('🧪 Testing CORRECTED API...', 'info');
+            
+            addLog('=== Testing CORRECTED API (serverPort + serverHost) ===');
+            
+            try {
+                // Step 1: Check if library loaded
+                addLog('1. Checking Console Log Pipe library...', 'info');
+                if (typeof ConsoleLogPipe === 'undefined') {
+                    throw new Error('ConsoleLogPipe not loaded from CDN');
+                }
+                addLog(`✅ Library loaded successfully (v${ConsoleLogPipe.version})`, 'success');
+                
+                // Step 2: Initialize with CORRECT API
+                addLog('2. Using CORRECTED API: { serverPort: 9229, serverHost: "localhost" }', 'info');
+                await ConsoleLogPipe.init({
+                    serverPort: 9229,        // ✅ CORRECT parameter name
+                    serverHost: 'localhost'  // ✅ CORRECT parameter name
+                });
+                addLog('✅ CORRECTED API worked! Connected to CLI server successfully', 'success');
+                
+                // Step 3: Send test messages
+                addLog('3. Sending console messages with CORRECTED API...', 'info');
+                
+                console.log('🎯 CORRECTED API TEST: This message uses the fixed documentation!');
+                console.error('🎯 CORRECTED ERROR: Fixed API is working correctly');
+                console.warn('🎯 CORRECTED WARN: Documentation has been corrected');
+                
+                addLog('✅ Console messages sent successfully with CORRECTED API', 'success');
+                addLog('📋 Check your CLI terminal - you should see the corrected test messages', 'info');
+                
+                updateStatus('🎉 CORRECTED API test completed successfully! Documentation is now fixed.', 'success');
+                
+            } catch (error) {
+                addLog(`❌ CORRECTED API test failed: ${error.message}`, 'error');
+                updateStatus(`❌ CORRECTED API test failed: ${error.message}`, 'error');
+            }
+            
+            testBtn.disabled = false;
+        }
+        
+        async function testWrongAPI() {
+            wrongBtn.disabled = true;
+            clearLogs();
+            updateStatus('🧪 Testing WRONG API (should fail)...', 'info');
+            
+            addLog('=== Testing WRONG API (port parameter) ===');
+            
+            try {
+                // This should fail because 'port' parameter doesn't exist in published package
+                addLog('1. Using WRONG API: { port: 9229 }', 'info');
+                
+                // This will likely connect to default port 3001 instead of 9229
+                await ConsoleLogPipe.init({
+                    port: 9229  // ❌ WRONG parameter name (doesn't exist in published package)
+                });
+                
+                addLog('⚠️ WRONG API appeared to work, but likely connected to wrong port!', 'error');
+                addLog('📋 Check CLI - this probably connected to default port 3001, not 9229', 'error');
+                
+                updateStatus('⚠️ WRONG API test completed - may have connected to wrong port', 'error');
+                
+            } catch (error) {
+                addLog(`✅ WRONG API correctly failed: ${error.message}`, 'success');
+                addLog('📋 This proves the documentation was wrong and has been fixed', 'info');
+                updateStatus('✅ WRONG API correctly failed - documentation fix confirmed', 'success');
+            }
+            
+            wrongBtn.disabled = false;
+        }
+        
+        // Initialize when page loads
+        window.addEventListener('load', function() {
+            addLog('🔍 Corrected API test page loaded successfully');
+            
+            if (typeof ConsoleLogPipe !== 'undefined') {
+                addLog(`✅ Console Log Pipe library loaded (v${ConsoleLogPipe.version})`, 'success');
+                addLog('📋 Documentation has been corrected to use: serverPort + serverHost', 'info');
+                updateStatus('✅ Ready to test - Click "Test CORRECTED API" button', 'success');
+            } else {
+                addLog('❌ Console Log Pipe library failed to load', 'error');
+                updateStatus('❌ Library loading failed - Check internet connection', 'error');
+            }
+        });
+    </script>
+</body>
+</html>
