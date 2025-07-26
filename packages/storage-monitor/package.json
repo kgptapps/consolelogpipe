@@ -1,6 +1,6 @@
 {
   "name": "@kansnpms/storage-pipe",
-  "version": "2.4.8",
+  "version": "2.4.9",
   "description": "Browser storage and cookies monitoring - Real-time tracking of localStorage, sessionStorage, cookies, and IndexedDB",
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
