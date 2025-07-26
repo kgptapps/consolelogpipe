@@ -55,10 +55,14 @@ class LogCapture {
 
     // Initialize components
     this.formatter = new LogFormatter(this.options);
+
+    // Use external onLogData callback if provided, otherwise use internal handler
+    const logDataHandler = options.onLogData || this.handleLogData.bind(this);
+
     this.interceptor = new LogInterceptor(
       this.options,
       this.formatter,
-      this.handleLogData.bind(this),
+      logDataHandler,
       this._createLogEntry.bind(this)
     );
 
