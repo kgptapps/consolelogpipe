@@ -16,16 +16,17 @@ const { version } = require('../package.json');
 /**
  * Initialize Console Log Pipe with configuration
  * @param {Object} options - Configuration options
- * @param {number} options.port - Required port number for CLI server
+ * @param {number} options.serverPort - Required port number for CLI server
+ * @param {string} [options.serverHost] - Server host (defaults to 'localhost')
  * @param {function} [options.onReady] - Callback when initialization is complete
  * @param {function} [options.onError] - Callback when initialization fails
  * @returns {Promise<ConsoleLogPipe>} Promise that resolves when ready
  */
 async function init(options = {}) {
-  // Enforce port parameter
-  if (!options.port || typeof options.port !== 'number') {
+  // Enforce serverPort parameter
+  if (!options.serverPort || typeof options.serverPort !== 'number') {
     const error = new Error(
-      'Port number is required. Usage: ConsoleLogPipe.init({ port: 3001 })'
+      'serverPort is required. Usage: ConsoleLogPipe.init({ serverPort: 3001 })'
     );
     if (typeof options.onError === 'function') {
       try {

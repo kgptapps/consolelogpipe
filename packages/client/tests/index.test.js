@@ -154,7 +154,7 @@ describe('Index Module', () => {
         return mockWs;
       });
 
-      clp = await ConsoleLogPipeAPI.init({ port: 3002 });
+      clp = await ConsoleLogPipeAPI.init({ serverPort: 3002 });
 
       expect(clp).toBeInstanceOf(ConsoleLogPipeAPI.ConsoleLogPipe);
       expect(clp.config.serverPort).toBe(3002);

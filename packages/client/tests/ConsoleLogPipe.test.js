@@ -108,7 +108,7 @@ describe('ConsoleLogPipe', () => {
 
     it('should merge custom configuration', () => {
       const clp = new ConsoleLogPipe({
-        port: 3002,
+        serverPort: 3002,
         serverHost: 'custom-host',
         batchSize: 20,
         enableNetworkCapture: false,
@@ -139,8 +139,8 @@ describe('ConsoleLogPipe', () => {
     });
 
     it('should use specified port', () => {
-      const clp1 = new ConsoleLogPipe({ port: 3005 });
-      const clp2 = new ConsoleLogPipe({ port: 3010 });
+      const clp1 = new ConsoleLogPipe({ serverPort: 3005 });
+      const clp2 = new ConsoleLogPipe({ serverPort: 3010 });
 
       expect(clp1.config.serverPort).toBe(3005);
       expect(clp2.config.serverPort).toBe(3010);

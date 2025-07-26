@@ -90,7 +90,7 @@ Session ID     Error Categories    Performance Data      Smart Routing         A
 #### API Design
 
 ```javascript
-import { ConsoleLogPipe } from '@kansnpms/console-log-pipe-client';
+import ConsoleLogPipe from '@kansnpms/console-log-pipe-client';
 
 // Simple Usage (Port-based identification)
 await ConsoleLogPipe.init({
@@ -100,7 +100,7 @@ await ConsoleLogPipe.init({
 
 // AI-Friendly Development Context
 const logger = new ConsoleLogPipe({
-  port: 3002,
+  serverPort: 3002,
   sessionId: 'custom-session-123', // optional override
   environment: 'staging',
   developer: 'jane-smith',

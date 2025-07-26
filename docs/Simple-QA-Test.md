@@ -72,7 +72,7 @@ npm install @kansnpms/console-log-pipe-storage-beta
     <script type="module">
       import ConsoleLogPipe from './node_modules/@kansnpms/console-log-pipe-client/dist/console-log-pipe.esm.js';
 
-      ConsoleLogPipe.init({ port: 3001 });
+      ConsoleLogPipe.init({ serverPort: 3001 });
 
       window.testLogs = function () {
         console.log('✅ Test log message');
@@ -258,7 +258,5 @@ window.testStorage = function () {
 
 ---
 
-**Tester:** \***\*\*\*\*\***\_\***\*\*\*\*\***  
-**Date:** \***\*\*\*\*\***\_\***\*\*\*\*\***  
-**Environment:** \***\*\*\*\*\***\_\***\*\*\*\*\***  
-**Overall Status:** ⭐⭐⭐⭐⭐ (Rate 1-5 stars)
+**Tester:** \***\*\*\*\*\***\_\***\*\*\*\*\*** **Date:** \***\*\*\*\*\***\_\***\*\*\*\*\***
+**Environment:** \***\*\*\*\*\***\_\***\*\*\*\*\*** **Overall Status:** ⭐⭐⭐⭐⭐ (Rate 1-5 stars)

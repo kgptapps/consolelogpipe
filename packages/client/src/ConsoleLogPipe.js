@@ -31,8 +31,8 @@ class ConsoleLogPipe {
       branch: options.branch || this._detectBranch(),
 
       // Server configuration
-      serverHost: options.serverHost || options.host || 'localhost',
-      serverPort: options.serverPort || options.port || 3001,
+      serverHost: options.serverHost || 'localhost',
+      serverPort: options.serverPort || 3001,
       serverPath: options.serverPath || '/api/logs',
       enableRemoteLogging: options.enableRemoteLogging !== false,
 
