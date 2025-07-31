@@ -645,3 +645,6 @@ if (typeof module !== 'undefined' && module.exports) {
 } else if (typeof window !== 'undefined') {
   window.StorageMonitor = StorageMonitor;
 }
+
+// ES6 default export
+export default StorageMonitor;

@@ -42,7 +42,19 @@ const BrowserStorageMonitor = {
     this.instance = new StorageMonitor(config);
 
     if (config.autoStart) {
-      await this.instance.init();
+      try {
+        await this.instance.init();
+      } catch (error) {
+        // Connection failed, but we still return the instance
+        // This allows the API to work even when the server is not running
+        console.warn(
+          'Storage Monitor server connection failed:',
+          error.message
+        );
+        console.warn(
+          "Storage monitoring will work locally but won't stream to CLI"
+        );
+      }
     }
 
     return this.instance;
@@ -109,6 +121,54 @@ const BrowserStorageMonitor = {
   },
 };
 
+/**
+ * Create a unified StorageMonitor API that matches documentation
+ * This provides the static methods that documentation expects
+ */
+
+// Create the unified API by directly copying methods (avoid .bind() issues)
+const UnifiedStorageMonitor = {};
+
+// Copy init method with proper context
+UnifiedStorageMonitor.init = function (options) {
+  return BrowserStorageMonitor.init.call(BrowserStorageMonitor, options);
+};
+
+// Copy other methods
+UnifiedStorageMonitor.stop = function () {
+  return BrowserStorageMonitor.stop.call(BrowserStorageMonitor);
+};
+
+UnifiedStorageMonitor.getCurrentState = function () {
+  return BrowserStorageMonitor.getCurrentState.call(BrowserStorageMonitor);
+};
+
+UnifiedStorageMonitor.isMonitoring = function () {
+  return BrowserStorageMonitor.isMonitoring.call(BrowserStorageMonitor);
+};
+
+UnifiedStorageMonitor.isConnected = function () {
+  return BrowserStorageMonitor.isConnected.call(BrowserStorageMonitor);
+};
+
+UnifiedStorageMonitor.checkStorageChanges = function () {
+  return BrowserStorageMonitor.checkStorageChanges.call(BrowserStorageMonitor);
+};
+
+UnifiedStorageMonitor.onStorageChange = function (callback) {
+  return BrowserStorageMonitor.onStorageChange.call(
+    BrowserStorageMonitor,
+    callback
+  );
+};
+
+UnifiedStorageMonitor.offStorageChange = function () {
+  return BrowserStorageMonitor.offStorageChange.call(BrowserStorageMonitor);
+};
+
+// Provide access to the underlying BrowserStorageMonitor for advanced usage
+UnifiedStorageMonitor._internal = BrowserStorageMonitor;
+
 // Auto-initialize if window.ConsoleLogPipeStorage is configured
 if (typeof window !== 'undefined' && window.ConsoleLogPipeStorage) {
   const config = window.ConsoleLogPipeStorage;
@@ -119,12 +179,12 @@ if (typeof window !== 'undefined' && window.ConsoleLogPipeStorage) {
 
 // Export for different module systems
 if (typeof module !== 'undefined' && module.exports) {
-  module.exports = BrowserStorageMonitor;
+  module.exports = UnifiedStorageMonitor; // Export the unified API
 } else if (typeof window !== 'undefined') {
   window.BrowserStorageMonitor = BrowserStorageMonitor;
 
-  // Also provide a shorter alias
-  window.StorageMonitor = BrowserStorageMonitor;
+  // Export the unified StorageMonitor API (matches documentation)
+  window.StorageMonitor = UnifiedStorageMonitor;
 }
 
-export default BrowserStorageMonitor;
+export default UnifiedStorageMonitor; // Export the unified API

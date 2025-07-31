@@ -136,13 +136,26 @@ export interface BrowserStorageMonitor {
   offStorageChange(): void;
 }
 
+// Unified StorageMonitor API for browser environment (matches UMD export)
+export interface UnifiedStorageMonitor {
+  init(options?: StorageMonitorConfig): Promise<StorageMonitor>;
+  stop(): void;
+  getCurrentState(): StorageState | null;
+  isMonitoring(): boolean;
+  isConnected(): boolean;
+  checkStorageChanges(): void;
+  onStorageChange(callback: (changes: StorageChanges) => void): void;
+  offStorageChange(): void;
+  _internal: BrowserStorageMonitor;
+}
+
 declare const _default: ConsoleLogPipeStorage;
 export default _default;
 
 // Global declarations for browser environment
 declare global {
   interface Window {
-    StorageMonitor?: BrowserStorageMonitor;
+    StorageMonitor?: UnifiedStorageMonitor; // This is what UMD actually exports
     BrowserStorageMonitor?: BrowserStorageMonitor;
     ConsoleLogPipeStorage?: StorageMonitorConfig;
   }
@@ -151,4 +164,10 @@ declare global {
 // Module augmentation for different environments
 declare module '@kansnpms/storage-pipe' {
   export = ConsoleLogPipeStorage;
+}
+
+// UMD module declaration for browser builds
+declare module '@kansnpms/storage-pipe/dist/storage-monitor.umd.js' {
+  const StorageMonitor: UnifiedStorageMonitor;
+  export = StorageMonitor;
 }

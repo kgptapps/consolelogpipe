@@ -6,6 +6,9 @@
 [![Code Quality](https://github.com/kgptapps/consolelogpipe/actions/workflows/code-quality.yml/badge.svg)](https://github.com/kgptapps/consolelogpipe/actions/workflows/code-quality.yml)
 [![license: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
+> 🎉 **v2.5.0 Released!** - Major API consistency fixes and improved documentation. All browser and
+> Node.js APIs now work as documented. See [CHANGELOG.md](CHANGELOG.md) for details.
+
 > ⚠️ **IMPORTANT**: This is a **monitoring tool** that pipes browser storage changes to your CLI
 > terminal. It does **NOT** provide storage methods like `.set()`, `.get()`, `.delete()`. If you
 > need a general storage solution, this is not the right package.
@@ -71,19 +74,38 @@ clp storage --port 3002
 
 ### 3. Add to Your Web Application
 
+#### Option A: Browser Script Tag (Easiest)
+
+```html
+<script src="https://unpkg.com/@kansnpms/storage-pipe/dist/storage-monitor.umd.js"></script>
+<script>
+  // Initialize storage monitoring (NOT storage creation)
+  StorageMonitor.init({
+    serverPort: 3002, // Must match CLI port
+  }).then(() => {
+    console.log('Storage monitoring active!');
+  });
+</script>
+```
+
+#### Option B: NPM Package
+
 ```bash
 npm install @kansnpms/storage-pipe
 ```
 
 ```javascript
-import StorageMonitor from '@kansnpms/storage-pipe';
+import { ConsoleLogPipeStorage } from '@kansnpms/storage-pipe';
 
-// Initialize storage monitoring (NOT storage creation)
-const monitor = await StorageMonitor.init({
+// Initialize storage monitoring
+const storage = await ConsoleLogPipeStorage.init({
   serverPort: 3002, // Must match CLI port
 });
+```
 
-// Now when your app uses storage, changes appear in CLI:
+**Now when your app uses storage, changes appear in CLI:**
+
+```javascript
 localStorage.setItem('theme', 'dark'); // ← This will be monitored
 sessionStorage.setItem('user', 'john'); // ← This will be monitored
 document.cookie = 'session=abc123'; // ← This will be monitored
@@ -104,31 +126,41 @@ document.cookie = 'session=abc123'; // ← This will be monitored
 
 ## 🛠️ Usage Examples
 
-### Basic Usage
+## 📋 API Usage by Environment
 
-```javascript
-import StorageMonitor from '@kansnpms/storage-pipe';
+### 🌐 Browser Script Tag (Recommended for Quick Setup)
 
-// Simple initialization
-const monitor = await StorageMonitor.init();
+```html
+<script src="https://unpkg.com/@kansnpms/storage-pipe/dist/storage-monitor.umd.js"></script>
+<script>
+  // Initialize storage monitoring with static methods
+  StorageMonitor.init({
+    serverPort: 3002,
+    serverHost: 'localhost',
+    enableCookies: true,
+    enableLocalStorage: true,
+    enableSessionStorage: true,
+    enableIndexedDB: false, // Disable IndexedDB monitoring
+    pollInterval: 500, // Check for changes every 500ms
+  }).then(monitor => {
+    console.log('🍪 Storage monitoring started!');
 
-// With custom configuration
-const monitor = await StorageMonitor.init({
-  serverPort: 3002,
-  serverHost: 'localhost',
-  enableCookies: true,
-  enableLocalStorage: true,
-  enableSessionStorage: true,
-  enableIndexedDB: false, // Disable IndexedDB monitoring
-  pollInterval: 500, // Check for changes every 500ms
-});
+    // Use static methods for control
+    console.log('Monitoring active:', StorageMonitor.isMonitoring());
+    console.log('Connected:', StorageMonitor.isConnected());
+  });
+
+  // Stop monitoring
+  // StorageMonitor.stop();
+</script>
 ```
 
-### Advanced Configuration
+### 📦 ES6 Module Import (Node.js/Bundlers)
 
 ```javascript
 import { ConsoleLogPipeStorage } from '@kansnpms/storage-pipe';
 
+// Create instance with configuration
 const storage = new ConsoleLogPipeStorage({
   serverPort: 3002,
   sessionId: 'my-custom-session',
@@ -150,18 +182,18 @@ console.log('Current storage:', currentState);
 storage.stop();
 ```
 
-### Browser Script Tag Usage
+### 🔧 Static Factory Methods (ES6 Alternative)
 
-```html
-<script src="https://unpkg.com/@kansnpms/storage-pipe/dist/storage-monitor.umd.js"></script>
-<script>
-  // Initialize storage monitoring
-  StorageMonitor.init({
-    serverPort: 3002,
-  }).then(() => {
-    console.log('🍪 Storage monitoring started!');
-  });
-</script>
+```javascript
+import { ConsoleLogPipeStorage } from '@kansnpms/storage-pipe';
+
+// Quick initialization with static method
+const monitor = await ConsoleLogPipeStorage.init({
+  serverPort: 3002,
+  enableIndexedDB: false,
+});
+
+console.log('Storage monitoring active:', monitor.isMonitoring());
 ```
 
 ## 🔧 CLI Commands
