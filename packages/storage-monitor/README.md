@@ -241,11 +241,11 @@ Access the web dashboard at `http://localhost:3002` when the storage monitor is 
 ### ✅ Available Methods (Monitoring Only)
 
 ```javascript
-import StorageMonitor from '@kansnpms/storage-pipe';
+import { ConsoleLogPipeStorage } from '@kansnpms/storage-pipe';
 
 // Static methods
-await StorageMonitor.init(options); // Initialize and start monitoring
-StorageMonitor.create(options); // Create instance without starting
+await ConsoleLogPipeStorage.init(options); // Initialize and start monitoring
+ConsoleLogPipeStorage.create(options); // Create instance without starting
 
 // Instance methods
 await monitor.start(); // Start monitoring

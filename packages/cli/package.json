@@ -1,6 +1,6 @@
 {
   "name": "@kansnpms/console-log-pipe-cli",
-  "version": "2.4.9",
+  "version": "2.5.0",
   "description": "Global CLI tool for Console Log Pipe - Real-time log streaming server and management",
   "main": "src/cli.js",
   "bin": {
@@ -42,8 +42,14 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
+    "test:integration": "jest --testPathPattern=integration --passWithNoTests",
+    "test:e2e": "jest --testPathPattern=e2e --passWithNoTests",
+    "test:performance": "echo 'Performance tests not yet implemented'",
     "lint": "eslint src --ext .js,.ts",
     "lint:fix": "eslint src --ext .js,.ts --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "type-check": "echo 'TypeScript checking not yet implemented'",
     "clean": "rimraf build/dist node_modules/.cache"
   },
   "dependencies": {
